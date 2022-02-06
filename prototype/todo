@@ -1,0 +1,9 @@
+
+- Choosing a data source determines other shown elements. For SMEAR greenhouse gases are
+  shown as checkboxes, while for STATFI datasets are shown as checkboxes.
+  Check the assignment specification for details for what the options must be. For both
+  there is an element for selecting a time period. STATFI only has one data point per
+  day, while SMEAR can have as many as one per every 30 minutes.
+
+- If you can get the graphs working, consider of ways to draw lines for the max, average, and min values.
+  Can the lines be interactive?
