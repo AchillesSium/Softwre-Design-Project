@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -10,20 +10,17 @@ CONFIG += c++11
 
 SOURCES += \
     date_to_date.cpp \
-    historywindow.cpp \
     main.cpp \
     mainwindow.cpp \
     settingswindow.cpp
 
 HEADERS += \
     date_to_date.h \
-    historywindow.h \
     mainwindow.h \
     settingswindow.h
 
 FORMS += \
     date_to_date.ui \
-    historywindow.ui \
     mainwindow.ui \
     settingswindow.ui
 

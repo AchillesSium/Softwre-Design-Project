@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QGraphicsView" name="chart_main_view">
+   <widget class="QChartView" name="chart_main_view">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -351,9 +351,18 @@
      <addaction name="action_PNG"/>
      <addaction name="action_JPEG"/>
     </widget>
+    <widget class="QMenu" name="menuChoose_loadout">
+     <property name="title">
+      <string>Choose loadout</string>
+     </property>
+     <addaction name="actionDefault_loadout"/>
+    </widget>
     <addaction name="menuExport"/>
+    <addaction name="separator"/>
     <addaction name="actionSave_loadout"/>
-    <addaction name="actionChoose_loadout"/>
+    <addaction name="menuChoose_loadout"/>
+    <addaction name="separator"/>
+    <addaction name="actionSettings"/>
    </widget>
    <addaction name="menuWeather_Report"/>
   </widget>
@@ -378,12 +387,29 @@
     <string>Save loadout</string>
    </property>
   </action>
-  <action name="actionChoose_loadout">
+  <action name="actionCompare">
    <property name="text">
-    <string>Choose loadout</string>
+    <string>Compare</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="text">
+    <string>Settings</string>
+   </property>
+  </action>
+  <action name="actionDefault_loadout">
+   <property name="text">
+    <string>Default loadout</string>
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QChartView</class>
+   <extends>QGraphicsView</extends>
+   <header>QtCharts</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
