@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1200</width>
+    <height>641</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QChartView" name="chart_main_view">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>20</y>
+      <width>981</width>
+      <height>571</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="station_main_combo">
+    <property name="geometry">
+     <rect>
+      <x>1020</x>
+      <y>80</y>
+      <width>161</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>MeasuringStation1</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>MeasuringStation2</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>MeasuringStation3</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QPushButton" name="compare_button">
+    <property name="geometry">
+     <rect>
+      <x>1030</x>
+      <y>510</y>
+      <width>141</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Compare</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="settings_main_button">
+    <property name="geometry">
+     <rect>
+      <x>1030</x>
+      <y>540</y>
+      <width>141</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Settings</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="exit_main_button">
+    <property name="geometry">
+     <rect>
+      <x>1030</x>
+      <y>570</y>
+      <width>141</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Exit</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="co2_main_check">
+    <property name="geometry">
+     <rect>
+      <x>1030</x>
+      <y>170</y>
+      <width>72</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>CO2</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="so2_main_check">
+    <property name="geometry">
+     <rect>
+      <x>1030</x>
+      <y>190</y>
+      <width>72</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>SO2</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="nox_main_check">
+    <property name="geometry">
+     <rect>
+      <x>1030</x>
+      <y>210</y>
+      <width>72</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>NOx</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="other_main_check">
+    <property name="geometry">
+     <rect>
+      <x>1030</x>
+      <y>230</y>
+      <width>61</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>(other)</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="data_main_combo">
+    <property name="geometry">
+     <rect>
+      <x>1020</x>
+      <y>50</y>
+      <width>161</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>SMEAR</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>STATFI</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QPushButton" name="default_main_button">
+    <property name="geometry">
+     <rect>
+      <x>1030</x>
+      <y>480</y>
+      <width>141</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Default loadout</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="month_main_button">
+    <property name="geometry">
+     <rect>
+      <x>1030</x>
+      <y>330</y>
+      <width>141</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Month</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="day_main_button">
+    <property name="geometry">
+     <rect>
+      <x>1030</x>
+      <y>390</y>
+      <width>141</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>24h</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="week_main_button">
+    <property name="geometry">
+     <rect>
+      <x>1030</x>
+      <y>360</y>
+      <width>141</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Week</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="date_to_main_button">
+    <property name="geometry">
+     <rect>
+      <x>1030</x>
+      <y>420</y>
+      <width>141</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Date-to-Date</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="year_main_button">
+    <property name="geometry">
+     <rect>
+      <x>1030</x>
+      <y>300</y>
+      <width>141</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Year</string>
+    </property>
+   </widget>
+   <widget class="Line" name="line">
+    <property name="geometry">
+     <rect>
+      <x>1020</x>
+      <y>450</y>
+      <width>161</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="gas_main_label">
+    <property name="geometry">
+     <rect>
+      <x>1030</x>
+      <y>150</y>
+      <width>47</width>
+      <height>13</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Gas:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="data_main_label">
+    <property name="geometry">
+     <rect>
+      <x>1100</x>
+      <y>150</y>
+      <width>81</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Additional data:</string>
+    </property>
+   </widget>
+   <widget class="Line" name="line_2">
+    <property name="geometry">
+     <rect>
+      <x>1080</x>
+      <y>130</y>
+      <width>16</width>
+      <height>131</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="min_main_check">
+    <property name="geometry">
+     <rect>
+      <x>1110</x>
+      <y>200</y>
+      <width>72</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>min.</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="max_main_check">
+    <property name="geometry">
+     <rect>
+      <x>1110</x>
+      <y>180</y>
+      <width>72</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>max.</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="avg_main_check">
+    <property name="geometry">
+     <rect>
+      <x>1110</x>
+      <y>220</y>
+      <width>72</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>avg.</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1200</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuWeather_Report">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menuExport">
+     <property name="title">
+      <string>Export data</string>
+     </property>
+     <addaction name="action_PDF"/>
+     <addaction name="action_PNG"/>
+     <addaction name="action_JPEG"/>
+    </widget>
+    <widget class="QMenu" name="menuChoose_loadout">
+     <property name="title">
+      <string>Choose loadout</string>
+     </property>
+     <addaction name="actionDefault_loadout"/>
+    </widget>
+    <addaction name="menuExport"/>
+    <addaction name="separator"/>
+    <addaction name="actionSave_loadout"/>
+    <addaction name="menuChoose_loadout"/>
+    <addaction name="separator"/>
+    <addaction name="actionSettings"/>
+   </widget>
+   <addaction name="menuWeather_Report"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="action_PDF">
+   <property name="text">
+    <string>.pdf</string>
+   </property>
+  </action>
+  <action name="action_PNG">
+   <property name="text">
+    <string>.PNG</string>
+   </property>
+  </action>
+  <action name="action_JPEG">
+   <property name="text">
+    <string>.JPEG</string>
+   </property>
+  </action>
+  <action name="actionSave_loadout">
+   <property name="text">
+    <string>Save loadout</string>
+   </property>
+  </action>
+  <action name="actionCompare">
+   <property name="text">
+    <string>Compare</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="text">
+    <string>Settings</string>
+   </property>
+  </action>
+  <action name="actionDefault_loadout">
+   <property name="text">
+    <string>Default loadout</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QChartView</class>
+   <extends>QGraphicsView</extends>
+   <header>QtCharts</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
