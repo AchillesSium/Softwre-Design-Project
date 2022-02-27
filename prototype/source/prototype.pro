@@ -12,11 +12,13 @@ SOURCES += \
     date_to_date.cpp \
     main.cpp \
     mainwindow.cpp \
+    networkcalls.cpp \
     settingswindow.cpp
 
 HEADERS += \
     date_to_date.h \
     mainwindow.h \
+    networkcalls.h \
     settingswindow.h
 
 FORMS += \

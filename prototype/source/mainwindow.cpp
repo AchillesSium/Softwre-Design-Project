@@ -304,6 +304,8 @@ void MainWindow::on_default_main_button_clicked()
 {
     default_combo_boxes();
     default_check_boxes();
+   // networkcalls *network = new networkcalls();
+
 }
 
 
