@@ -7,12 +7,12 @@
 
 using std::string;
 
-class networkCalls: public QObject
+class networkcalls: public QObject
 {
     Q_OBJECT
 public:
-    explicit networkCalls();
-    void queryStatFi(QMap<string, string *>);
+    explicit networkcalls();
+    void queryStatFi(QString);
 private slots:
     void replyFinished(QNetworkReply *reply);
 };

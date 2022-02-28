@@ -13,13 +13,13 @@
 #include <string>
 #include <QStringList>
 
-networkCalls::networkCalls()
+networkcalls::networkcalls()
 {
 
 }
 
 
-void networkCalls::queryStatFi(QMap<std::string, std::string*> map)
+void networkcalls::queryStatFi(QString str)
 {
     //the network manager will post and recieve our HTTP requests
         QNetworkAccessManager *manager = new QNetworkAccessManager(this);
@@ -33,11 +33,14 @@ void networkCalls::queryStatFi(QMap<std::string, std::string*> map)
 
         //the additional query data to enter
          QUrlQuery query(url);
-         QMapIterator<string, string *> i(map);
-         while (i.hasNext()) {
-             i.next();
-             query.addQueryItem(i.key().c_str(),i.value()->c_str());
-         }
+//         QMapIterator<string, string *> i(map);
+//         while (i.hasNext()) {
+//             i.next();
+
+//         }
+         query.addQueryItem("query",str);
+         QString val = "{'format': 'json-stat2'}}";
+         query.addQueryItem("response",val);
          url.setQuery(query);
 
          //update the request with the new query information.
@@ -51,7 +54,7 @@ void networkCalls::queryStatFi(QMap<std::string, std::string*> map)
 
 }
 
-void networkCalls::replyFinished(QNetworkReply *reply)
+void networkcalls::replyFinished(QNetworkReply *reply)
 {
     if ( reply->error() != QNetworkReply::NoError ){
             // A communication error has occurred
@@ -60,5 +63,9 @@ void networkCalls::replyFinished(QNetworkReply *reply)
 
         //We read the JSON response into a QJsonObject
         QJsonObject obj = QJsonDocument::fromJson(reply->readAll()).object();
-        qDebug() << obj;
+
+        QString strFromObj = QJsonDocument(obj).toJson(QJsonDocument::Compact).toStdString().c_str();
+
+        //qDebug("asv" + strFromObj);
+        qDebug().nospace() << "abc" << qPrintable(strFromObj) << "def";
 }
