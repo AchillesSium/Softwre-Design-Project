@@ -10,6 +10,7 @@ CONFIG += c++11
 
 SOURCES += \
     date_to_date.cpp \
+    jsonparser.cpp \
     main.cpp \
     mainwindow.cpp \
     networkcalls.cpp \
@@ -17,6 +18,7 @@ SOURCES += \
 
 HEADERS += \
     date_to_date.h \
+    jsonparser.h \
     mainwindow.h \
     networkcalls.h \
     settingswindow.h
