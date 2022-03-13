@@ -4,7 +4,7 @@
 ChartWindow::ChartWindow(QWidget *parent) :
       QMainWindow(parent),
       ui(new Ui::ChartWindow),
-      checker(new Checker)
+      view_elements(new ViewObject)
 {
     ui->setupUi(this);
 
@@ -19,7 +19,7 @@ ChartWindow::ChartWindow(QWidget *parent) :
     axis_x->setGridLineVisible(true);
     axis_x->setLabelFormat("%.1i");
     axis_x->setTitleText("Hours");
-    current_time = Day;
+    view_elements->selected_preset_time = Day;
 
     // Initialize the Y-axis
     QtCharts::QValueAxis *axis_y = new QtCharts::QValueAxis();
@@ -102,28 +102,36 @@ ChartWindow::ChartWindow(QWidget *parent) :
 
     // Check correct checkboxes
 
+    /*
     ui->co2Box->blockSignals(true);
     ui->so2Box->blockSignals(true);
     ui->noxBox->blockSignals(true);
+    */
 
     ui->co2Box->setChecked(true);
     ui->so2Box->setChecked(true);
     ui->noxBox->setChecked(true);
 
+    /*
     ui->co2Box->blockSignals(false);
     ui->so2Box->blockSignals(false);
     ui->noxBox->blockSignals(false);
+    */
 
-    checker->checkbox_1 = true;
-    checker->checkbox_2 = true;
-    checker->checkbox_3 = true;
-    checker->checkbox_4 = false;
-
+    // Might need to add the checkboxes for calculated values
+    view_elements->checks.insert(std::make_pair(CO2_Checkbox, true));
+    view_elements->checks.insert(std::make_pair(SO2_Checkbox, true));
+    view_elements->checks.insert(std::make_pair(NOx_Checkbox, true));
+    view_elements->checks.insert(std::make_pair(Other_Checkbox, false));
 
     // Set correct combo box and stacked widget
     ui->databaseCombo->blockSignals(true);
+
     ui->databaseCombo->setCurrentText("SMEAR");
+    view_elements->current_database = SMEAR;
     ui->stackedBoxes->setCurrentIndex(0);
+    view_elements->current_station = Station_1;
+
     ui->databaseCombo->blockSignals(false);
 
 }
@@ -165,8 +173,7 @@ void ChartWindow::default_combo_boxes()
 
 void ChartWindow::default_check_boxes()
 {
-    QString current_text = ui->databaseCombo->currentText();
-    if(current_text == "SMEAR")
+    if(view_elements->current_database == SMEAR)
     {
         // Gasses checked
         ui->co2Box->setChecked(false);
@@ -174,7 +181,7 @@ void ChartWindow::default_check_boxes()
         ui->noxBox->setChecked(false);
         ui->otherBox->setChecked(false);
     }
-    else if(current_text == "STATFI")
+    else if(view_elements->current_database == STATFI)
     {
         // Intensity and indexes checked
         ui->co2DataBox->setChecked(false);
@@ -189,13 +196,10 @@ void ChartWindow::default_check_boxes()
     ui->avgBox->setChecked(false);
 
     // Inform the struct
-    checker->checkbox_1 = false;
-    checker->checkbox_2 = false;
-    checker->checkbox_3 = false;
-    checker->checkbox_4 = false;
-    checker->checkbox_max = false;
-    checker->checkbox_min = false;
-    checker->checkbox_avg = false;
+    view_elements->checks.at(CO2_Checkbox) = false;
+    view_elements->checks.at(SO2_Checkbox) = false;
+    view_elements->checks.at(NOx_Checkbox) = false;
+    view_elements->checks.at(Other_Checkbox) = false;
 }
 
 
@@ -226,7 +230,7 @@ void ChartWindow::add_graph_series(QtCharts::QLineSeries *new_series)
 
 void ChartWindow::react_to_checkbox(bool state, std::vector<QtCharts::QLineSeries *> &pointers)
 {
-    QtCharts::QAbstractSeries *current_pointer = pointers.at(current_time);
+    QtCharts::QAbstractSeries *current_pointer = pointers.at(view_elements->selected_preset_time);
     QList<QAbstractSeries*> all_series = ui->chartView->chart()->series();
     QList<QAbstractSeries*>::iterator all;
 
@@ -234,35 +238,35 @@ void ChartWindow::react_to_checkbox(bool state, std::vector<QtCharts::QLineSerie
 
     if(state == true && all == all_series.end())
     {
-       add_graph_series(pointers.at(current_time));
+       add_graph_series(pointers.at(view_elements->selected_preset_time));
     }
     else if(state == false && all != all_series.end())
     {
-        remove_graph_series(pointers.at(current_time));
+        remove_graph_series(pointers.at(view_elements->selected_preset_time));
     }
 }
 
 void ChartWindow::quick_time_change(Time period)
 {
 
-    if(current_time == period)
+    if(view_elements->selected_preset_time == period)
     {
         return;
     }
 
     if(ui->co2Box->isChecked())
     {
-        remove_graph_series(co2_series.at(current_time));
+        remove_graph_series(co2_series.at(view_elements->selected_preset_time));
     }
 
     if(ui->so2Box->isChecked())
     {
-        remove_graph_series(so2_series.at(current_time));
+        remove_graph_series(so2_series.at(view_elements->selected_preset_time));
     }
 
     if(ui->noxBox->isChecked())
     {
-        remove_graph_series(nox_series.at(current_time));
+        remove_graph_series(nox_series.at(view_elements->selected_preset_time));
     }
 
     ui->chartView->chart()->removeAxis(ui->chartView->chart()->axisX());
@@ -291,6 +295,13 @@ void ChartWindow::quick_time_change(Time period)
         max_tick = 12;
         title_text = "Months";
         break;
+
+    case Custom:
+        // TODO
+        // Dummy values as placeholder
+        max_tick = 10;
+        title_text = "Years";
+        break;
     }
 
     axis_x->setMax(max_tick);
@@ -299,21 +310,21 @@ void ChartWindow::quick_time_change(Time period)
     axis_x->setGridLineVisible(true);
     axis_x->setLabelFormat("%.1i");
     ui->chartView->chart()->addAxis(axis_x, Qt::AlignBottom);
-    current_time = period;
+    view_elements->selected_preset_time = period;
 
     if(ui->co2Box->isChecked())
     {
-        add_graph_series(co2_series.at(current_time));
+        add_graph_series(co2_series.at(view_elements->selected_preset_time));
     }
 
     if(ui->so2Box->isChecked())
     {
-        add_graph_series(so2_series.at(current_time));
+        add_graph_series(so2_series.at(view_elements->selected_preset_time));
     }
 
     if(ui->noxBox->isChecked())
     {
-        add_graph_series(nox_series.at(current_time));
+        add_graph_series(nox_series.at(view_elements->selected_preset_time));
     }
 }
 
@@ -360,26 +371,29 @@ void ChartWindow::on_timeButton_clicked()
 
 void ChartWindow::on_applyButton_clicked()
 {
+
+    // Send ViewObject pointer to controller
+
     for(unsigned int box_count = 0; box_count < 4; box_count++)
     {
         switch(box_count)
         {
-        case FirstBox:
+        case CO2_Checkbox:
             // TODO Fetch the correct information and display it on the graph
-            react_to_checkbox(checker->checkbox_1, co2_series);
+            react_to_checkbox(view_elements->checks.at(CO2_Checkbox), co2_series);
             break;
 
-        case SecondBox:
+        case SO2_Checkbox:
             // TODO -||-
-            react_to_checkbox(checker->checkbox_2, so2_series);
+            react_to_checkbox(view_elements->checks.at(SO2_Checkbox), so2_series);
             break;
 
-        case ThirdBox:
+        case NOx_Checkbox:
             // TODO -||-
-            react_to_checkbox(checker->checkbox_3, nox_series);
+            react_to_checkbox(view_elements->checks.at(NOx_Checkbox), nox_series);
             break;
 
-        case FourthBox:
+        case Other_Checkbox:
             // TODO -||-
             break;
         }
@@ -407,6 +421,8 @@ void ChartWindow::on_databaseCombo_currentIndexChanged(const int index)
         button_text = "Year-to_Year";
         widget = ui->stackedBoxes->widget(1);
         quick_time_change(Year);
+        view_elements->current_database = STATFI;
+        view_elements->current_station = NONE;
         break;
 
     case SMEAR:
@@ -414,6 +430,8 @@ void ChartWindow::on_databaseCombo_currentIndexChanged(const int index)
         quick_times = true;
         button_text = "Date-to-Date";
         widget = ui->stackedBoxes->widget(0);
+        view_elements->current_database = SMEAR;
+        view_elements->current_station = static_cast<Station>(ui->stationCombo->currentIndex());
         break;
     }
 
@@ -450,24 +468,25 @@ void ChartWindow::on_databaseCombo_currentIndexChanged(const int index)
 
 void ChartWindow::on_co2Box_clicked(bool state)
 {
-    checker->checkbox_1 = state;
+    view_elements->checks.at(CO2_Checkbox) = state;
 }
 
 void ChartWindow::on_so2Box_clicked(bool state)
 {
-    checker->checkbox_2 = state;
+    view_elements->checks.at(SO2_Checkbox) = state;
 }
 
 void ChartWindow::on_noxBox_clicked(bool state)
 {
-    checker->checkbox_3 = state;
+    view_elements->checks.at(NOx_Checkbox) = state;
 }
 
 void ChartWindow::on_otherBox_clicked(bool state)
 {
-    checker->checkbox_4 = state;
+    view_elements->checks.at(Other_Checkbox) = state;
 }
 
+/*
 void ChartWindow::on_co2DataBox_clicked(bool state)
 {
     checker->checkbox_1 = state;
@@ -487,7 +506,7 @@ void ChartWindow::on_indexIntBox_clicked(bool state)
 {
     checker->checkbox_4 = state;
 }
-
+*/
 //----------------------------------------------------------------------------------------------
 // Menu Bar slots
 

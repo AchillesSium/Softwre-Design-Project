@@ -11,10 +11,22 @@
 #include <vector>
 #include <algorithm>
 #include <memory>
+#include <unordered_map>
 
-enum Time {Day = 0, Week = 1, Month = 2, Year = 3};
+// Enum to clarify timescale of the graph
+enum Time {Day = 0, Week = 1, Month = 2, Year = 3, Custom};
+
+// Enum to clarify used Database
 enum Database {STATFI = 0, SMEAR = 1};
-enum CheckBox {FirstBox = 0, SecondBox = 1, ThirdBox = 2, FourthBox = 3};
+
+// Enum to clarify used measuring station
+enum Station {Station_1 = 0, Station_2, Station_3, Station_4, NONE};
+
+// Enum to list every UI element
+enum Elements {CO2_Checkbox = 0, SO2_Checkbox = 1, NOx_Checkbox = 2, Other_Checkbox = 3,
+               CO2_FI_Checkbox, Itensity_Checkbox, Index_Checkbox, Index_Intensity_Checkbox,
+               Maximum, Average, Minimum,
+               Database_Combobox, Station_Combobox};
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class ChartWindow; }
@@ -65,14 +77,17 @@ private slots:
     void on_noxBox_clicked(bool state);
     void on_otherBox_clicked(bool state);
 
+    /*
     void on_co2DataBox_clicked(bool state);
     void on_intBox_clicked(bool state);
     void on_indexBox_clicked(bool state);
     void on_indexIntBox_clicked(bool state);
+    */
 
     // Menubar slots
     void on_actionNewWindow_triggered();
 
+    // TODO?
     //void on_actionChooseLoadout_triggered();
     //void on_actionSaveLoadout_triggered();
     //void on_actionSettings_triggered();
@@ -84,27 +99,22 @@ private:
     ChartWindow *history;
     TimeWindow *date;
 
-
-    // Struct for checkboxes
-    struct Checker
+    // Struct for tracking the state of the view elements
+    struct ViewObject
     {
         // This whole class could possibly be just a map with enum key already defined above
-        bool checkbox_1;
-        bool checkbox_2;
-        bool checkbox_3;
-        bool checkbox_4;
-        bool checkbox_max;
-        bool checkbox_min;
-        bool checkbox_avg;
+        std::unordered_map<Elements, bool, std::hash<int>> checks;
+        Database current_database;
+        Station current_station;
+        Elements radioselection;
+        Time selected_preset_time;
+        std::pair<std::string, std::string> selcted_custom_time; // From beginning date to end date
     };
 
-    std::unique_ptr<Checker> checker;
+    std::shared_ptr<ViewObject> view_elements;
 
 
     // Chart elemnets
-
-        // Enum to clarify timescale of the graph
-        Time current_time;
 
         // CO2 series
         QtCharts::QLineSeries *co2_day_series;
