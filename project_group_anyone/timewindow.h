@@ -2,6 +2,7 @@
 #define TIMEWINDOW_H
 
 #include <QDialog>
+#include <QRegExpValidator>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class TimeWindow; }
@@ -15,12 +16,21 @@ public:
     TimeWindow(QWidget *parent = nullptr);
     ~TimeWindow();
     void change_data(QString database_used);
+    void add_text(QString text);
+
+signals:
+    void send_pair(std::pair<QString, QString> time_pair);
 
 private slots:
-    void on_cancel_date_button_clicked();
+    void on_cancelButton_clicked();
+    void on_showButton_clicked();
 
 private:
     Ui::TimeWindow *ui;
+
+    QRegExpValidator *date_validator;
+    QRegExpValidator *year_validator;
+
 };
 
 #endif // TIMEWINDOW_H

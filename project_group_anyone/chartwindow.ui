@@ -167,31 +167,31 @@
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="co2DataBox">
+               <widget class="QRadioButton" name="co2DataRadio">
                 <property name="text">
                  <string>CO2</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="intBox">
+               <widget class="QRadioButton" name="intensityRadio">
                 <property name="text">
                  <string>Intensity</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="indexBox">
+               <widget class="QRadioButton" name="indexedRadio">
                 <property name="text">
                  <string>Indexed</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="indexIntBox">
+               <widget class="QRadioButton" name="indexedIntensityRadio">
                 <property name="text">
                  <string>Indexed
-intensity</string>
+Intentisy</string>
                 </property>
                </widget>
               </item>

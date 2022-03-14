@@ -184,10 +184,12 @@ void ChartWindow::default_check_boxes()
     else if(view_elements->current_database == STATFI)
     {
         // Intensity and indexes checked
+        /*
         ui->co2DataBox->setChecked(false);
         ui->intBox->setChecked(false);
         ui->indexBox->setChecked(false);
         ui->indexIntBox->setChecked(false);
+        */
     }
 
     // Min, max, average unchecked
@@ -333,6 +335,20 @@ void ChartWindow::quick_time_change(Time period)
 //SLOTS
 
 //----------------------------------------------------------------------------------------------
+// Public slots
+
+
+// TimeWindow slot
+
+void ChartWindow::get_pair(std::pair<QString,QString> time_pair)
+{
+    view_elements->selected_custom_time = time_pair;
+    on_applyButton_clicked();
+}
+
+
+
+//----------------------------------------------------------------------------------------------
 // Button slots
 
 void ChartWindow::on_defaultButton_clicked()
@@ -364,6 +380,7 @@ void ChartWindow::on_yearButton_clicked()
 void ChartWindow::on_timeButton_clicked()
 {
     TimeWindow *date = new TimeWindow();
+    connect(date, &TimeWindow::send_pair, this, &ChartWindow::get_pair);
     date->setModal(true);
     date->change_data(ui->databaseCombo->currentText());
     date->show();
@@ -462,9 +479,14 @@ void ChartWindow::on_databaseCombo_currentIndexChanged(const int index)
     remove_all_graph_series();
 }
 
+void ChartWindow::on_stationCombo_currentIndexChanged(const int index)
+{
+    view_elements->current_station = static_cast<Station>(index);
+}
+
 
 //----------------------------------------------------------------------------------------------
-// Check Box slots
+// Check Box and Radio Button slots
 
 void ChartWindow::on_co2Box_clicked(bool state)
 {
@@ -486,27 +508,40 @@ void ChartWindow::on_otherBox_clicked(bool state)
     view_elements->checks.at(Other_Checkbox) = state;
 }
 
-/*
-void ChartWindow::on_co2DataBox_clicked(bool state)
+
+
+void ChartWindow::on_co2DataRadio_clicked(bool state)
 {
-    checker->checkbox_1 = state;
+    if(state == true)
+    {
+        view_elements->radioselection = CO2_FI_Radio;
+    }
 }
 
-void ChartWindow::on_intBox_clicked(bool state)
+void ChartWindow::on_intensityRadio_clicked(bool state)
 {
-    checker->checkbox_2 = state;
+    if(state == true)
+    {
+        view_elements->radioselection = Intensity_Radio;
+    }
 }
 
-void ChartWindow::on_indexBox_clicked(bool state)
+void ChartWindow::on_indexedRadio_clicked(bool state)
 {
-    checker->checkbox_3 = state;
+    if(state == true)
+    {
+        view_elements->radioselection = Indexed_Radio;
+    }
 }
 
-void ChartWindow::on_indexIntBox_clicked(bool state)
+void ChartWindow::on_indexedIntensityRadio_clicked(bool state)
 {
-    checker->checkbox_4 = state;
+    if(state == true)
+    {
+        view_elements->radioselection = Indexed_Intensity_Radio;
+    }
 }
-*/
+
 //----------------------------------------------------------------------------------------------
 // Menu Bar slots
 

@@ -13,6 +13,7 @@
 #include <memory>
 #include <unordered_map>
 
+
 // Enum to clarify timescale of the graph
 enum Time {Day = 0, Week = 1, Month = 2, Year = 3, Custom};
 
@@ -20,13 +21,14 @@ enum Time {Day = 0, Week = 1, Month = 2, Year = 3, Custom};
 enum Database {STATFI = 0, SMEAR = 1};
 
 // Enum to clarify used measuring station
-enum Station {Station_1 = 0, Station_2, Station_3, Station_4, NONE};
+enum Station {Station_1 = 0, Station_2 = 1, Station_3 = 2, Station_4 = 3, NONE = 4};
 
 // Enum to list every UI element
 enum Elements {CO2_Checkbox = 0, SO2_Checkbox = 1, NOx_Checkbox = 2, Other_Checkbox = 3,
-               CO2_FI_Checkbox, Itensity_Checkbox, Index_Checkbox, Index_Intensity_Checkbox,
+               CO2_FI_Radio, Intensity_Radio, Indexed_Radio, Indexed_Intensity_Radio,
                Maximum, Average, Minimum,
                Database_Combobox, Station_Combobox};
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class ChartWindow; }
@@ -54,6 +56,10 @@ public:
     void react_to_checkbox(bool state, std::vector<QtCharts::QLineSeries*> &pointers);
     void quick_time_change(Time period);
 
+public slots:
+
+    // TimeWindow slot
+    void get_pair(std::pair<QString,QString> time_pair);
 
 private slots:
 
@@ -63,13 +69,12 @@ private slots:
     void on_monthButton_clicked();
     void on_yearButton_clicked();
     void on_timeButton_clicked();
-
     void on_defaultButton_clicked();
     void on_applyButton_clicked();
 
-
     // Combo box slots
     void on_databaseCombo_currentIndexChanged(const int index);
+    void on_stationCombo_currentIndexChanged(const int index);
 
     // Check Box slots
     void on_co2Box_clicked(bool state);
@@ -77,22 +82,20 @@ private slots:
     void on_noxBox_clicked(bool state);
     void on_otherBox_clicked(bool state);
 
-    /*
-    void on_co2DataBox_clicked(bool state);
-    void on_intBox_clicked(bool state);
-    void on_indexBox_clicked(bool state);
-    void on_indexIntBox_clicked(bool state);
-    */
+    // Radio Button slots
+    void on_co2DataRadio_clicked(bool state);
+    void on_intensityRadio_clicked(bool state);
+    void on_indexedRadio_clicked(bool state);
+    void on_indexedIntensityRadio_clicked(bool state);
 
     // Menubar slots
     void on_actionNewWindow_triggered();
+    void on_actionCloseWindow_triggered();
 
     // TODO?
     //void on_actionChooseLoadout_triggered();
     //void on_actionSaveLoadout_triggered();
     //void on_actionSettings_triggered();
-
-    void on_actionCloseWindow_triggered();
 
 private:
     Ui::ChartWindow *ui;
@@ -108,7 +111,7 @@ private:
         Station current_station;
         Elements radioselection;
         Time selected_preset_time;
-        std::pair<std::string, std::string> selcted_custom_time; // From beginning date to end date
+        std::pair<QString, QString> selected_custom_time; // From beginning date to end date
     };
 
     std::shared_ptr<ViewObject> view_elements;
