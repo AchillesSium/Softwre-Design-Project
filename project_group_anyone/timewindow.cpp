@@ -7,12 +7,12 @@ TimeWindow::TimeWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    QRegExp date("(0[1-9]|[12][1-9]|3[01])/(0[1-9]|1[0-2])/(19[0-9][0-9]|20[0-2][0-2])");
+    QRegExp date("(0[1-9]|[12][1-9]|3[01])/(0[1-9]|1[0-2])/(19[0-9][0-9]|20[0-2][0-2]|200[0-9])");
     date_validator = new QRegExpValidator(date, this);
     ui->beginEdit->setValidator(date_validator);
     ui->endEdit->setValidator(date_validator);
 
-    QRegExp year("(19[0-9][0-9]|20[0-2][0-2])");
+    QRegExp year("(19[0-9][0-9]|20[0-2][0-2]|200[0-9])");
     year_validator = new QRegExpValidator(year, this);
 }
 

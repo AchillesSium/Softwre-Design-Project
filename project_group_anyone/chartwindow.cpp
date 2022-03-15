@@ -101,22 +101,9 @@ ChartWindow::ChartWindow(QWidget *parent) :
     ui->chartView->setRenderHint(QPainter::Antialiasing);
 
     // Check correct checkboxes
-
-    /*
-    ui->co2Box->blockSignals(true);
-    ui->so2Box->blockSignals(true);
-    ui->noxBox->blockSignals(true);
-    */
-
     ui->co2Box->setChecked(true);
     ui->so2Box->setChecked(true);
     ui->noxBox->setChecked(true);
-
-    /*
-    ui->co2Box->blockSignals(false);
-    ui->so2Box->blockSignals(false);
-    ui->noxBox->blockSignals(false);
-    */
 
     // Might need to add the checkboxes for calculated values
     view_elements->checks.insert(std::make_pair(CO2_Checkbox, true));
@@ -183,13 +170,34 @@ void ChartWindow::default_check_boxes()
     }
     else if(view_elements->current_database == STATFI)
     {
-        // Intensity and indexes checked
-        /*
-        ui->co2DataBox->setChecked(false);
-        ui->intBox->setChecked(false);
-        ui->indexBox->setChecked(false);
-        ui->indexIntBox->setChecked(false);
-        */
+        // Uncheck the checked radio button
+        switch(view_elements->radioselection)
+        {
+        case CO2_FI_Radio:
+            ui->co2DataRadio->setAutoExclusive(false);
+            ui->co2DataRadio->setChecked(false);
+            ui->co2DataRadio->setAutoExclusive(true);
+            break;
+        case Intensity_Radio:
+            ui->intensityRadio->setAutoExclusive(false);
+            ui->intensityRadio->setChecked(false);
+            ui->intensityRadio->setAutoExclusive(true);
+            break;
+        case Indexed_Radio:
+            ui->indexedRadio->setAutoExclusive(false);
+            ui->indexedRadio->setChecked(false);
+            ui->indexedRadio->setAutoExclusive(true);
+            break;
+        case Indexed_Intensity_Radio:
+            ui->indexedIntensityRadio->setAutoExclusive(false);
+            ui->indexedIntensityRadio->setChecked(false);
+            ui->indexedIntensityRadio->setAutoExclusive(true);
+            break;
+        case no_radio:
+            // Nothing needs to be done
+            break;
+        }
+        view_elements->radioselection = no_radio;
     }
 
     // Min, max, average unchecked
