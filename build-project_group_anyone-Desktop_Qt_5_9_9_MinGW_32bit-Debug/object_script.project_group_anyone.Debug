@@ -1,0 +1,12 @@
+INPUT(
+./debug\main.o
+./debug\chartwindow.o
+./debug\timewindow.o
+./debug\userselections.o
+./debug\userselectionssmear.o
+./debug\userselectionsstatfi.o
+./debug\date.o
+./debug\controller.o
+./debug\moc_chartwindow.o
+./debug\moc_timewindow.o
+);

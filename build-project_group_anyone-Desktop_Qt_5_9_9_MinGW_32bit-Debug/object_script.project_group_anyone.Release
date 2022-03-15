@@ -1,0 +1,12 @@
+INPUT(
+./release\main.o
+./release\chartwindow.o
+./release\timewindow.o
+./release\userselections.o
+./release\userselectionssmear.o
+./release\userselectionsstatfi.o
+./release\date.o
+./release\controller.o
+./release\moc_chartwindow.o
+./release\moc_timewindow.o
+);

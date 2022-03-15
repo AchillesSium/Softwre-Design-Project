@@ -11,11 +11,21 @@ CONFIG += c++11
 SOURCES += \
     main.cpp \
     chartwindow.cpp \
-    timewindow.cpp
+    timewindow.cpp \
+    userselections.cpp \
+    userselectionssmear.cpp \
+    userselectionsstatfi.cpp \
+    date.cpp \
+    controller.cpp \
 
 HEADERS += \
     chartwindow.h \
-    timewindow.h
+    timewindow.h \
+    userselections.h \
+    userselectionssmear.h \
+    userselectionsstatfi.h \
+    date.h \
+    controller.h \
 
 FORMS += \
     chartwindow.ui \

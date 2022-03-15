@@ -1,5 +1,10 @@
 #include "chartwindow.h"
 #include "ui_chartwindow.h"
+#include "userselections.h"
+#include "userselectionssmear.h"
+#include "userselectionsstatfi.h"
+#include "controller.h"
+#include "date.h"
 
 ChartWindow::ChartWindow(QWidget *parent) :
       QMainWindow(parent),
@@ -390,6 +395,25 @@ void ChartWindow::on_applyButton_clicked()
 {
 
     // Send ViewObject pointer to controller
+    UserSelections* selections = nullptr;
+    switch (view_elements->current_database)
+    {
+    case STATFI:
+        selections = new UserSelectionsSTATFI;
+        selections->addDataSet(view_elements->radioselection);
+        selections->setStart(Date(1,1,view_elements->selected_custom_time.first.toInt(),0,0));
+        selections->setEnd(Date(1,1,view_elements->selected_custom_time.second.toInt(),0,0));
+        break;
+
+    case SMEAR:
+
+        break;
+
+    default:
+        break;
+    }
+    Controller::getSTATFIData(selections);
+    delete selections;
 
     for(unsigned int box_count = 0; box_count < 4; box_count++)
     {
@@ -514,7 +538,7 @@ void ChartWindow::on_co2DataRadio_clicked(bool state)
 {
     if(state == true)
     {
-        view_elements->radioselection = CO2_FI_Radio;
+        view_elements->radioselection = CO2tonnes;
     }
 }
 
@@ -522,7 +546,7 @@ void ChartWindow::on_intensityRadio_clicked(bool state)
 {
     if(state == true)
     {
-        view_elements->radioselection = Intensity_Radio;
+        view_elements->radioselection = CO2intensity;
     }
 }
 
@@ -530,7 +554,7 @@ void ChartWindow::on_indexedRadio_clicked(bool state)
 {
     if(state == true)
     {
-        view_elements->radioselection = Indexed_Radio;
+        view_elements->radioselection = CO2indexed;
     }
 }
 
@@ -538,7 +562,7 @@ void ChartWindow::on_indexedIntensityRadio_clicked(bool state)
 {
     if(state == true)
     {
-        view_elements->radioselection = Indexed_Intensity_Radio;
+        view_elements->radioselection = CO2intensityIndexed;
     }
 }
 

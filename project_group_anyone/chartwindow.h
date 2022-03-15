@@ -13,6 +13,8 @@
 #include <memory>
 #include <unordered_map>
 
+#include "userselectionsstatfi.h"
+
 
 // Enum to clarify timescale of the graph
 enum Time {Day = 0, Week = 1, Month = 2, Year = 3, Custom};
@@ -28,7 +30,6 @@ enum Elements {CO2_Checkbox = 0, SO2_Checkbox = 1, NOx_Checkbox = 2, Other_Check
                CO2_FI_Radio, Intensity_Radio, Indexed_Radio, Indexed_Intensity_Radio,
                Maximum, Average, Minimum,
                Database_Combobox, Station_Combobox};
-
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class ChartWindow; }
@@ -109,7 +110,7 @@ private:
         std::unordered_map<Elements, bool, std::hash<int>> checks;
         Database current_database;
         Station current_station;
-        Elements radioselection;
+        DataSet radioselection;
         Time selected_preset_time;
         std::pair<QString, QString> selected_custom_time; // From beginning date to end date
     };
