@@ -16,7 +16,7 @@ StatfiDB* Jsonparser::parse_statfi(QJsonObject obj)
 
     QJsonArray values = obj["value"].toArray();
 
-    //add data from json to data structure
+    //add data from json to data structure, there seems to be data only for years 1990-2016, might need to make changes later...
     for(int year = 1990; year < 2017; ++year){
 
         StatfiData sd;
@@ -40,4 +40,10 @@ StatfiDB* Jsonparser::parse_statfi(QJsonObject obj)
         statfi_db_[year] = sd;
     }
     return statfi_ptr;
+}
+
+// not yet implemented
+void Jsonparser::parse_smear(QJsonObject obj)
+{
+    return;
 }

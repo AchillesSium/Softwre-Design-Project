@@ -23,6 +23,7 @@ public:
     Jsonparser();
     ~Jsonparser();
     StatfiDB* parse_statfi(QJsonObject obj);
+    void parse_smear(QJsonObject obj); // returns a pointer to the smear datastructure when implemented
 private:
     StatfiDB statfi_db_;
 };
