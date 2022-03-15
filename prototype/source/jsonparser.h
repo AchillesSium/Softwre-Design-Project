@@ -6,13 +6,13 @@
 #include <string>
 #include <map>
 
-const double temp = -1;
+const double TEMP = -1;
 
 struct StatfiData{
-    double tonnes = temp;
-    double intensity = temp;
-    double indexed = temp;
-    double intensity_indexed = temp;
+    double tonnes = TEMP;
+    double intensity = TEMP;
+    double tonnes_indexed = TEMP;
+    double intensity_indexed = TEMP;
 };
 
 using StatfiDB = std::map<int, StatfiData>;
@@ -22,7 +22,9 @@ class Jsonparser
 public:
     Jsonparser();
     ~Jsonparser();
-    void parse(QJsonObject obj, std::string db);
+    StatfiDB* parse_statfi(QJsonObject obj);
+private:
+    StatfiDB statfi_db_;
 };
 
 #endif // JSONPARSER_H
