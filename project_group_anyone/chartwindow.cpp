@@ -5,6 +5,7 @@
 #include "userselectionsstatfi.h"
 #include "controller.h"
 #include "date.h"
+#include <QDebug>
 
 ChartWindow::ChartWindow(QWidget *parent) :
       QMainWindow(parent),
@@ -412,6 +413,7 @@ void ChartWindow::on_applyButton_clicked()
     default:
         break;
     }
+    qDebug().nospace() << "abc" << qPrintable(view_elements->radioselection) << "def";
     Controller::getSTATFIData(selections);
     delete selections;
 

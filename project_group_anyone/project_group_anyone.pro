@@ -11,6 +11,7 @@ CONFIG += c++11
 SOURCES += \
     main.cpp \
     chartwindow.cpp \
+    networkcalls.cpp \
     timewindow.cpp \
     userselections.cpp \
     userselectionssmear.cpp \
@@ -20,6 +21,7 @@ SOURCES += \
 
 HEADERS += \
     chartwindow.h \
+    networkcalls.h \
     timewindow.h \
     userselections.h \
     userselectionssmear.h \
