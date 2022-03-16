@@ -12,9 +12,7 @@ class networkcalls: public QObject
     Q_OBJECT
 public:
     explicit networkcalls();
-    void queryStatFi(QString);
-private slots:
-    void replyFinished(QNetworkReply *reply);
+    void queryStatFi();
 };
 
 #endif // NETWORKCALLS_H

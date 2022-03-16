@@ -12,6 +12,8 @@
 #include <QDebug>
 #include <string>
 #include <QStringList>
+#include <QVector>
+#include <QJsonArray>
 
 networkcalls::networkcalls()
 {
@@ -19,54 +21,65 @@ networkcalls::networkcalls()
 }
 
 
-void networkcalls::queryStatFi(QString str)
+void networkcalls::queryStatFi()
 {
-    //the network manager will post and recieve our HTTP requests
-        QNetworkAccessManager *manager = new QNetworkAccessManager(this);
 
-        //the host of the webservice
-        QUrl url("https://pxnet2.stat.fi:443/PXWeb/api/v1/en/ymp/taulukot/Kokodata.px");
+    QNetworkAccessManager *mgr = new QNetworkAccessManager(this);
+    const QUrl url(QStringLiteral("https://pxnet2.stat.fi:443/PXWeb/api/v1/en/ymp/taulukot/Kokodata.px"));
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-        //set up the request to post
-        QNetworkRequest request(url);
-        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    QJsonArray gas_array;
+    gas_array.push_back(QString("Kt020_b1gmth"));
 
-        //the additional query data to enter
-         QUrlQuery query(url);
-//         QMapIterator<string, string *> i(map);
-//         while (i.hasNext()) {
-//             i.next();
+    QJsonObject selectionTiedot;
+    selectionTiedot["values"] = gas_array;
+    selectionTiedot["filter"] = "item";
+    QJsonObject codeTiedot;
+    codeTiedot["code"] = "Tiedot";
+    codeTiedot["selection"] = selectionTiedot;
 
-//         }
-         query.addQueryItem("query",str);
-         QString val = "{'format': 'json-stat2'}}";
-         query.addQueryItem("response",val);
-         url.setQuery(query);
+    QJsonArray year_array;
+    year_array.push_back(QString("2015"));
+    QJsonObject selectionVuosi;
+    selectionVuosi["values"] = year_array;
+    selectionVuosi["filter"] = "item";
+    QJsonObject codeVuosi;
+    codeVuosi["code"] = "Vuosi";
+    codeVuosi["selection"] = selectionVuosi;
 
-         //update the request with the new query information.
-             request.setUrl(url);
+    QJsonArray query_array;
+    query_array.push_back(codeTiedot);
+    query_array.push_back(codeVuosi);
 
-             //post the request
-             manager->post(request, url.toEncoded());
+    QJsonObject query;
+    query["query"] = query_array;
 
-             //connect the "finished" signal from the manager to our response handling method
-             QObject::connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(replyFinished(QNetworkReply *)));
+    QJsonObject format;
+    format["format"] =  "json-stat2";
+    //query["response"] =  format;
 
-}
+    QJsonDocument doc(query);
+    QByteArray data = doc.toJson();
+    qDebug() << "query" << query ;
 
-void networkcalls::replyFinished(QNetworkReply *reply)
-{
-    if ( reply->error() != QNetworkReply::NoError ){
-            // A communication error has occurred
-            return;
+    QNetworkReply *reply = mgr->post(request, data);
+
+    QObject::connect(reply, &QNetworkReply::finished, [=](){
+        if(reply->error() == QNetworkReply::NoError){
+            QString contents = QString::fromUtf8(reply->readAll());
+            qDebug() << contents;
+            QJsonObject obj = QJsonDocument::fromJson(reply->readAll()).object();
+            qDebug() << obj;
         }
+        else{
+            QString err = reply->errorString();
+            QVariant statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute );
+            qDebug() << statusCode.toInt();
+            qDebug() << err;
+        }
+        reply->deleteLater();
+    });
 
-        //We read the JSON response into a QJsonObject
-        QJsonObject obj = QJsonDocument::fromJson(reply->readAll()).object();
-
-        QString strFromObj = QJsonDocument(obj).toJson(QJsonDocument::Compact).toStdString().c_str();
-
-        //qDebug("asv" + strFromObj);
-        qDebug().nospace() << "abc" << qPrintable(strFromObj) << "def";
 }
 
