@@ -54,10 +54,12 @@ void networkcalls::queryStatFi()
 
     QJsonObject query;
     query["query"] = query_array;
+    QJsonArray query_array1;
+    query["query"] = query_array1;
 
     QJsonObject format;
     format["format"] =  "json-stat2";
-    //query["response"] =  format;
+    query["response"] =  format;
 
     QJsonDocument doc(query);
     QByteArray data = doc.toJson();
@@ -80,6 +82,5 @@ void networkcalls::queryStatFi()
         }
         reply->deleteLater();
     });
-
 }
 
