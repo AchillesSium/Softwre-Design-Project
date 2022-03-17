@@ -23,14 +23,6 @@ TimeWindow::~TimeWindow()
     delete ui;
 }
 
-void TimeWindow::add_text(QString text)
-{
-    QTextCursor cursor = ui->infoBrowser->textCursor();
-    cursor.movePosition(QTextCursor::End);
-    ui->infoBrowser->setTextCursor(cursor);
-    ui->infoBrowser->setPlainText(text);
-}
-
 void TimeWindow::change_data(QString database_used)
 {
     QString begin_label;
@@ -40,19 +32,24 @@ void TimeWindow::change_data(QString database_used)
 
     if(database_used == "STATFI")
     {
-        begin_label = "Begin year (yyyy)";
-        end_label = "End year (yyyy)";
-        instructions_text = "Enter begining and ending years to determine the desired time period";
+        begin_label = begin_year_label;
+        end_label = end_year_label;
+        instructions_text = year_info;
         validator = year_validator;
+        current_format = year_format;
     }
 
     else // if "SMEAR"
     {
-        begin_label = "Begin date (dd/mm/yyyy)";
-        end_label = "End year (dd/mm/yyyy)";
-        instructions_text = "Enter begining and ending dates to determine the desired time period";
+        begin_label = begin_date_label;
+        end_label = end_date_label;
+        instructions_text = date_info;
         validator = date_validator;
+        current_format = date_format;
     }
+
+    // Update current database
+    current_database = database_used;
 
     // Line edit boxes
     ui->beginEdit->setValidator(validator);
@@ -63,26 +60,66 @@ void TimeWindow::change_data(QString database_used)
     ui->endLabel->setText(end_label);
 
     // Browser
-    ui->infoBrowser->setTextColor(Qt::black);
-    add_text(instructions_text + "\n");
+    ui->infoEdit->setTextColor(Qt::black);
+    ui->infoEdit->append(instructions_text + "\n");
 }
+
+
+QDate TimeWindow::string_to_date(QString string_date)
+{
+    QDate date = QDate::fromString(string_date, "dd/MM/yyyy");
+    return date;
+}
+
+void TimeWindow::give_error(QString error)
+{
+    ui->infoEdit->setTextColor(Qt::red);
+    ui->infoEdit->append(error + "\n");
+}
+
+// SLOTS
+//------------------------------------------------------------------------------------------------------
 
 void TimeWindow::on_showButton_clicked()
 {
-    // Doesn't yet check if values are cronological
-    if(ui->beginEdit->hasAcceptableInput() == true || ui->endEdit->hasAcceptableInput() == true)
+    if(!ui->beginEdit->hasAcceptableInput() || !ui->endEdit->hasAcceptableInput())
     {
-        QString begin = ui->beginEdit->text();
-        QString end = ui->endEdit->text();
-        std::pair<QString, QString> time_zone = std::make_pair(begin, end);
-        emit send_pair(time_zone);
-        this->close();
+        give_error(input_error + current_format);
+        return;
+    }
+
+    QString begin = ui->beginEdit->text();
+    QString end = ui->endEdit->text();
+
+    if(current_database == "STATFI")
+    {
+        if(begin > end)
+        {
+            give_error(chronology_year_error);
+            return;
+        }
     }
     else
     {
-        ui->infoBrowser->setTextColor(Qt::red);
-        add_text("Error: Incorrect input! \nPlease write the input in given format: dd/mm/yyyy");
+        QDate begin_date = string_to_date(begin);
+        QDate end_date = string_to_date(end);
+
+        if(!begin_date.isValid() || !end_date.isValid())
+        {
+            give_error(month_error);
+            return;
+        }
+
+        if(begin_date > end_date)
+        {
+            give_error(chronology_date_error);
+            return;
+        }
     }
+
+    std::pair<QString, QString> time_zone = std::make_pair(begin, end);
+    emit send_pair(time_zone);
+    on_cancelButton_clicked();
 }
 
 void TimeWindow::on_cancelButton_clicked()
