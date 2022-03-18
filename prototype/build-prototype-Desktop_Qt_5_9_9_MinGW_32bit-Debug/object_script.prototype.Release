@@ -1,0 +1,13 @@
+INPUT(
+./release\date_to_date.o
+./release\main.o
+./release\mainwindow.o
+./release\networkcalls.o
+./release\settingswindow.o
+./release\time.o
+./release\userselections.o
+./release\moc_date_to_date.o
+./release\moc_mainwindow.o
+./release\moc_networkcalls.o
+./release\moc_settingswindow.o
+);
