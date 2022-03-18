@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QRegExpValidator>
+#include <QDate>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class TimeWindow; }
@@ -16,7 +17,8 @@ public:
     TimeWindow(QWidget *parent = nullptr);
     ~TimeWindow();
     void change_data(QString database_used);
-    void add_text(QString text);
+    QDate string_to_date(QString string_date);
+    void give_error(QString error);
 
 signals:
     void send_pair(std::pair<QString, QString> time_pair);
@@ -30,6 +32,23 @@ private:
 
     QRegExpValidator *date_validator;
     QRegExpValidator *year_validator;
+
+    QString current_database;
+    QString current_format;
+
+    const QString begin_date_label = "Begin date (dd/mm/yyyy)";
+    const QString end_date_label = "End date (dd/mm/yyyy)";
+    const QString date_info = "Enter begining and ending dates to determine the desired time period";
+    const QString begin_year_label = "Begin year (yyyy)";
+    const QString end_year_label = "End year (yyyy)";
+    const QString year_info = "Enter begining and ending years to determine the desired time period";
+
+    const QString input_error = "Error: Incorrect input! \nPlease write the input in given format: ";
+    const QString date_format = "dd/mm/yyyy";
+    const QString year_format = "yyyy";
+    const QString month_error = "Error: One or both of the given dates are not possible! \nMake sure given month doesn't have too many days.";
+    const QString chronology_date_error = "Error: Begin date comes after end date! \nMake sure begin date takes place before the end date.";
+    const QString chronology_year_error = "Error: Begin year comes after end year! \nMake sure begin year takes place before the end year.";
 
 };
 

@@ -17,19 +17,19 @@
 
 
 // Enum to clarify timescale of the graph
-enum Time {Day = 0, Week = 1, Month = 2, Year = 3, Custom};
+enum Time {Day = 0, Week = 1, Month = 2, Year = 3, Custom = 4};
 
-// Enum to clarify used Database
+// Used Database
 enum Database {STATFI = 0, SMEAR = 1};
 
-// Enum to clarify used measuring station
+// Measuring stations
 enum Station {Station_1 = 0, Station_2 = 1, Station_3 = 2, Station_4 = 3, NONE = 4};
 
-// Enum to list every UI element
-enum Elements {CO2_Checkbox = 0, SO2_Checkbox = 1, NOx_Checkbox = 2, Other_Checkbox = 3,
-               CO2_FI_Radio, Intensity_Radio, Indexed_Radio, Indexed_Intensity_Radio,
-               Maximum, Average, Minimum,
-               Database_Combobox, Station_Combobox};
+// Checkboxes
+enum Checks {CO2_Checkbox = 0, SO2_Checkbox = 1, NOx_Checkbox = 2, Other_Checkbox = 3, no_check = 4};
+
+// Radio buttons
+enum Radio {CO2_FI_Radio = 0, Intensity_Radio = 1, Indexed_Radio = 2, Indexed_Intensity_Radio = 3, no_radio = 4};
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class ChartWindow; }
@@ -107,7 +107,7 @@ private:
     struct ViewObject
     {
         // This whole class could possibly be just a map with enum key already defined above
-        std::unordered_map<Elements, bool, std::hash<int>> checks;
+        std::unordered_map<Checks, bool, std::hash<int>> checks;
         Database current_database;
         Station current_station;
         DataSet radioselection;
