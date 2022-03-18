@@ -1,4 +1,5 @@
 #include "controller.h"
+#include <QDebug>
 
 void Controller::getSTATFIData(UserSelections* selections)
 {
@@ -9,5 +10,5 @@ void Controller::getSTATFIData(UserSelections* selections)
     // Send filtered data to view, return value of the function can be changed
     // OR a separate function can be created in the view and called here
     // with the filtered data as a parameter
-
+    qDebug() << "statfi" << selections->getDataSets();
 }
