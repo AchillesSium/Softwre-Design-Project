@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "networkcalls.h"
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -298,6 +299,11 @@ void MainWindow::quick_time_change(Time period)
 void MainWindow::on_exit_main_button_clicked()
 {
     this->close();
+//    QString val = "[{'code': 'Tiedot','selection': {'filter': 'item','values':['Kt050_b1gmth']}},{'code': 'Vuosi','selection':{'filter': 'item','values':['2014']}}]";
+
+
+//    networkcalls *network = new networkcalls();
+//    network->queryStatFi(val);
 }
 
 void MainWindow::on_default_main_button_clicked()

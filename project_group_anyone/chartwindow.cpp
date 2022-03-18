@@ -1,5 +1,11 @@
 #include "chartwindow.h"
 #include "ui_chartwindow.h"
+#include "userselections.h"
+#include "userselectionssmear.h"
+#include "userselectionsstatfi.h"
+#include "controller.h"
+#include "date.h"
+#include <QDebug>
 
 ChartWindow::ChartWindow(QWidget *parent) :
       QMainWindow(parent),
@@ -176,51 +182,35 @@ void ChartWindow::default_check_boxes()
         // Uncheck the checked radio button
         switch(view_elements->radioselection)
         {
-        case CO2_FI_Radio:
+        case CO2tonnes:
             ui->co2DataRadio->setAutoExclusive(false);
             ui->co2DataRadio->setChecked(false);
             ui->co2DataRadio->setAutoExclusive(true);
             break;
-<<<<<<< Updated upstream
-        case Intensity_Radio:
-=======
 
         case CO2intensity:
->>>>>>> Stashed changes
             ui->intensityRadio->setAutoExclusive(false);
             ui->intensityRadio->setChecked(false);
             ui->intensityRadio->setAutoExclusive(true);
             break;
-<<<<<<< Updated upstream
-        case Indexed_Radio:
-=======
 
         case CO2indexed:
->>>>>>> Stashed changes
             ui->indexedRadio->setAutoExclusive(false);
             ui->indexedRadio->setChecked(false);
             ui->indexedRadio->setAutoExclusive(true);
             break;
-<<<<<<< Updated upstream
-        case Indexed_Intensity_Radio:
-=======
 
         case CO2intensityIndexed:
->>>>>>> Stashed changes
             ui->indexedIntensityRadio->setAutoExclusive(false);
             ui->indexedIntensityRadio->setChecked(false);
             ui->indexedIntensityRadio->setAutoExclusive(true);
             break;
-<<<<<<< Updated upstream
-        case no_radio:
-=======
 
         default:
->>>>>>> Stashed changes
             // Nothing needs to be done
             break;
         }
-        view_elements->radioselection = no_radio;
+        view_elements->radioselection = None;
     }
 
     // Min, max, average unchecked
@@ -472,10 +462,7 @@ void ChartWindow::on_timeButton_clicked()
 
 void ChartWindow::on_applyButton_clicked()
 {
-<<<<<<< Updated upstream
-
     // Send ViewObject pointer to controller
-=======
     UserSelections* selections = nullptr;
     Database current = view_elements->current_database;
 
@@ -493,7 +480,6 @@ void ChartWindow::on_applyButton_clicked()
 
         display_custom_series(filteredVector);
     }
->>>>>>> Stashed changes
 
     else if(current == SMEAR)
     {
@@ -638,7 +624,7 @@ void ChartWindow::on_co2DataRadio_clicked(bool state)
 {
     if(state == true)
     {
-        view_elements->radioselection = CO2_FI_Radio;
+        view_elements->radioselection = CO2tonnes;
     }
 }
 
@@ -646,7 +632,7 @@ void ChartWindow::on_intensityRadio_clicked(bool state)
 {
     if(state == true)
     {
-        view_elements->radioselection = Intensity_Radio;
+        view_elements->radioselection = CO2intensity;
     }
 }
 
@@ -654,7 +640,7 @@ void ChartWindow::on_indexedRadio_clicked(bool state)
 {
     if(state == true)
     {
-        view_elements->radioselection = Indexed_Radio;
+        view_elements->radioselection = CO2indexed;
     }
 }
 
@@ -662,7 +648,7 @@ void ChartWindow::on_indexedIntensityRadio_clicked(bool state)
 {
     if(state == true)
     {
-        view_elements->radioselection = Indexed_Intensity_Radio;
+        view_elements->radioselection = CO2intensityIndexed;
     }
 }
 
