@@ -1,11 +1,15 @@
 #include "chartwindow.h"
 
 #include <QApplication>
+#include <QJsonObject>
+#include <QDebug>
+#include <QEventLoop>
 
 #include "date.h"
 #include <iostream>
 #include <string>
 #include "networkcalls.h"
+#include "jsonparser.h"
 
 int main(int argc, char *argv[])
 {
@@ -48,7 +52,24 @@ int main(int argc, char *argv[])
     w.show();
 
     networkcalls *network = new networkcalls();
+
     network->queryStatFi();
+
+    // wait for the request to process completely
+    QEventLoop loop;
+    QObject::connect(network, SIGNAL(done()), &loop, SLOT(quit()));
+    loop.exec();
+
+    QJsonObject obj = network->getObject();
+
+    if(obj["class"] == QJsonValue::Undefined ){
+        qDebug() << "error happened";
+    }
+    else{
+        Jsonparser *parser = new Jsonparser();
+        StatfiDB statfi_db = parser->parse_statfi(obj);
+        delete parser;
+    }
 
     return a.exec();
 }

@@ -413,9 +413,11 @@ void ChartWindow::on_applyButton_clicked()
     default:
         break;
     }
+
     qDebug().nospace() << "abc" << qPrintable(view_elements->radioselection) << "def";
     std::vector<std::pair<int, double>> filteredVector = Controller::getSTATFIData(selections);
     qDebug() << "Filtered Vecor in Chart Window" << filteredVector;
+
     delete selections;
 
     for(unsigned int box_count = 0; box_count < 4; box_count++)
