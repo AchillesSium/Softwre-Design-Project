@@ -118,6 +118,7 @@ ChartWindow::ChartWindow(QWidget *parent) :
     view_elements->current_database = SMEAR;
     ui->stackedBoxes->setCurrentIndex(0);
     view_elements->current_station = Station_1;
+    view_elements->radioselection = None;
 
     ui->databaseCombo->blockSignals(false);
 
@@ -160,6 +161,8 @@ void ChartWindow::default_combo_boxes()
 
 void ChartWindow::default_check_boxes()
 {
+    remove_all_graph_series();
+
     if(view_elements->current_database == SMEAR)
     {
         // Gasses checked
@@ -178,22 +181,42 @@ void ChartWindow::default_check_boxes()
             ui->co2DataRadio->setChecked(false);
             ui->co2DataRadio->setAutoExclusive(true);
             break;
+<<<<<<< Updated upstream
         case Intensity_Radio:
+=======
+
+        case CO2intensity:
+>>>>>>> Stashed changes
             ui->intensityRadio->setAutoExclusive(false);
             ui->intensityRadio->setChecked(false);
             ui->intensityRadio->setAutoExclusive(true);
             break;
+<<<<<<< Updated upstream
         case Indexed_Radio:
+=======
+
+        case CO2indexed:
+>>>>>>> Stashed changes
             ui->indexedRadio->setAutoExclusive(false);
             ui->indexedRadio->setChecked(false);
             ui->indexedRadio->setAutoExclusive(true);
             break;
+<<<<<<< Updated upstream
         case Indexed_Intensity_Radio:
+=======
+
+        case CO2intensityIndexed:
+>>>>>>> Stashed changes
             ui->indexedIntensityRadio->setAutoExclusive(false);
             ui->indexedIntensityRadio->setChecked(false);
             ui->indexedIntensityRadio->setAutoExclusive(true);
             break;
+<<<<<<< Updated upstream
         case no_radio:
+=======
+
+        default:
+>>>>>>> Stashed changes
             // Nothing needs to be done
             break;
         }
@@ -226,6 +249,11 @@ void ChartWindow::remove_graph_series(QtCharts::QLineSeries *old_series)
 void ChartWindow::remove_all_graph_series()
 {
     QList<QAbstractSeries*> all_series = ui->chartView->chart()->series();
+
+    if(all_series.size() == 0)
+    {
+        return;
+    }
 
     for(QAbstractSeries* pointer : qAsConst(all_series)) //qAsConst() makes the loop safer
     {
@@ -306,9 +334,7 @@ void ChartWindow::quick_time_change(Time period)
         title_text = "Months";
         break;
 
-    case Custom:
-        // TODO
-        // Dummy values as placeholder
+    default:
         max_tick = 10;
         title_text = "Years";
         break;
@@ -336,6 +362,56 @@ void ChartWindow::quick_time_change(Time period)
     {
         add_graph_series(nox_series.at(view_elements->selected_preset_time));
     }
+}
+
+
+void ChartWindow::display_custom_series(std::vector<std::pair<int, double>> filtered)
+{
+
+    remove_all_graph_series();
+
+    double max_value = filtered.at(0).second;
+    double current_value;
+
+    QLineSeries *custom_series = new QLineSeries();
+
+    for(std::pair<int, double> data_point : filtered)
+    {
+        current_value = data_point.second;
+        custom_series->append(data_point.first, current_value);
+
+        if(current_value > max_value)
+        {
+            max_value = current_value;
+        }
+    }
+
+    max_value = ceil(max_value);
+
+    // Y-axis
+    ui->chartView->chart()->removeAxis(ui->chartView->chart()->axisY());
+    axis_y = new QValueAxis();
+
+    axis_y->setRange(0, max_value);
+    axis_y->setTickCount(9);
+    axis_y->setTitleText("Tonnes");
+    axis_y->setGridLineVisible(true);
+    axis_y->setLabelFormat("%.1i");
+    ui->chartView->chart()->addAxis(axis_y, Qt::AlignLeft);
+    view_elements->selected_preset_time = Custom;
+
+    // X-axis
+    ui->chartView->chart()->removeAxis(ui->chartView->chart()->axisX());
+    axis_x = new QValueAxis();
+
+    axis_x->setRange(filtered.at(0).first, filtered.at(filtered.size() - 1).first);
+    axis_x->setTickCount(filtered.size());
+    axis_x->setTitleText("Years");
+    axis_x->setGridLineVisible(true);
+    axis_x->setLabelFormat("%.1i");
+    ui->chartView->chart()->addAxis(axis_x, Qt::AlignBottom);
+
+    add_graph_series(custom_series);
 }
 
 
@@ -396,31 +472,54 @@ void ChartWindow::on_timeButton_clicked()
 
 void ChartWindow::on_applyButton_clicked()
 {
+<<<<<<< Updated upstream
 
     // Send ViewObject pointer to controller
+=======
+    UserSelections* selections = nullptr;
+    Database current = view_elements->current_database;
 
-    for(unsigned int box_count = 0; box_count < 4; box_count++)
+    if(current == STATFI && view_elements->radioselection != None)
     {
-        switch(box_count)
+        selections = new UserSelectionsSTATFI;
+        selections->addDataSet(view_elements->radioselection);
+        selections->setStart(Date(1,1,view_elements->selected_custom_time.first.toInt(),0,0));
+        selections->setEnd(Date(1,1,view_elements->selected_custom_time.second.toInt(),0,0));
+
+        qDebug().nospace() << "abc" << qPrintable(view_elements->radioselection) << "def";
+        std::vector<std::pair<int, double>> filteredVector = Controller::getSTATFIData(selections);
+        qDebug() << "Filtered Vecor in Chart Window" << filteredVector;
+        delete selections;
+
+        display_custom_series(filteredVector);
+    }
+>>>>>>> Stashed changes
+
+    else if(current == SMEAR)
+    {
+        for(unsigned int box_count = 0; box_count < 4; box_count++)
         {
-        case CO2_Checkbox:
-            // TODO Fetch the correct information and display it on the graph
-            react_to_checkbox(view_elements->checks.at(CO2_Checkbox), co2_series);
-            break;
+            switch(box_count)
+            {
+            case CO2_Checkbox:
+                // TODO Fetch the correct information and display it on the graph
+                react_to_checkbox(view_elements->checks.at(CO2_Checkbox), co2_series);
+                break;
 
-        case SO2_Checkbox:
-            // TODO -||-
-            react_to_checkbox(view_elements->checks.at(SO2_Checkbox), so2_series);
-            break;
+            case SO2_Checkbox:
+                // TODO -||-
+                react_to_checkbox(view_elements->checks.at(SO2_Checkbox), so2_series);
+                break;
 
-        case NOx_Checkbox:
-            // TODO -||-
-            react_to_checkbox(view_elements->checks.at(NOx_Checkbox), nox_series);
-            break;
+            case NOx_Checkbox:
+                // TODO -||-
+                react_to_checkbox(view_elements->checks.at(NOx_Checkbox), nox_series);
+                break;
 
-        case Other_Checkbox:
-            // TODO -||-
-            break;
+            case Other_Checkbox:
+                // TODO -||-
+                break;
+            }
         }
     }
 }
@@ -457,6 +556,23 @@ void ChartWindow::on_databaseCombo_currentIndexChanged(const int index)
         widget = ui->stackedBoxes->widget(0);
         view_elements->current_database = SMEAR;
         view_elements->current_station = static_cast<Station>(ui->stationCombo->currentIndex());
+
+        if(view_elements->selected_preset_time == Custom)
+        {
+            //TODO (At the moment just changes things so that program can keep working)
+            remove_all_graph_series();
+                quick_time_change(Day);
+
+            // Re-make the Y-axis
+            ui->chartView->chart()->removeAxis(ui->chartView->chart()->axisY());
+            QValueAxis *axis_y = new QtCharts::QValueAxis();
+            axis_y->setRange(0, 2000);
+            axis_y->setTickCount(9);
+            axis_y->setGridLineVisible(true);
+            axis_y->setLabelFormat("%.1i");
+            axis_y->setTitleText("Tonnes");
+            ui->chartView->chart()->addAxis(axis_y, Qt::AlignLeft);
+        }
         break;
     }
 
