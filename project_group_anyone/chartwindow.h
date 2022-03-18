@@ -2,6 +2,7 @@
 #define CHARTWINDOW_H
 
 #include "timewindow.h"
+#include "userselectionsstatfi.h"
 
 #include <QMainWindow>
 #include <QString>
@@ -12,8 +13,6 @@
 #include <algorithm>
 #include <memory>
 #include <unordered_map>
-
-#include "userselectionsstatfi.h"
 
 
 // Enum to clarify timescale of the graph
@@ -29,7 +28,7 @@ enum Station {Station_1 = 0, Station_2 = 1, Station_3 = 2, Station_4 = 3, NONE =
 enum Checks {CO2_Checkbox = 0, SO2_Checkbox = 1, NOx_Checkbox = 2, Other_Checkbox = 3, no_check = 4};
 
 // Radio buttons
-enum Radio {CO2_FI_Radio = 0, Intensity_Radio = 1, Indexed_Radio = 2, Indexed_Intensity_Radio = 3, no_radio = 4};
+//enum Radio {CO2_FI_Radio = 0, Intensity_Radio = 1, Indexed_Radio = 2, Indexed_Intensity_Radio = 3, no_radio = 4};
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class ChartWindow; }
