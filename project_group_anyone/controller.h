@@ -3,6 +3,7 @@
 
 #include "userselections.h"
 #include "date.h"
+#include "jsonparser.h"
 
 class Controller
 {
@@ -16,6 +17,10 @@ public:
     // OR CALL A FUNCTION FROM VIEW WITH THE FILTERED DATA
     // AS A PARAMETER INSTEAD
     static std::vector<std::pair<int, double>> getSTATFIData(UserSelections* selections);
+
+
+private:
+    static StatfiDB getStatFiDataFromApi();
 };
 
 #endif // CONTROLLER_H

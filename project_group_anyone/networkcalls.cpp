@@ -73,16 +73,16 @@ void networkcalls::queryStatFi()
     QObject::connect(reply, &QNetworkReply::finished, [=](){
         if(reply->error() == QNetworkReply::NoError){
 
-            QString contents = QString::fromUtf8(reply->readAll());
+            //QString contents = QString::fromUtf8(reply->readAll());
             //qDebug() << contents;
-            QJsonObject obj = QJsonDocument::fromJson(reply->readAll()).object();
+            //QJsonObject obj = QJsonDocument::fromJson(reply->readAll()).object();
             //qDebug() << obj;
 
             //QString contents = QString::fromUtf8(reply->readAll());
             //qDebug() << contents;
             // needs to be commented out since apparently the data form from the reply can be read only once
-            //obj_ = QJsonDocument::fromJson(reply->readAll()).object();
-            qDebug() << obj_;
+            obj_ = QJsonDocument::fromJson(reply->readAll()).object();
+            //qDebug() << obj_;
             emit done();
         }
         else{

@@ -10,6 +10,8 @@
 #include <string>
 #include "networkcalls.h"
 #include "jsonparser.h"
+#include <QDebug>
+#include "controller.h"
 
 int main(int argc, char *argv[])
 {
@@ -68,6 +70,8 @@ int main(int argc, char *argv[])
     else{
         Jsonparser *parser = new Jsonparser();
         StatfiDB statfi_db = parser->parse_statfi(obj);
+        for (const auto &[k, v] : statfi_db)
+            qDebug() << "m[" << k << "] = (" << v.intensity << ", " << v.intensity_indexed << ") ";
         delete parser;
     }
 
