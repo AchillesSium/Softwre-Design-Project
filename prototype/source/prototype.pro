@@ -1,4 +1,4 @@
-QT       += core gui charts
+QT       += core gui charts network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -10,13 +10,17 @@ CONFIG += c++11
 
 SOURCES += \
     date_to_date.cpp \
+    jsonparser.cpp \
     main.cpp \
     mainwindow.cpp \
+    networkcalls.cpp \
     settingswindow.cpp
 
 HEADERS += \
     date_to_date.h \
+    jsonparser.h \
     mainwindow.h \
+    networkcalls.h \
     settingswindow.h
 
 FORMS += \

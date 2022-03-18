@@ -2,6 +2,7 @@
 #define CONTROLLER_H
 
 #include "userselections.h"
+#include "date.h"
 
 class Controller
 {
@@ -14,7 +15,7 @@ public:
     // NOTE: CHANGE RETURN VALUE WHEN DATATYPE IS DECIDED
     // OR CALL A FUNCTION FROM VIEW WITH THE FILTERED DATA
     // AS A PARAMETER INSTEAD
-    static void getSTATFIData(UserSelections* selections);
+    static std::vector<std::pair<int, double>> getSTATFIData(UserSelections* selections);
 };
 
 #endif // CONTROLLER_H

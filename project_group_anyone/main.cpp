@@ -5,6 +5,7 @@
 #include "date.h"
 #include <iostream>
 #include <string>
+#include "networkcalls.h"
 
 int main(int argc, char *argv[])
 {
@@ -45,5 +46,9 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     ChartWindow w;
     w.show();
+
+    networkcalls *network = new networkcalls();
+    network->queryStatFi();
+
     return a.exec();
 }

@@ -5,6 +5,7 @@
 #include "userselectionsstatfi.h"
 #include "controller.h"
 #include "date.h"
+#include <QDebug>
 
 ChartWindow::ChartWindow(QWidget *parent) :
       QMainWindow(parent),
@@ -420,7 +421,9 @@ void ChartWindow::on_applyButton_clicked()
     default:
         break;
     }
-    Controller::getSTATFIData(selections);
+    qDebug().nospace() << "abc" << qPrintable(view_elements->radioselection) << "def";
+    std::vector<std::pair<int, double>> filteredVector = Controller::getSTATFIData(selections);
+    qDebug() << "Filtered Vecor in Chart Window" << filteredVector;
     delete selections;
 
     for(unsigned int box_count = 0; box_count < 4; box_count++)
