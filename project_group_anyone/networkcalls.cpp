@@ -70,9 +70,9 @@ void networkcalls::queryStatFi()
     QObject::connect(reply, &QNetworkReply::finished, [=](){
         if(reply->error() == QNetworkReply::NoError){
             QString contents = QString::fromUtf8(reply->readAll());
-            qDebug() << contents;
+            //qDebug() << contents;
             QJsonObject obj = QJsonDocument::fromJson(reply->readAll()).object();
-            qDebug() << obj;
+            //qDebug() << obj;
         }
         else{
             QString err = reply->errorString();
