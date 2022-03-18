@@ -413,7 +413,7 @@ void ChartWindow::on_applyButton_clicked()
     default:
         break;
     }
-    qDebug().nospace() << "abc" << qPrintable(view_elements->radioselection) << "def";
+    //qDebug().nospace() << "abc" << qPrintable(view_elements->radioselection) << "def";
     Controller::getSTATFIData(selections);
     delete selections;
 

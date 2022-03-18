@@ -3,16 +3,18 @@
 
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QDebug>
+#include <QVector>
 #include <string>
 #include <map>
 
-const double TEMP = -1;
+const double NO_VALUE = 0.0;
 
 struct StatfiData{
-    double tonnes = TEMP;
-    double intensity = TEMP;
-    double tonnes_indexed = TEMP;
-    double intensity_indexed = TEMP;
+    double tonnes;
+    double intensity;
+    double tonnes_indexed;
+    double intensity_indexed;
 };
 
 using StatfiDB = std::map<int, StatfiData>;
@@ -22,10 +24,8 @@ class Jsonparser
 public:
     Jsonparser();
     ~Jsonparser();
-    StatfiDB* parse_statfi(QJsonObject obj);
+    StatfiDB parse_statfi(QJsonObject obj);
     void parse_smear(QJsonObject obj); // returns a pointer to the smear datastructure when implemented
-private:
-    StatfiDB statfi_db_;
 };
 
 #endif // JSONPARSER_H

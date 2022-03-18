@@ -10,36 +10,67 @@ Jsonparser::~Jsonparser()
 
 }
 
-StatfiDB* Jsonparser::parse_statfi(QJsonObject obj)
+StatfiDB Jsonparser::parse_statfi(QJsonObject obj)
 {
-    StatfiDB* statfi_ptr = &statfi_db_;
+    StatfiDB statfi_db;
 
+    // get all years from the QJsonObject to an vector
+    QVector<QString> years = obj[QString("dimension")]
+            .toObject()[QString("Vuosi")]
+            .toObject()[QString("category")]
+            .toObject()[QString("index")]
+            .toObject().keys().toVector();
+
+    // get all values to an array
     QJsonArray values = obj["value"].toArray();
 
-    //add data from json to data structure, there seems to be data only for years 1990-2016, might need to make changes later...
-    for(int year = 1990; year < 2017; ++year){
+    // all values from each year can be found from the following indexes
+    int tonnes_index = 0;
+    int tonnes_indexed_index = tonnes_index + years.size();
+    int intensity_index = tonnes_indexed_index + years.size();
+    int intensity_indexed_index = intensity_index + years.size();
+
+    //add data from json to data structure
+    for(int i = 0; i < years.size(); ++i){
 
         StatfiData sd;
 
-        for(int i = 0; i < 4; ++i){
-
-            sd.tonnes = values.at(0).toDouble(); // Greenhouse gas emissions 2), CO2 equivalent 1000 t
-            values.pop_front();
-
-            sd.tonnes_indexed = values.at(0).toDouble(); // Greenhouse gas emissions, indexed, year 1990 = 100
-            values.pop_front();
-
-            sd.intensity = values.at(0).toDouble(); // Intensity of greenhouse gas emissions
-            values.pop_front();
-
-            sd.intensity_indexed = values.at(0).toDouble(); // Intensity of greenhouse gases, indexed, year 1990 = 100
-            values.pop_front();
-
+        if(values[tonnes_index] == "null"){
+            sd.tonnes = NO_VALUE;
+        }
+        else{
+            sd.tonnes = values[tonnes_index].toDouble(); // Greenhouse gas emissions 2), CO2 equivalent 1000 t
         }
 
-        statfi_db_[year] = sd;
+        if(values[tonnes_indexed_index] == "null"){
+            sd.tonnes_indexed = NO_VALUE;
+        }
+        else{
+            sd.tonnes_indexed = values[tonnes_indexed_index].toDouble(); // Greenhouse gas emissions, indexed, year 1990 = 100
+        }
+
+        if(values[intensity_index] == "null"){
+            sd.intensity = NO_VALUE;
+        }
+        else{
+            sd.intensity = values[intensity_index].toDouble(); // Intensity of greenhouse gas emissions
+        }
+
+        if(values[intensity_indexed_index] == "null"){
+            sd.intensity_indexed = NO_VALUE;
+        }
+        else{
+            sd.intensity_indexed = values[intensity_indexed_index].toDouble(); // Intensity of greenhouse gases, indexed, year 1990 = 100
+        }
+
+        statfi_db[years[i].toInt()] = sd;
+
+        ++tonnes_index;
+        ++tonnes_indexed_index;
+        ++intensity_index;
+        ++intensity_indexed_index;
     }
-    return statfi_ptr;
+    return statfi_db;
 }
 
 // not yet implemented

@@ -4,6 +4,7 @@
 #include <QtNetwork/QNetworkReply>
 #include <QObject>
 #include <QStringList>
+#include <QJsonObject>
 
 using std::string;
 
@@ -13,6 +14,11 @@ class networkcalls: public QObject
 public:
     explicit networkcalls();
     void queryStatFi();
+    QJsonObject getObject();
+signals:
+    void done();
+private:
+    QJsonObject obj_;
 };
 
 #endif // NETWORKCALLS_H
