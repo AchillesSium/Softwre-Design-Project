@@ -12,7 +12,7 @@ TimeWindow::TimeWindow(QWidget *parent) :
     ui->beginEdit->setValidator(date_validator);
     ui->endEdit->setValidator(date_validator);
 
-    QRegExp year("(19[0-9][0-9]|20[0-2][0-2]|200[0-9])");
+    QRegExp year("(19[0-9][0-9]|200[0-9]|201[0-9]|202[0-2])");
     year_validator = new QRegExpValidator(year, this);
 }
 
@@ -98,6 +98,11 @@ void TimeWindow::on_showButton_clicked()
             give_error(chronology_year_error);
             return;
         }
+        else if(begin == end)
+        {
+            give_error(same_year_error);
+            return;
+        }
     }
     else
     {
@@ -109,11 +114,15 @@ void TimeWindow::on_showButton_clicked()
             give_error(month_error);
             return;
         }
-
-        if(begin_date > end_date)
+        else if(begin_date > end_date)
         {
             give_error(chronology_date_error);
             return;
+        }
+        else if(begin_date == end_date)
+        {
+           give_error(same_date_error);
+           return;
         }
     }
 

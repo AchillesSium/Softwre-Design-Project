@@ -49,6 +49,8 @@ private:
     const QString month_error = "Error: One or both of the given dates are not possible! \nMake sure given month doesn't have too many days.";
     const QString chronology_date_error = "Error: Begin date comes after end date! \nMake sure begin date takes place before the end date.";
     const QString chronology_year_error = "Error: Begin year comes after end year! \nMake sure begin year takes place before the end year.";
+    const QString same_date_error = "Error: Begin date and end date cannot be the same date";
+    const QString same_year_error = "Error: Begin year and end year cannot be the same date";
 
 };
 

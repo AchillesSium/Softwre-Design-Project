@@ -132,6 +132,7 @@ ChartWindow::ChartWindow(QWidget *parent) :
 
 ChartWindow::~ChartWindow()
 {
+    ui->chartView->chart()->removeAllSeries();
     delete ui;
 }
 
@@ -354,27 +355,92 @@ void ChartWindow::quick_time_change(Time period)
     }
 }
 
+int ChartWindow::check_for_actual_values(const std::vector<std::pair<int, double>> &possible_values)
+{
+    unsigned int counter = 0;
+    double current_value;
 
-void ChartWindow::display_custom_series(std::vector<std::pair<int, double>> filtered)
+    while(counter < possible_values.size())
+    {
+        current_value = possible_values.at(counter).second;
+        if(current_value != 0)
+        {
+            return counter;
+        }
+
+        counter++;
+    }
+
+    return -1;
+}
+
+QList<QPointF> ChartWindow::make_custom_series(const std::vector<std::pair<int, double>> &filtered, int to_start, int to_end)
+{
+    int counter = to_start;
+    QList<QPointF> points;
+
+    while(counter <= to_end)
+    {
+        qDebug() << filtered.at(counter).first << "year to be in series";
+        points.append(QPointF(filtered.at(counter).first, filtered.at(counter).second));
+        counter++;
+    }
+
+    return points;
+}
+
+
+void ChartWindow::display_custom_series(const std::vector<std::pair<int, double>> &filtered)
 {
 
     remove_all_graph_series();
 
-    double max_value = filtered.at(0).second;
-    double current_value;
+    int start = check_for_actual_values(filtered);
 
-    QLineSeries *custom_series = new QLineSeries();
-
-    for(std::pair<int, double> data_point : filtered)
+    if(start == -1)
     {
-        current_value = data_point.second;
-        custom_series->append(data_point.first, current_value);
+        //Nothing to show!
+        return;
+    }
 
+    remove_all_graph_series();
+
+    double max_value = filtered.at(0).second;
+    double previous_value = 1;
+    double current_value;
+    std::vector<QList<QPointF>> points;
+
+    for(unsigned int data_point = start ; data_point < filtered.size() ; data_point++)
+    {
+        current_value = filtered.at(data_point).second;
+
+        if(current_value == 0 && previous_value != 0)
+        {
+            qDebug() << "new series chosen bcause of a zero value";
+            points.push_back(make_custom_series(filtered, start, data_point -1));
+            qDebug() << "new series ready";
+        }
+        else if(current_value != 0 && previous_value == 0)
+        {
+            qDebug() << "start index changed";
+            start = data_point;
+        }
+        else if(current_value != 0 && data_point == filtered.size() - 1)
+        {
+            qDebug() << "new series chosen bcause of end of the list";
+            points.push_back(make_custom_series(filtered, start, data_point));
+        }
+
+        previous_value = current_value;
+
+        // Max value checker
         if(current_value > max_value)
         {
             max_value = current_value;
         }
     }
+
+
 
     max_value = ceil(max_value);
 
@@ -401,7 +467,40 @@ void ChartWindow::display_custom_series(std::vector<std::pair<int, double>> filt
     axis_x->setLabelFormat("%.1i");
     ui->chartView->chart()->addAxis(axis_x, Qt::AlignBottom);
 
-    add_graph_series(custom_series);
+    for(QList<QPointF> points_list : qAsConst(points))
+    {
+        QLineSeries *series = new QLineSeries();
+        series->append(points_list);
+        add_graph_series(series);
+    }
+
+    /*double max_value = filtered.at(0).second;
+    double current_value;
+
+    std::vector<QList<QPointF>> datapoints;
+    for(std::pair<int, double> data_point : filtered)
+    {
+
+
+        current_value = data_point.second;
+
+        if(current_value == 0)
+        {
+            continue;
+        }
+        else
+        {
+            custom_series->append(data_point.first, current_value);
+        }
+
+        if(current_value > max_value)
+        {
+            max_value = current_value;
+        }
+    }
+*/
+
+//    add_graph_series(custom_series);
 }
 
 
