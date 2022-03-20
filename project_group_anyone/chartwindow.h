@@ -27,6 +27,11 @@ enum Station {Station_1 = 0, Station_2 = 1, Station_3 = 2, Station_4 = 3, NONE =
 // Checkboxes
 enum Checks {CO2_Checkbox = 0, SO2_Checkbox = 1, NOx_Checkbox = 2, Other_Checkbox = 3, no_check = 4};
 
+<<<<<<< HEAD
+=======
+// Radio buttons
+//enum Radio {CO2_FI_Radio = 0, Intensity_Radio = 1, Indexed_Radio = 2, Indexed_Intensity_Radio = 3, no_radio = 4};
+>>>>>>> main
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class ChartWindow; }
