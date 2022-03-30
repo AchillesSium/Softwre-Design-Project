@@ -405,7 +405,7 @@ void ChartWindow::display_custom_series(const std::vector<std::pair<int, double>
 
     remove_all_graph_series();
 
-    double max_value = filtered.at(0).second;
+    double max_value = 0;
     double previous_value = 1;
     double current_value;
     std::vector<QList<QPointF>> points;
@@ -416,91 +416,53 @@ void ChartWindow::display_custom_series(const std::vector<std::pair<int, double>
 
         if(current_value == 0 && previous_value != 0)
         {
-            qDebug() << "new series chosen bcause of a zero value";
             points.push_back(make_custom_series(filtered, start, data_point -1));
-            qDebug() << "new series ready";
         }
         else if(current_value != 0 && previous_value == 0)
         {
-            qDebug() << "start index changed";
             start = data_point;
         }
         else if(current_value != 0 && data_point == filtered.size() - 1)
         {
-            qDebug() << "new series chosen bcause of end of the list";
             points.push_back(make_custom_series(filtered, start, data_point));
         }
 
         previous_value = current_value;
 
-        // Max value checker
+        //Max value checker
         if(current_value > max_value)
         {
             max_value = current_value;
         }
+
     }
 
-
-
-    max_value = ceil(max_value);
-
-    // Y-axis
-    ui->chartView->chart()->removeAxis(ui->chartView->chart()->axisY());
-    axis_y = new QValueAxis();
-
-    axis_y->setRange(0, max_value);
-    axis_y->setTickCount(9);
-    axis_y->setTitleText("Tonnes");
-    axis_y->setGridLineVisible(true);
-    axis_y->setLabelFormat("%.1i");
-    ui->chartView->chart()->addAxis(axis_y, Qt::AlignLeft);
-    view_elements->selected_preset_time = Custom;
-
-    // X-axis
-    ui->chartView->chart()->removeAxis(ui->chartView->chart()->axisX());
-    axis_x = new QValueAxis();
-
-    axis_x->setRange(filtered.at(0).first, filtered.at(filtered.size() - 1).first);
-    axis_x->setTickCount(filtered.size());
-    axis_x->setTitleText("Years");
-    axis_x->setGridLineVisible(true);
-    axis_x->setLabelFormat("%.1i");
-    ui->chartView->chart()->addAxis(axis_x, Qt::AlignBottom);
+    unsigned int point_amount = 0;
 
     for(QList<QPointF> points_list : qAsConst(points))
     {
         QLineSeries *series = new QLineSeries();
+        point_amount = point_amount + points_list.size();
         series->append(points_list);
         add_graph_series(series);
     }
 
-    /*double max_value = filtered.at(0).second;
-    double current_value;
+    ui->chartView->chart()->createDefaultAxes();
 
-    std::vector<QList<QPointF>> datapoints;
-    for(std::pair<int, double> data_point : filtered)
-    {
+    QValueAxis *x_axis = static_cast<QValueAxis*>(ui->chartView->chart()->axisX());
+    x_axis->setTitleText("Years");
+    x_axis->setTickCount(point_amount);
+    x_axis->setGridLineVisible(true);
+    x_axis->setLabelFormat("%.1i");
 
+    QValueAxis *y_axis = static_cast<QValueAxis*>(ui->chartView->chart()->axisY());
+    y_axis->setRange(0, ceil(max_value));
+    y_axis->setTitleText("Tonnes");
+    y_axis->setTickCount(10);
+    y_axis->setGridLineVisible(true);
+    y_axis->setLabelFormat("%.1i");
 
-        current_value = data_point.second;
-
-        if(current_value == 0)
-        {
-            continue;
-        }
-        else
-        {
-            custom_series->append(data_point.first, current_value);
-        }
-
-        if(current_value > max_value)
-        {
-            max_value = current_value;
-        }
-    }
-*/
-
-//    add_graph_series(custom_series);
+    view_elements->selected_preset_time = Custom;
 }
 
 
