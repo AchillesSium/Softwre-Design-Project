@@ -15,6 +15,7 @@ public:
     explicit networkcalls();
     void queryStatFi();
     QJsonObject getObject();
+    void querySmearStation();
 signals:
     void done();
 private:

@@ -57,6 +57,8 @@ int main(int argc, char *argv[])
 
     network->queryStatFi();
 
+    network->querySmearStation();
+
     // wait for the request to process completely
     QEventLoop loop;
     QObject::connect(network, SIGNAL(done()), &loop, SLOT(quit()));
