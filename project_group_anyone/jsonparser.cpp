@@ -1,4 +1,5 @@
 #include "jsonparser.h"
+#include "datastorage.h"
 
 Jsonparser::Jsonparser()
 {
@@ -10,7 +11,7 @@ Jsonparser::~Jsonparser()
 
 }
 
-StatfiDB Jsonparser::parse_statfi(QJsonObject obj)
+void Jsonparser::parse_statfi(QJsonObject obj)
 {
     StatfiDB statfi_db;
 
@@ -70,7 +71,7 @@ StatfiDB Jsonparser::parse_statfi(QJsonObject obj)
         ++intensity_index;
         ++intensity_indexed_index;
     }
-    return statfi_db;
+    DataStorage::setStatfiDB(statfi_db);
 }
 
 // not yet implemented

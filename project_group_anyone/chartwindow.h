@@ -2,7 +2,7 @@
 #define CHARTWINDOW_H
 
 #include "timewindow.h"
-#include "userselectionsstatfi.h"
+#include "userselections.h"
 
 #include <QMainWindow>
 #include <QString>
@@ -23,6 +23,7 @@ enum Database {STATFI = 0, SMEAR = 1};
 
 // Measuring stations
 enum Station {Station_1 = 0, Station_2 = 1, Station_3 = 2, Station_4 = 3, NONE = 4};
+
 
 // Checkboxes
 enum Checks {CO2_Checkbox = 0, SO2_Checkbox = 1, NOx_Checkbox = 2, Other_Checkbox = 3, no_check = 4};
