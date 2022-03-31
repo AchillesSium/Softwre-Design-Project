@@ -68,8 +68,9 @@ int main(int argc, char *argv[])
         qDebug() << "error happened";
     }
     else{
-        Jsonparser *parser = new Jsonparser();
-        StatfiDB statfi_db = parser->parse_statfi(obj);
+        StatfiParser *parser = new StatfiParser();
+        parser->parse(obj);
+        StatfiDB statfi_db = parser->get_db();
         /*
          * for (const auto &[k, v] : statfi_db)
             qDebug() << "m[" << k << "] = (" << v.intensity << ", " << v.intensity_indexed << ") ";*/

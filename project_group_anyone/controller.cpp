@@ -85,8 +85,9 @@ StatfiDB Controller::getStatFiDataFromApi()
         qDebug() << "error happened";
     }
     else{
-        Jsonparser *parser = new Jsonparser();
-        statfi_db = parser->parse_statfi(obj);
+        StatfiParser *parser = new StatfiParser();
+        parser->parse(obj);
+        statfi_db = parser->get_db();
         delete parser;
     }
 

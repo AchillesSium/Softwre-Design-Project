@@ -13,6 +13,8 @@ SOURCES += \
     main.cpp \
     chartwindow.cpp \
     networkcalls.cpp \
+    smearparser.cpp \
+    statfiparser.cpp \
     timewindow.cpp \
     userselections.cpp \
     userselectionssmear.cpp \
@@ -24,6 +26,8 @@ HEADERS += \
     chartwindow.h \
     jsonparser.h \
     networkcalls.h \
+    smearparser.h \
+    statfiparser.h \
     timewindow.h \
     userselections.h \
     userselectionssmear.h \
