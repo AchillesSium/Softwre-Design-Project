@@ -6,6 +6,7 @@
 #include <QVector>
 #include <string>
 #include <map>
+#include <vector>
 #include "jsonparser.h"
 
 

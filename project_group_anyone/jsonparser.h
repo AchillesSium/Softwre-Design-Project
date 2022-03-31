@@ -2,12 +2,6 @@
 #define JSONPARSER_H
 
 #include <QJsonObject>
-#include <QJsonArray>
-#include <QDebug>
-#include <QVector>
-#include <string>
-#include <map>
-#include <utility>
 
 class Jsonparser
 {
