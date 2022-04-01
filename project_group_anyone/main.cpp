@@ -68,14 +68,16 @@ int main(int argc, char *argv[])
         qDebug() << "error happened";
     }
     else{
+
         StatfiParser *parser = new StatfiParser();
         parser->parse(obj);
-        StatfiDB statfi_db = parser->get_db();
-        /*
+      /*
          * for (const auto &[k, v] : statfi_db)
             qDebug() << "m[" << k << "] = (" << v.intensity << ", " << v.intensity_indexed << ") ";*/
         delete parser;
     }
+
+    delete network;
 
     return a.exec();
 }

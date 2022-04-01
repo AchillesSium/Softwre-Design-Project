@@ -1,11 +1,16 @@
-#include "controller.h"
 #include <QDebug>
-#include <vector>
-#include "networkcalls.h"
 #include <QJsonObject>
 #include <QEventLoop>
+
+#include <vector>
 #include <string>
+#include <iostream>
+
+#include "networkcalls.h"
 #include "userselections.h"
+#include "jsonparser.h"
+#include "datastorage.h"
+#include "controller.h"
 
 std::vector<std::pair<int, double>> Controller::getSTATFIData(UserSelections* selections)
 {
@@ -16,21 +21,14 @@ std::vector<std::pair<int, double>> Controller::getSTATFIData(UserSelections* se
     // Send filtered data to view, return value of the function can be changed
     // OR a separate function can be created in the view and called here
     // with the filtered data as a parameter
-    std::vector<DataSet> ds = selections->getDataSets();
-
-    DataSet selected_gas;
-    for(int i = 0; i < ds.size(); ++i){
-        qDebug() << "vector" << ds[i];
-        selected_gas = ds[i];
-    }
+    DataSet selected_gas = selections->getDataSet();
 
     int startDate = selections->getStart().getYear();
     int endDate = selections->getEnd().getYear();
 
     std::vector<std::pair<int, double>> filteredVector;
 
-
-    StatfiDB statfi_db_ = getStatFiDataFromApi();
+    StatfiDB& statfi_db_ = DataStorage::getStatfiDB();
 
 //    for (const auto &[k, v] : statfi_db_)
 //        qDebug() << "m[" << k << "] = (" << v.intensity << ", " << v.intensity_indexed << ") ";
@@ -67,31 +65,17 @@ std::vector<std::pair<int, double>> Controller::getSTATFIData(UserSelections* se
     return filteredVector;
 }
 
-StatfiDB Controller::getStatFiDataFromApi()
+void Controller::getSMEARData(UserSelections* selections)
 {
-    StatfiDB statfi_db;
-    networkcalls *network = new networkcalls();
+    // Call SMEAR data fetcher, below is an example of what it might look
+    /*
+    networkcallsSMEAR* network = new networkcallsSMEAR(selections);
 
-    network->queryStatFi();
+    network->query();
 
-    // wait for the request to process completely
-    QEventLoop loop;
-    QObject::connect(network, SIGNAL(done()), &loop, SLOT(quit()));
-    loop.exec();
+    // Wait for the request, do stuff with the data, etc.
 
-    QJsonObject obj = network->getObject();
-
-    if(obj["class"] == QJsonValue::Undefined ){
-        qDebug() << "error happened";
-    }
-    else{
-        StatfiParser *parser = new StatfiParser();
-        parser->parse(obj);
-        statfi_db = parser->get_db();
-        delete parser;
-    }
-
-    return statfi_db;
+    delete network;
+    */
 }
-
 

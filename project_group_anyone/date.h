@@ -1,12 +1,14 @@
 #ifndef DATE_H
 #define DATE_H
 
+#include "string"
 
 class Date
 {
 public:
     Date();
     Date(int day, int month, int year, int hour, int min);
+    Date(std::string dateStr);
     int getYear()           { return year_; }
     int getMonth()          { return month_; }
     int getDay()            { return day_; }
@@ -21,6 +23,7 @@ public:
     bool operator < (Date& t);
     bool operator >= (Date& t);
     bool operator <= (Date& t);
+    std::string toString();
 private:
     int year_;
     int month_;
