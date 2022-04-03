@@ -8,7 +8,7 @@
 #include "date.h"
 #include <iostream>
 #include <string>
-#include "networkcalls.h"
+#include "statfinetworkcall.h"
 #include "jsonparser.h"
 #include <QDebug>
 #include "controller.h"
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     ChartWindow w;
     w.show();
 
-    networkcalls *network = new networkcalls();
+    statfinetworkcall *network = new statfinetworkcall();
 
     network->queryStatFi();
 
