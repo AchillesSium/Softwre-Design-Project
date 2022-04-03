@@ -104,7 +104,7 @@ QJsonObject networkcalls::getObject()
 void networkcalls::querySmearStation()
 {
     QNetworkAccessManager *mgr = new QNetworkAccessManager(this);
-    const QUrl url(QStringLiteral("https://smear-backend.rahtiapp.fi/search/station"));
+    const QUrl url(QStringLiteral("https://smear-backend.rahtiapp.fi/station"));
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
