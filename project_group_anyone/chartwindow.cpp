@@ -87,44 +87,19 @@ ChartWindow::ChartWindow(QWidget *parent) :
     make_chart_line(time_month, nox_month, nox_month_series);
     make_chart_line(time_year, nox_year, nox_year_series);
 
-    // Add series to chart
-    graph->addSeries(co2_day_series);
-    graph->addSeries(so2_day_series);
-    graph->addSeries(nox_day_series);
-
-    // Attach series to axis
-    co2_day_series->attachAxis(axis_x);
-    co2_day_series->attachAxis(axis_y);
-
-    so2_day_series->attachAxis(axis_x);
-    so2_day_series->attachAxis(axis_y);
-
-    nox_day_series->attachAxis(axis_x);
-    nox_day_series->attachAxis(axis_y);
-
     // Initialize the chart view
     ui->chartView->setChart(graph);
     ui->chartView->setRenderHint(QPainter::Antialiasing);
-
-    // Check correct checkboxes
-    ui->co2Box->setChecked(true);
-    ui->so2Box->setChecked(true);
-    ui->noxBox->setChecked(true);
-
-    // Might need to add the checkboxes for calculated values
-    view_elements->checks.insert(std::make_pair(CO2_Checkbox, true));
-    view_elements->checks.insert(std::make_pair(SO2_Checkbox, true));
-    view_elements->checks.insert(std::make_pair(NOx_Checkbox, true));
-    view_elements->checks.insert(std::make_pair(Other_Checkbox, false));
 
     // Set correct combo box and stacked widget
     ui->databaseCombo->blockSignals(true);
 
     ui->databaseCombo->setCurrentText("SMEAR");
-    view_elements->current_database = SMEAR;
+    view_elements->current_database = DataSource::SMEAR;
     ui->stackedBoxes->setCurrentIndex(0);
-    view_elements->current_station = Station_1;
-    view_elements->radioselection = None;
+    view_elements->current_station = Varrio;
+    view_elements->radioselection_smear = None;
+    view_elements->radioselection_statfi = None;
 
     ui->databaseCombo->blockSignals(false);
 
@@ -170,18 +145,38 @@ void ChartWindow::default_check_boxes()
 {
     remove_all_graph_series();
 
-    if(view_elements->current_database == SMEAR)
-    {
-        // Gasses checked
-        ui->co2Box->setChecked(false);
-        ui->so2Box->setChecked(false);
-        ui->noxBox->setChecked(false);
-        ui->otherBox->setChecked(false);
-    }
-    else if(view_elements->current_database == STATFI)
+    if(view_elements->current_database == DataSource::SMEAR)
     {
         // Uncheck the checked radio button
-        switch(view_elements->radioselection)
+        switch(view_elements->radioselection_smear)
+        {
+        case CO2:
+            ui->co2Radio->setAutoExclusive(false);
+            ui->co2Radio->setChecked(false);
+            ui->co2Radio->setAutoExclusive(true);
+            break;
+
+        case SO2:
+            ui->so2Radio->setAutoExclusive(false);
+            ui->so2Radio->setChecked(false);
+            ui->so2Radio->setAutoExclusive(true);
+            break;
+
+        case NOx:
+            ui->noxRadio->setAutoExclusive(false);
+            ui->noxRadio->setChecked(false);
+            ui->noxRadio->setAutoExclusive(true);
+            break;
+
+        default:
+            // Nothing needs to be done
+            break;
+        }
+    }
+    else if(view_elements->current_database == DataSource::STATFI)
+    {
+        // Uncheck the checked radio button
+        switch(view_elements->radioselection_statfi)
         {
         case CO2tonnes:
             ui->co2DataRadio->setAutoExclusive(false);
@@ -211,19 +206,12 @@ void ChartWindow::default_check_boxes()
             // Nothing needs to be done
             break;
         }
-        view_elements->radioselection = None;
+        view_elements->radioselection_statfi = None;
+        view_elements->radioselection_smear = None;
     }
 
-    // Min, max, average unchecked
-    ui->maxBox->setChecked(false);
-    ui->minBox->setChecked(false);
-    ui->avgBox->setChecked(false);
-
-    // Inform the struct
-    view_elements->checks.at(CO2_Checkbox) = false;
-    view_elements->checks.at(SO2_Checkbox) = false;
-    view_elements->checks.at(NOx_Checkbox) = false;
-    view_elements->checks.at(Other_Checkbox) = false;
+    // Reset aggregation type
+    ui->aggregationCombo->setCurrentIndex(0);
 }
 
 
@@ -283,19 +271,24 @@ void ChartWindow::quick_time_change(Time period)
         return;
     }
 
-    if(ui->co2Box->isChecked())
+
+    switch(view_elements->radioselection_smear)
     {
+    case CO2:
         remove_graph_series(co2_series.at(view_elements->selected_preset_time));
-    }
+        break;
 
-    if(ui->so2Box->isChecked())
-    {
+    case SO2:
         remove_graph_series(so2_series.at(view_elements->selected_preset_time));
-    }
+        break;
 
-    if(ui->noxBox->isChecked())
-    {
+    case NOx:
         remove_graph_series(nox_series.at(view_elements->selected_preset_time));
+        break;
+
+    default:
+        // Nothing needs to be done
+        break;
     }
 
     ui->chartView->chart()->removeAxis(ui->chartView->chart()->axisX());
@@ -339,19 +332,23 @@ void ChartWindow::quick_time_change(Time period)
     ui->chartView->chart()->addAxis(axis_x, Qt::AlignBottom);
     view_elements->selected_preset_time = period;
 
-    if(ui->co2Box->isChecked())
+    switch(view_elements->radioselection_smear)
     {
+    case CO2:
         add_graph_series(co2_series.at(view_elements->selected_preset_time));
-    }
+        break;
 
-    if(ui->so2Box->isChecked())
-    {
+    case SO2:
         add_graph_series(so2_series.at(view_elements->selected_preset_time));
-    }
+        break;
 
-    if(ui->noxBox->isChecked())
-    {
+    case NOx:
         add_graph_series(nox_series.at(view_elements->selected_preset_time));
+        break;
+
+    default:
+        // Nothing needs to be done
+        break;
     }
 }
 
@@ -395,18 +392,20 @@ void ChartWindow::display_custom_series(const std::vector<std::pair<int, double>
 
     remove_all_graph_series();
 
-    int start = check_for_actual_values(filtered);
+    int start = 0;//= check_for_actual_values(filtered);
 
+    /*
     if(start == -1)
     {
         //Nothing to show!
         return;
     }
+    */
 
     remove_all_graph_series();
 
     double max_value = 0;
-    double previous_value = 1;
+    double previous_value = 0;
     double current_value;
     std::vector<QList<QPointF>> points;
 
@@ -416,14 +415,19 @@ void ChartWindow::display_custom_series(const std::vector<std::pair<int, double>
 
         if(current_value == 0 && previous_value != 0)
         {
+            qDebug() << filtered.at(data_point).first;
             points.push_back(make_custom_series(filtered, start, data_point -1));
+            start = data_point;
         }
         else if(current_value != 0 && previous_value == 0)
         {
+            qDebug() << filtered.at(data_point).first;
+            points.push_back(make_custom_series(filtered, start, data_point -1));
             start = data_point;
         }
-        else if(current_value != 0 && data_point == filtered.size() - 1)
+        else if(data_point == filtered.size() - 1)
         {
+            qDebug() << filtered.at(data_point).first;
             points.push_back(make_custom_series(filtered, start, data_point));
         }
 
@@ -434,7 +438,6 @@ void ChartWindow::display_custom_series(const std::vector<std::pair<int, double>
         {
             max_value = current_value;
         }
-
     }
 
     unsigned int point_amount = 0;
@@ -444,7 +447,13 @@ void ChartWindow::display_custom_series(const std::vector<std::pair<int, double>
         QLineSeries *series = new QLineSeries();
         point_amount = point_amount + points_list.size();
         series->append(points_list);
-        add_graph_series(series);
+
+        if(series->at(0).y() == 0)
+        {
+            series->setVisible(false);
+        }
+
+        ui->chartView->chart()->addSeries(series);
     }
 
     ui->chartView->chart()->createDefaultAxes();
@@ -525,16 +534,16 @@ void ChartWindow::on_applyButton_clicked()
 {
     // Send ViewObject pointer to controller
     UserSelections* selections = nullptr;
-    Database current = view_elements->current_database;
+    DataSource current = view_elements->current_database;
 
-    if(current == STATFI && view_elements->radioselection != None)
+    if(current == DataSource::STATFI && view_elements->radioselection_statfi != None)
     {
         selections = new UserSelectionsSTATFI;
-        selections->addDataSet(view_elements->radioselection);
+        selections->addDataSet(view_elements->radioselection_statfi);
         selections->setStart(Date(1,1,view_elements->selected_custom_time.first.toInt(),0,0));
         selections->setEnd(Date(1,1,view_elements->selected_custom_time.second.toInt(),0,0));
 
-        qDebug().nospace() << "abc" << qPrintable(view_elements->radioselection) << "def";
+        qDebug().nospace() << "abc" << qPrintable(view_elements->radioselection_statfi) << "def";
         std::vector<std::pair<int, double>> filteredVector = Controller::getSTATFIData(selections);
         qDebug() << "Filtered Vecor in Chart Window" << filteredVector;
         delete selections;
@@ -542,31 +551,28 @@ void ChartWindow::on_applyButton_clicked()
         display_custom_series(filteredVector);
     }
 
-    else if(current == SMEAR)
+    else if(current == DataSource::SMEAR && view_elements->radioselection_smear != None)
     {
-        for(unsigned int box_count = 0; box_count < 4; box_count++)
+        switch(view_elements->radioselection_smear)
         {
-            switch(box_count)
-            {
-            case CO2_Checkbox:
-                // TODO Fetch the correct information and display it on the graph
-                react_to_checkbox(view_elements->checks.at(CO2_Checkbox), co2_series);
-                break;
+        case CO2:
+            // TODO Fetch the correct information and display it on the graph
+            react_to_checkbox(true, co2_series);
+            break;
 
-            case SO2_Checkbox:
-                // TODO -||-
-                react_to_checkbox(view_elements->checks.at(SO2_Checkbox), so2_series);
-                break;
+        case SO2:
+            // TODO -||-
+            react_to_checkbox(true, so2_series);
+            break;
 
-            case NOx_Checkbox:
-                // TODO -||-
-                react_to_checkbox(view_elements->checks.at(NOx_Checkbox), nox_series);
-                break;
+        case NOx:
+            // TODO -||-
+            react_to_checkbox(true, nox_series);
+            break;
 
-            case Other_Checkbox:
-                // TODO -||-
-                break;
-            }
+        default:
+            // Nothing to be done
+            break;
         }
     }
 }
@@ -575,61 +581,52 @@ void ChartWindow::on_applyButton_clicked()
 //----------------------------------------------------------------------------------------------
 // Combo Box slots
 
-void ChartWindow::on_databaseCombo_currentIndexChanged(const int index)
+void ChartWindow::on_databaseCombo_currentIndexChanged(const QString current_database)
 {
     default_check_boxes();
 
-    bool min_max = false;
     bool quick_times = false;
     QString button_text;
     QWidget *widget = nullptr;
 
-    switch(index)
+    if(current_database == "STATFI")
     {
-    case STATFI:
-        min_max = false;
         quick_times = false;
         button_text = "Year-to_Year";
         widget = ui->stackedBoxes->widget(1);
         quick_time_change(Year);
-        view_elements->current_database = STATFI;
+        view_elements->current_database = DataSource::STATFI;
         view_elements->current_station = NONE;
-        break;
+    }
 
-    case SMEAR:
-        min_max = true;
+    else if(current_database == "SMEAR")
+    {
         quick_times = true;
         button_text = "Date-to-Date";
         widget = ui->stackedBoxes->widget(0);
-        view_elements->current_database = SMEAR;
+        view_elements->current_database = DataSource::SMEAR;
         view_elements->current_station = static_cast<Station>(ui->stationCombo->currentIndex());
 
-        if(view_elements->selected_preset_time == Custom)
-        {
-            //TODO (At the moment just changes things so that program can keep working)
-            remove_all_graph_series();
-                quick_time_change(Day);
+        remove_all_graph_series();
+        quick_time_change(Day);
 
-            // Re-make the Y-axis
-            ui->chartView->chart()->removeAxis(ui->chartView->chart()->axisY());
-            QValueAxis *axis_y = new QtCharts::QValueAxis();
-            axis_y->setRange(0, 2000);
-            axis_y->setTickCount(9);
-            axis_y->setGridLineVisible(true);
-            axis_y->setLabelFormat("%.1i");
-            axis_y->setTitleText("Tonnes");
-            ui->chartView->chart()->addAxis(axis_y, Qt::AlignLeft);
-        }
-        break;
+        // Re-make the Y-axis
+        ui->chartView->chart()->removeAxis(ui->chartView->chart()->axisY());
+        QValueAxis *axis_y = new QtCharts::QValueAxis();
+        axis_y->setRange(0, 2000);
+        axis_y->setTickCount(9);
+        axis_y->setGridLineVisible(true);
+        axis_y->setLabelFormat("%.1i");
+        axis_y->setTitleText("Tonnes");
+        ui->chartView->chart()->addAxis(axis_y, Qt::AlignLeft);
     }
 
-    // Measuring stations combo box visibility
+    // Combo box and label visibility
     ui->stationCombo->setVisible(quick_times);
+    ui->aggregationCombo->setVisible(quick_times);
 
-    //Max, min and average
-    ui->maxBox->setEnabled(min_max);
-    ui->minBox->setEnabled(min_max);
-    ui->avgBox->setEnabled(min_max);
+    ui->stationLabel->setVisible(quick_times);
+    ui->aggregationLabel->setVisible(quick_times);
 
     //Quick time selection buttons
     ui->yearButton->setEnabled(quick_times);
@@ -650,33 +647,48 @@ void ChartWindow::on_databaseCombo_currentIndexChanged(const int index)
     remove_all_graph_series();
 }
 
-void ChartWindow::on_stationCombo_currentIndexChanged(const int index)
+void ChartWindow::on_stationCombo_currentIndexChanged(const QString current_station)
 {
-    view_elements->current_station = static_cast<Station>(index);
+    if(current_station == "Värriö")
+    {
+        view_elements->current_station = Varrio;
+    }
+    else if(current_station == "Hyytiälä")
+    {
+        view_elements->current_station = Hyytiala;
+    }
+    else if(current_station == "Kumpula")
+    {
+        view_elements->current_station = Kumpula;
+    }
 }
 
 
 //----------------------------------------------------------------------------------------------
 // Check Box and Radio Button slots
 
-void ChartWindow::on_co2Box_clicked(bool state)
+void ChartWindow::on_co2Radio_clicked(bool state)
 {
-    view_elements->checks.at(CO2_Checkbox) = state;
+    if(state == true)
+    {
+        view_elements->radioselection_smear = CO2;
+    }
 }
 
-void ChartWindow::on_so2Box_clicked(bool state)
+void ChartWindow::on_so2Radio_clicked(bool state)
 {
-    view_elements->checks.at(SO2_Checkbox) = state;
+    if(state == true)
+    {
+        view_elements->radioselection_smear = SO2;
+    }
 }
 
-void ChartWindow::on_noxBox_clicked(bool state)
+void ChartWindow::on_noxRadio_clicked(bool state)
 {
-    view_elements->checks.at(NOx_Checkbox) = state;
-}
-
-void ChartWindow::on_otherBox_clicked(bool state)
-{
-    view_elements->checks.at(Other_Checkbox) = state;
+    if(state == true)
+    {
+        view_elements->radioselection_smear = NOx;
+    }
 }
 
 
@@ -685,7 +697,7 @@ void ChartWindow::on_co2DataRadio_clicked(bool state)
 {
     if(state == true)
     {
-        view_elements->radioselection = CO2tonnes;
+        view_elements->radioselection_statfi = CO2tonnes;
     }
 }
 
@@ -693,7 +705,7 @@ void ChartWindow::on_intensityRadio_clicked(bool state)
 {
     if(state == true)
     {
-        view_elements->radioselection = CO2intensity;
+        view_elements->radioselection_statfi = CO2intensity;
     }
 }
 
@@ -701,7 +713,7 @@ void ChartWindow::on_indexedRadio_clicked(bool state)
 {
     if(state == true)
     {
-        view_elements->radioselection = CO2indexed;
+        view_elements->radioselection_statfi = CO2indexed;
     }
 }
 
@@ -709,7 +721,7 @@ void ChartWindow::on_indexedIntensityRadio_clicked(bool state)
 {
     if(state == true)
     {
-        view_elements->radioselection = CO2intensityIndexed;
+        view_elements->radioselection_statfi = CO2intensityIndexed;
     }
 }
 

@@ -18,11 +18,8 @@
 // Enum to clarify timescale of the graph
 enum Time {Day = 0, Week = 1, Month = 2, Year = 3, Custom = 4};
 
-// Used Database
-enum Database {STATFI = 0, SMEAR = 1};
-
 // Measuring stations
-enum Station {Station_1 = 0, Station_2 = 1, Station_3 = 2, Station_4 = 3, NONE = 4};
+enum Station {Varrio = 0, Hyytiala = 1, Kumpula = 2, NONE = 3};
 
 // Checkboxes
 enum Checks {CO2_Checkbox = 0, SO2_Checkbox = 1, NOx_Checkbox = 2, Other_Checkbox = 3, no_check = 4};
@@ -74,16 +71,15 @@ private slots:
     void on_applyButton_clicked();
 
     // Combo box slots
-    void on_databaseCombo_currentIndexChanged(const int index);
-    void on_stationCombo_currentIndexChanged(const int index);
+    void on_databaseCombo_currentIndexChanged(const QString current_database);
+    void on_stationCombo_currentIndexChanged(const QString current_station);
 
-    // Check Box slots
-    void on_co2Box_clicked(bool state);
-    void on_so2Box_clicked(bool state);
-    void on_noxBox_clicked(bool state);
-    void on_otherBox_clicked(bool state);
+    // SMEAR Radio Button slots
+    void on_co2Radio_clicked(bool state);
+    void on_so2Radio_clicked(bool state);
+    void on_noxRadio_clicked(bool state);
 
-    // Radio Button slots
+    // STATFI Radio Button slots
     void on_co2DataRadio_clicked(bool state);
     void on_intensityRadio_clicked(bool state);
     void on_indexedRadio_clicked(bool state);
@@ -106,11 +102,10 @@ private:
     // Struct for tracking the state of the view elements
     struct ViewObject
     {
-        // This whole class could possibly be just a map with enum key already defined above
-        std::unordered_map<Checks, bool, std::hash<int>> checks;
-        Database current_database;
+        DataSource current_database;
         Station current_station;
-        DataSet radioselection;
+        DataSet radioselection_statfi;
+        DataSet radioselection_smear;
         Time selected_preset_time;
         std::pair<QString, QString> selected_custom_time; // From beginning date to end date
     };
