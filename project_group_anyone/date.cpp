@@ -14,6 +14,16 @@ Date::Date(int day, int month, int year, int hour, int minute)
     minute_ = minute;
 }
 
+// String needs to be formatted dd/mm/yyyy
+Date::Date(std::string dateStr)
+{
+    day_ = stoi(dateStr.substr(0,2));
+    month_ = stoi(dateStr.substr(3,2));
+    year_ = stoi(dateStr.substr(6,4));
+    hour_ = 0;
+    minute_ = 0;
+}
+
 /*
  * After creating a Time object based on user input, validate it
  * immediately and inform the user about a failed validation.
@@ -94,4 +104,16 @@ bool Date::operator >= (Date& t)
 bool Date::operator <= (Date& t)
 {
     return (*this < (t) || *this == (t));
+}
+
+// Returns the date in the following format: "yyyy-mm-ddThh:ss.mmm"
+std::string Date::toString()
+{
+    std::string yearStr = std::to_string(year_);
+    std::string monthStr = std::to_string(month_);
+    if (month_ < 10) monthStr = "0" + monthStr;
+    std::string dayStr = std::to_string(day_);
+    if (day_ < 10) dayStr = "0" + dayStr;
+
+    return yearStr + "-" + monthStr + "-" + dayStr + "T00:00.000";
 }

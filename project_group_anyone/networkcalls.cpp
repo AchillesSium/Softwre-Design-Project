@@ -1,4 +1,5 @@
 #include "networkcalls.h"
+#include "userselections.h"
 #include <iostream>
 
 #include <QJsonDocument>

@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QStringList>
 #include <QJsonObject>
+#include "unordered_map"
 
 using std::string;
 

@@ -1,8 +1,6 @@
 #include "chartwindow.h"
 #include "ui_chartwindow.h"
 #include "userselections.h"
-#include "userselectionssmear.h"
-#include "userselectionsstatfi.h"
 #include "controller.h"
 #include "date.h"
 #include <QDebug>
@@ -567,21 +565,29 @@ void ChartWindow::on_applyButton_clicked()
 
     if(current == STATFI && view_elements->radioselection != None)
     {
-        selections = new UserSelectionsSTATFI;
-        selections->addDataSet(view_elements->radioselection);
+        selections = new UserSelections(DataSource::STATFI);
+        selections->setDataSet(view_elements->radioselection);
         selections->setStart(Date(1,1,view_elements->selected_custom_time.first.toInt(),0,0));
         selections->setEnd(Date(1,1,view_elements->selected_custom_time.second.toInt(),0,0));
 
-        qDebug().nospace() << "abc" << qPrintable(view_elements->radioselection) << "def";
+      //  qDebug().nospace() << "abc" << qPrintable(view_elements->radioselection) << "def";
         std::vector<std::pair<int, double>> filteredVector = Controller::getSTATFIData(selections);
         qDebug() << "Filtered Vecor in Chart Window" << filteredVector;
-        delete selections;
 
         display_custom_series(filteredVector);
     }
 
     else if(current == SMEAR)
     {
+        selections = new UserSelections(DataSource::SMEAR);
+        selections->setMeasuringStation(MeasuringStation::Varrio); // Later get the actual user selection
+        selections->setDataSet(DataSet::CO2); // Later use view_elements->radioselection when it is updated to handle SMEAR dataSets
+        selections->setStart(Date(view_elements->selected_custom_time.first.toStdString()));
+        selections->setEnd(Date(view_elements->selected_custom_time.second.toStdString()));
+        selections->setAggregateType(AggregateType::Arithmetic); // Later get the actual user selection
+
+        Controller::getSMEARData(selections);
+
         for(unsigned int box_count = 0; box_count < 4; box_count++)
         {
             switch(box_count)
@@ -607,6 +613,8 @@ void ChartWindow::on_applyButton_clicked()
             }
         }
     }
+
+    delete selections;
 }
 
 
