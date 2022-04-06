@@ -14,6 +14,7 @@ SOURCES += \
     main.cpp \
     chartwindow.cpp \
     networkcalls.cpp \
+    smearnetworkcall.cpp \
     smearparser.cpp \
     statfinetworkcall.cpp \
     statfiparser.cpp \
@@ -27,6 +28,7 @@ HEADERS += \
     datastorage.h \
     jsonparser.h \
     networkcalls.h \
+    smearnetworkcall.h \
     smearparser.h \
     statfinetworkcall.h \
     statfiparser.h \

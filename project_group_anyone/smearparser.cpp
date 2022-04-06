@@ -1,5 +1,7 @@
 #include "smearparser.h"
 
+#include <QDate>
+
 SmearParser::SmearParser()
 {
     SmearData sd;

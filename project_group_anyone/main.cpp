@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 #include "statfinetworkcall.h"
+#include "smearnetworkcall.h"
 #include "jsonparser.h"
 #include <QDebug>
 #include "controller.h"
@@ -53,18 +54,20 @@ int main(int argc, char *argv[])
     ChartWindow w;
     w.show();
 
-    statfinetworkcall *network = new statfinetworkcall();
+    statfinetworkcall *statfinetwork = new statfinetworkcall();
+    smearnetworkcall *smearnetwork = new smearnetworkcall();
 
-    network->queryStatFi();
+    statfinetwork->queryStatFi();
 
-    network->querySmearStation();
+    //smearnetwork->querySmearStations();
+    smearnetwork->querySmearTimeSeries("MAX", 60, "2013-01-01", "2022-01-01", "KUM_EDDY.av_c_ep");
 
     // wait for the request to process completely
     QEventLoop loop;
-    QObject::connect(network, SIGNAL(done()), &loop, SLOT(quit()));
+    QObject::connect(statfinetwork, SIGNAL(done()), &loop, SLOT(quit()));
     loop.exec();
 
-    QJsonObject obj = network->getObject();
+    QJsonObject obj = statfinetwork->getObject();
 
     if(obj["class"] == QJsonValue::Undefined ){
         qDebug() << "error happened";
@@ -79,7 +82,7 @@ int main(int argc, char *argv[])
         delete parser;
     }
 
-    delete network;
+    delete statfinetwork;
 
     return a.exec();
 }
