@@ -15,26 +15,39 @@ struct StatfiData
 
 using StatfiDB = std::map<int, StatfiData>;
 
+/*
+ * Implemented as a singleton
+ * Use example:
+ * DataStorage& storage = DataStorage::get();
+ * storage.setStatfiDBmin(firstAvailableYear);
+ * storage.setStatfiDBmax(lastAvailableYear);
+ */
 class DataStorage
 {
 public:
-    DataStorage();
-    DataStorage(const DataStorage&) = delete;
-    void operator=(DataStorage const&) = delete;
+    static DataStorage& get();
 
-    static void setStatfiDB(StatfiDB db);
-    static StatfiDB& getStatfiDB();
+    void setStatfiDB(StatfiDB db);
+    StatfiDB& getStatfiDB();
 
-    static void setStatfiDBmin(int min);
-    static void setStatfiDBmax(int max);
+    void setStatfiDBmin(int min);
+    void setStatfiDBmax(int max);
 
-    static int getStatfiDBmin();
-    static int getStatfiDBmax();
+    int getStatfiDBmin();
+    int getStatfiDBmax();
 
 private:
-    static StatfiDB statfiDB_;
-    static int statfiDBmin_;
-    static int statfiDBmax_;
+    DataStorage() = default;
+
+    // Do not allow creation of more instances
+    DataStorage(const DataStorage&) = delete;
+    DataStorage& operator=(const DataStorage&) = delete;
+    DataStorage(DataStorage&&) = delete;
+    DataStorage& operator=(DataStorage&&) = delete;
+
+    StatfiDB statfiDB_;
+    int statfiDBmin_;
+    int statfiDBmax_;
 };
 
 #endif // DATASTORAGE_H

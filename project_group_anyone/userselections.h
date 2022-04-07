@@ -15,6 +15,7 @@ enum class DataSource
 
 enum class MeasuringStation
 {
+    None,
     Varrio,
     Hyytiala,
     Kumpula

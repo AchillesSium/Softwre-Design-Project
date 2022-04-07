@@ -28,7 +28,8 @@ std::vector<std::pair<int, double>> Controller::getSTATFIData(UserSelections* se
 
     std::vector<std::pair<int, double>> filteredVector;
 
-    StatfiDB& statfi_db_ = DataStorage::getStatfiDB();
+    DataStorage& storage = DataStorage::get();
+    StatfiDB& statfi_db_ = storage.getStatfiDB();
 
 //    for (const auto &[k, v] : statfi_db_)
 //        qDebug() << "m[" << k << "] = (" << v.intensity << ", " << v.intensity_indexed << ") ";

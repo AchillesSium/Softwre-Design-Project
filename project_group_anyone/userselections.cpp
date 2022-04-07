@@ -103,7 +103,7 @@ std::string UserSelections::getTableVariableAsString()
 
     switch (station_)
     {
-    case MeasuringStation::Varrio:
+    case (MeasuringStation::Varrio):
         switch (dataSet_)
         {
         case (CO2): tableVar = "VAR_EDDY.av_c"; break;
@@ -113,7 +113,7 @@ std::string UserSelections::getTableVariableAsString()
         }
         break;
 
-    case MeasuringStation::Hyytiala:
+    case (MeasuringStation::Hyytiala):
         switch (dataSet_)
         {
         case (CO2): tableVar = "HYY_META.CO2icos168"; break;
@@ -123,7 +123,7 @@ std::string UserSelections::getTableVariableAsString()
         }
         break;
 
-    case MeasuringStation::Kumpula:
+    case (MeasuringStation::Kumpula):
         switch (dataSet_)
         {
         case (CO2): tableVar = "KUM_EDDY.av_c_ep"; break;
@@ -131,6 +131,8 @@ std::string UserSelections::getTableVariableAsString()
         case (NO): tableVar = "KUM_META.NO"; break;
         default:break;
         }
+        break;
+    default:
         break;
     }
 

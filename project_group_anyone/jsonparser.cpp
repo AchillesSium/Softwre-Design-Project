@@ -71,7 +71,9 @@ void Jsonparser::parse_statfi(QJsonObject obj)
         ++intensity_index;
         ++intensity_indexed_index;
     }
-    DataStorage::setStatfiDB(statfi_db);
+    DataStorage& storage = DataStorage::get();
+    storage.setStatfiDB(statfi_db);
+    //DataStorage::setStatfiDB(statfi_db);
 }
 
 // not yet implemented
