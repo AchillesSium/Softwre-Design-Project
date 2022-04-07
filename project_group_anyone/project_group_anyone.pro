@@ -14,6 +14,8 @@ SOURCES += \
     main.cpp \
     chartwindow.cpp \
     networkcalls.cpp \
+    smearparser.cpp \
+    statfiparser.cpp \
     timewindow.cpp \
     userselections.cpp \
     date.cpp \
@@ -24,6 +26,8 @@ HEADERS += \
     datastorage.h \
     jsonparser.h \
     networkcalls.h \
+    smearparser.h \
+    statfiparser.h \
     timewindow.h \
     userselections.h \
     date.h \

@@ -2,18 +2,7 @@
 #define DATASTORAGE_H
 
 #include <map>
-
-const double NO_VALUE = 0.0;
-
-struct StatfiData
-{
-    double tonnes;
-    double intensity;
-    double tonnes_indexed;
-    double intensity_indexed;
-};
-
-using StatfiDB = std::map<int, StatfiData>;
+#include "statfiparser.h"
 
 /*
  * Implemented as a singleton

@@ -570,7 +570,7 @@ void ChartWindow::on_applyButton_clicked()
         selections->setStart(Date(1,1,view_elements->selected_custom_time.first.toInt(),0,0));
         selections->setEnd(Date(1,1,view_elements->selected_custom_time.second.toInt(),0,0));
 
-        qDebug().nospace() << "abc" << qPrintable(view_elements->radioselection) << "def";
+      //  qDebug().nospace() << "abc" << qPrintable(view_elements->radioselection) << "def";
         std::vector<std::pair<int, double>> filteredVector = Controller::getSTATFIData(selections);
         qDebug() << "Filtered Vecor in Chart Window" << filteredVector;
 
