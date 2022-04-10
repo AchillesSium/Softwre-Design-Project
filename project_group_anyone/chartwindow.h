@@ -50,7 +50,6 @@ public:
     void add_graph_series(QtCharts::QLineSeries *new_series);
     void react_to_checkbox(bool state, std::vector<QtCharts::QLineSeries*> &pointers);
     void quick_time_change(Time period);
-    int check_for_actual_values(const std::vector<std::pair<int, double>> &possible_values);
     QList<QPointF> make_custom_series(const std::vector<std::pair<int, double>> &filtered, int to_start, int to_end);
     void display_custom_series(const std::vector<std::pair<int, double>> &filtered);
 

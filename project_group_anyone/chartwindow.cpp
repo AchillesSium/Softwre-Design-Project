@@ -352,25 +352,6 @@ void ChartWindow::quick_time_change(Time period)
     }
 }
 
-int ChartWindow::check_for_actual_values(const std::vector<std::pair<int, double>> &possible_values)
-{
-    unsigned int counter = 0;
-    double current_value;
-
-    while(counter < possible_values.size())
-    {
-        current_value = possible_values.at(counter).second;
-        if(current_value != 0)
-        {
-            return counter;
-        }
-
-        counter++;
-    }
-
-    return -1;
-}
-
 QList<QPointF> ChartWindow::make_custom_series(const std::vector<std::pair<int, double>> &filtered, int to_start, int to_end)
 {
     int counter = to_start;
@@ -392,20 +373,9 @@ void ChartWindow::display_custom_series(const std::vector<std::pair<int, double>
 
     remove_all_graph_series();
 
-    int start = 0;//= check_for_actual_values(filtered);
-
-    /*
-    if(start == -1)
-    {
-        //Nothing to show!
-        return;
-    }
-    */
-
-    remove_all_graph_series();
-
+    int start = 0;
     double max_value = 0;
-    double previous_value = 0;
+    double previous_value = -1;
     double current_value;
     std::vector<QList<QPointF>> points;
 
@@ -413,21 +383,18 @@ void ChartWindow::display_custom_series(const std::vector<std::pair<int, double>
     {
         current_value = filtered.at(data_point).second;
 
-        if(current_value == 0 && previous_value != 0)
+        if(current_value == 0 && previous_value > 0)
         {
-            qDebug() << filtered.at(data_point).first;
             points.push_back(make_custom_series(filtered, start, data_point -1));
             start = data_point;
         }
-        else if(current_value != 0 && previous_value == 0)
+        else if(current_value > 0 && previous_value == 0)
         {
-            qDebug() << filtered.at(data_point).first;
             points.push_back(make_custom_series(filtered, start, data_point -1));
             start = data_point;
         }
         else if(data_point == filtered.size() - 1)
         {
-            qDebug() << filtered.at(data_point).first;
             points.push_back(make_custom_series(filtered, start, data_point));
         }
 
