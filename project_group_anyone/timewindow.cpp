@@ -37,15 +37,15 @@ void TimeWindow::change_data(QString database_used)
         instructions_text = year_info;
         validator = year_validator;
         current_format = year_format;
+        ui->stackedSelection->setCurrentWidget(ui->statfi_query);
     }
 
     else // if "SMEAR"
     {
-        begin_label = begin_date_label;
-        end_label = end_date_label;
         instructions_text = date_info;
         validator = date_validator;
         current_format = date_format;
+        ui->stackedSelection->setCurrentWidget(ui->smear_query);
     }
 
     // Update current database

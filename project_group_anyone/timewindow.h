@@ -36,8 +36,6 @@ private:
     QString current_database;
     QString current_format;
 
-    const QString begin_date_label = "Begin date (dd/mm/yyyy)";
-    const QString end_date_label = "End date (dd/mm/yyyy)";
     const QString date_info = "Enter begining and ending dates to determine the desired time period";
     const QString begin_year_label = "Begin year (yyyy)";
     const QString end_year_label = "End year (yyyy)";

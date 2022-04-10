@@ -243,7 +243,7 @@ void ChartWindow::add_graph_series(QtCharts::QLineSeries *new_series)
     ui->chartView->chart()->addSeries(new_series);
 }
 
-void ChartWindow::react_to_checkbox(bool state, std::vector<QtCharts::QLineSeries *> &pointers)
+void ChartWindow::react_to_selection(bool state, std::vector<QtCharts::QLineSeries *> &pointers)
 {
     QtCharts::QAbstractSeries *current_pointer = pointers.at(view_elements->selected_preset_time);
     QList<QAbstractSeries*> all_series = ui->chartView->chart()->series();
@@ -501,7 +501,7 @@ void ChartWindow::on_applyButton_clicked()
     UserSelections* selections = nullptr;
     DataSource current = view_elements->current_database;
 
-    if(current == DataSource::STATFI && view_elements->radioselection_statfi != None)
+    if(current == DataSource::STATFI && view_elements->radioselection_statfi != DataSet::None)
     {
         selections = new UserSelections(DataSource::STATFI);
         selections->setDataSet(view_elements->radioselection_statfi);
@@ -516,42 +516,42 @@ void ChartWindow::on_applyButton_clicked()
         display_custom_series(filteredVector);
     }
 
-    else if(current == DataSource::SMEAR && view_elements->radioselection_smear != None)
+    else if(current == DataSource::SMEAR && view_elements->radioselection_smear != DataSet::None)
     {
         if(view_elements->selected_preset_time == Custom)
+        {
+            selections = new UserSelections(DataSource::SMEAR);
+            selections->setMeasuringStation(view_elements->current_station);
+            selections->setDataSet(view_elements->radioselection_smear);
+            selections->setStart(Date(view_elements->selected_custom_time.first.toStdString()));
+            selections->setEnd(Date(view_elements->selected_custom_time.second.toStdString()));
+            selections->setAggregateType(view_elements->selected_aggregation);
+
+            Controller::getSMEARData(selections);
+        }
+        else
         {
             switch(view_elements->radioselection_smear)
             {
             case CO2:
                 // TODO Fetch the correct information and display it on the graph
-                react_to_checkbox(true, co2_series);
+                react_to_selection(true, co2_series);
                 break;
 
             case SO2:
                 // TODO -||-
-                react_to_checkbox(true, so2_series);
+                react_to_selection(true, so2_series);
                 break;
 
             case NO:
                 // TODO -||-
-                react_to_checkbox(true, nox_series);
+                react_to_selection(true, nox_series);
                 break;
 
             default:
                 // Nothing to be done
                 break;
             }
-        }
-        else
-        {
-            selections = new UserSelections(DataSource::SMEAR);
-            selections->setMeasuringStation(MeasuringStation::Varrio); // Later get the actual user selection
-            selections->setDataSet(DataSet::CO2); // Later use view_elements->radioselection when it is updated to handle SMEAR dataSets
-            selections->setStart(Date(view_elements->selected_custom_time.first.toStdString()));
-            selections->setEnd(Date(view_elements->selected_custom_time.second.toStdString()));
-            selections->setAggregateType(AggregateType::Arithmetic); // Later get the actual user selection
-
-            Controller::getSMEARData(selections);
         }
     }
 
@@ -644,7 +644,46 @@ void ChartWindow::on_stationCombo_currentIndexChanged(const QString current_stat
     }
 }
 
+void ChartWindow::on_aggregationCombo_currentIndexChanged(const QString current_aggregate)
+{
+    if(current_aggregate == "Arithmetic")
+    {
+        view_elements->selected_aggregation = AggregateType::Arithmetic;
+    }
+    else if(current_aggregate == "Geometric")
+    {
+        view_elements->selected_aggregation = AggregateType::Geometric;
+    }
+    else if(current_aggregate == "Sum")
+    {
+        view_elements->selected_aggregation = AggregateType::Sum;
+    }
+    else if(current_aggregate == "Median")
+    {
+        view_elements->selected_aggregation = AggregateType::Median;
+    }
+    else if(current_aggregate == "Min")
+    {
+        view_elements->selected_aggregation = AggregateType::Min;
+    }
+    else if(current_aggregate == "Max")
+    {
+        view_elements->selected_aggregation = AggregateType::Max;
+    }
+    else if(current_aggregate == "Availability")
+    {
+        view_elements->selected_aggregation = AggregateType::Availability;
+    }
+    else if(current_aggregate == "Circular")
+    {
+        view_elements->selected_aggregation = AggregateType::Circular;
+    }
+    else
+    {
+        view_elements->selected_aggregation = AggregateType::None;
+    }
 
+}
 //----------------------------------------------------------------------------------------------
 // Check Box and Radio Button slots
 

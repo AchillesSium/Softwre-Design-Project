@@ -41,7 +41,7 @@ public:
     void remove_graph_series(QtCharts::QLineSeries *old_series);
     void remove_all_graph_series();
     void add_graph_series(QtCharts::QLineSeries *new_series);
-    void react_to_checkbox(bool state, std::vector<QtCharts::QLineSeries*> &pointers);
+    void react_to_selection(bool state, std::vector<QtCharts::QLineSeries*> &pointers);
     void quick_time_change(Time period);
     QList<QPointF> make_custom_series(const std::vector<std::pair<int, double>> &filtered, int to_start, int to_end);
     void display_custom_series(const std::vector<std::pair<int, double>> &filtered);
@@ -65,6 +65,7 @@ private slots:
     // Combo box slots
     void on_databaseCombo_currentIndexChanged(const QString current_database);
     void on_stationCombo_currentIndexChanged(const QString current_station);
+    void on_aggregationCombo_currentIndexChanged(const QString current_aggregate);
 
     // SMEAR Radio Button slots
     void on_co2Radio_clicked(bool state);
