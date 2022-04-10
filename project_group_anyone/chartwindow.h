@@ -18,24 +18,6 @@
 // Enum to clarify timescale of the graph
 enum Time {Day = 0, Week = 1, Month = 2, Year = 3, Custom = 4};
 
-// Used Database
-enum Database {STATFI = 0, SMEAR = 1};
-
-// Measuring stations
-enum Station {Station_1 = 0, Station_2 = 1, Station_3 = 2, Station_4 = 3, NONE = 4};
-
-
-// Checkboxes
-enum Checks {CO2_Checkbox = 0, SO2_Checkbox = 1, NOx_Checkbox = 2, Other_Checkbox = 3, no_check = 4};
-
-/*
-<<<<<<< HEAD
-=======
-// Radio buttons
-//enum Radio {CO2_FI_Radio = 0, Intensity_Radio = 1, Indexed_Radio = 2, Indexed_Intensity_Radio = 3, no_radio = 4};
->>>>>>> main
-*/
-
 QT_BEGIN_NAMESPACE
 namespace Ui { class ChartWindow; }
 QT_END_NAMESPACE
@@ -61,7 +43,6 @@ public:
     void add_graph_series(QtCharts::QLineSeries *new_series);
     void react_to_checkbox(bool state, std::vector<QtCharts::QLineSeries*> &pointers);
     void quick_time_change(Time period);
-    int check_for_actual_values(const std::vector<std::pair<int, double>> &possible_values);
     QList<QPointF> make_custom_series(const std::vector<std::pair<int, double>> &filtered, int to_start, int to_end);
     void display_custom_series(const std::vector<std::pair<int, double>> &filtered);
 
@@ -82,16 +63,15 @@ private slots:
     void on_applyButton_clicked();
 
     // Combo box slots
-    void on_databaseCombo_currentIndexChanged(const int index);
-    void on_stationCombo_currentIndexChanged(const int index);
+    void on_databaseCombo_currentIndexChanged(const QString current_database);
+    void on_stationCombo_currentIndexChanged(const QString current_station);
 
-    // Check Box slots
-    void on_co2Box_clicked(bool state);
-    void on_so2Box_clicked(bool state);
-    void on_noxBox_clicked(bool state);
-    void on_otherBox_clicked(bool state);
+    // SMEAR Radio Button slots
+    void on_co2Radio_clicked(bool state);
+    void on_so2Radio_clicked(bool state);
+    void on_noxRadio_clicked(bool state);
 
-    // Radio Button slots
+    // STATFI Radio Button slots
     void on_co2DataRadio_clicked(bool state);
     void on_intensityRadio_clicked(bool state);
     void on_indexedRadio_clicked(bool state);
@@ -114,13 +94,13 @@ private:
     // Struct for tracking the state of the view elements
     struct ViewObject
     {
-        // This whole class could possibly be just a map with enum key already defined above
-        std::unordered_map<Checks, bool, std::hash<int>> checks;
-        Database current_database;
-        Station current_station;
-        DataSet radioselection;
+        DataSource current_database;
+        MeasuringStation current_station;
+        DataSet radioselection_statfi;
+        DataSet radioselection_smear;
         Time selected_preset_time;
         std::pair<QString, QString> selected_custom_time; // From beginning date to end date
+        AggregateType selected_aggregation;
     };
 
     std::shared_ptr<ViewObject> view_elements;
