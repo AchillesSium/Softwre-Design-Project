@@ -13,6 +13,7 @@
 #include "jsonparser.h"
 #include <QDebug>
 #include "controller.h"
+#include "datastorage.h"
 
 int main(int argc, char *argv[])
 {
@@ -59,13 +60,20 @@ int main(int argc, char *argv[])
 
     statfinetwork->queryStatFi();
 
+    // wait for the request to process completely
+    QEventLoop statfi_loop;
+    QObject::connect(statfinetwork, SIGNAL(done()), &statfi_loop, SLOT(quit()));
+    statfi_loop.exec();
+
+
     //smearnetwork->querySmearStations();
+    /**
     smearnetwork->querySmearTimeSeries("MAX", 60, "2013-01-01", "2022-01-01", "KUM_EDDY.av_c_ep");
 
-    // wait for the request to process completely
-    QEventLoop loop;
-    QObject::connect(statfinetwork, SIGNAL(done()), &loop, SLOT(quit()));
-    loop.exec();
+    QEventLoop smear_loop;
+    QObject::connect(smearnetwork, SIGNAL(done()), &smear_loop, SLOT(quit()));
+    smear_loop.exec();
+    **/
 
     QJsonObject obj = statfinetwork->getObject();
 
@@ -79,6 +87,13 @@ int main(int argc, char *argv[])
       /*
          * for (const auto &[k, v] : statfi_db)
             qDebug() << "m[" << k << "] = (" << v.intensity << ", " << v.intensity_indexed << ") ";*/
+        DataStorage& storage = DataStorage::get();
+
+        storage.setStatfiDB(parser->get_db());
+        storage.setStatfiDBmin(parser->get_db().begin()->first);
+        storage.setStatfiDBmax(parser->get_db().rbegin()->first);
+
+
         delete parser;
     }
 
