@@ -91,8 +91,8 @@ void smearnetworkcall::querySmearTimeSeries(QString aggregation, int interval, Q
             //QJsonObject obj = QJsonDocument::fromJson(reply->readAll()).object();
             //qDebug() << obj;
 
-            QString contents = QString::fromUtf8(reply->readAll());
-            qDebug() << contents;
+            //QString contents = QString::fromUtf8(reply->readAll());
+            //qDebug() << contents;
             // needs to be commented out since apparently the data form from the reply can be read only once
             timeSeriesObj_ = QJsonDocument::fromJson(reply->readAll()).object();
             qDebug() << "Smear timeseries" << timeSeriesObj_;

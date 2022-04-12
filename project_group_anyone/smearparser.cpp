@@ -82,5 +82,25 @@ SmearDB SmearParser::get_db()
 
 std::vector<DataPoint> SmearParser::get_table_data(QString table_name, QJsonArray data_arr)
 {
+    std::vector<DataPoint> vec;
+    for(int i = 0; i < data_arr.size(); ++i){
 
+        DataPoint dp;
+        QJsonObject test = data_arr[i].toObject();
+
+        if(test[table_name] == QJsonValue::Null){
+            continue;
+        }
+
+        long double value = test[table_name].toDouble();
+        QString stime = test[QString("samptime")].toString();
+
+        QDateTime samptime = QDateTime::fromString(stime, Qt::ISODateWithMs);
+
+        dp.first = value;
+        dp.second = samptime;
+
+        vec.push_back(dp);
+    }
+    return vec;
 }

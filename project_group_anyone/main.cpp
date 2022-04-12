@@ -14,6 +14,7 @@
 #include <QDebug>
 #include "controller.h"
 #include "datastorage.h"
+#include "smearparser.h"
 
 int main(int argc, char *argv[])
 {
@@ -67,23 +68,24 @@ int main(int argc, char *argv[])
 
 
     //smearnetwork->querySmearStations();
-    /**
-    smearnetwork->querySmearTimeSeries("MAX", 60, "2013-01-01", "2022-01-01", "KUM_EDDY.av_c_ep");
+
+    smearnetwork->querySmearTimeSeries("MAX", 60, "2018-01-01", "2020-01-01", "KUM_EDDY.av_c_ep");
 
     QEventLoop smear_loop;
     QObject::connect(smearnetwork, SIGNAL(done()), &smear_loop, SLOT(quit()));
     smear_loop.exec();
-    **/
 
-    QJsonObject obj = statfinetwork->getObject();
 
-    if(obj["class"] == QJsonValue::Undefined ){
+    QJsonObject obj1 = statfinetwork->getObject();
+    QJsonObject obj2 = smearnetwork->getTimeSeriesObject();
+
+    if(obj1["class"] == QJsonValue::Undefined ){
         qDebug() << "error happened";
     }
     else{
 
         StatfiParser *parser = new StatfiParser();
-        parser->parse(obj);
+        parser->parse(obj1);
       /*
          * for (const auto &[k, v] : statfi_db)
             qDebug() << "m[" << k << "] = (" << v.intensity << ", " << v.intensity_indexed << ") ";*/
@@ -97,7 +99,11 @@ int main(int argc, char *argv[])
         delete parser;
     }
 
-    delete statfinetwork;
+    SmearParser *parser_ = new SmearParser();
+    parser_->parse(obj2);
+    SmearDB sb = parser_->get_db();
 
+    delete statfinetwork;
+    delete smearnetwork;
     return a.exec();
 }
