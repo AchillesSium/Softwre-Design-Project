@@ -492,6 +492,7 @@ void ChartWindow::on_timeButton_clicked()
     connect(date, &TimeWindow::send_pair, this, &ChartWindow::get_pair);
     date->setModal(true);
     date->change_data(ui->databaseCombo->currentText());
+    date->adjustSize();
     date->show();
 }
 

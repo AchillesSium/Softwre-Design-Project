@@ -7,35 +7,40 @@ TimeWindow::TimeWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    QRegExp date("(0[1-9]|[12][1-9]|3[01])/(0[1-9]|1[0-2])/(19[0-9][0-9]|20[0-2][0-2]|200[0-9])");
-    date_validator = new QRegExpValidator(date, this);
-    ui->beginEdit->setValidator(date_validator);
-    ui->endEdit->setValidator(date_validator);
+    ui->calendar->setGridVisible(true);
+    ui->calendar->setMaximumDate(ui->calendar->selectedDate());
+
+    earliest = QDate(1900, 1, 1);
+    ui->calendar->setMinimumDate(earliest);
+
+    highlight = QTextCharFormat();
+    highlight.setFontWeight(QFont::Black);
+    highlight.setBackground(QColor(0, 190, 0));
+    highlight.setForeground(QColor(255, 255, 255));
+
+    plain = ui->calendar->dateTextFormat(earliest.currentDate());
 
     QRegExp year("(19[0-9][0-9]|200[0-9]|201[0-9]|202[0-2])");
     year_validator = new QRegExpValidator(year, this);
+    ui->beginEdit->setValidator(year_validator);
+    ui->endEdit->setValidator(year_validator);
+
+    ui->infoEdit->setReadOnly(true);
 }
 
 TimeWindow::~TimeWindow()
 {
-    delete date_validator;
     delete year_validator;
     delete ui;
 }
 
 void TimeWindow::change_data(QString database_used)
 {
-    QString begin_label;
-    QString end_label;
     QString instructions_text;
-    QRegExpValidator *validator;
 
     if(database_used == "STATFI")
     {
-        begin_label = begin_year_label;
-        end_label = end_year_label;
         instructions_text = year_info;
-        validator = year_validator;
         current_format = year_format;
         ui->stackedSelection->setCurrentWidget(ui->statfi_query);
     }
@@ -43,21 +48,11 @@ void TimeWindow::change_data(QString database_used)
     else // if "SMEAR"
     {
         instructions_text = date_info;
-        validator = date_validator;
-        current_format = date_format;
         ui->stackedSelection->setCurrentWidget(ui->smear_query);
     }
 
     // Update current database
     current_database = database_used;
-
-    // Line edit boxes
-    ui->beginEdit->setValidator(validator);
-    ui->endEdit->setValidator(validator);
-
-    // Labels
-    ui->beginLabel->setText(begin_label);
-    ui->endLabel->setText(end_label);
 
     // Browser
     ui->infoEdit->setTextColor(Qt::black);
@@ -106,24 +101,8 @@ void TimeWindow::on_showButton_clicked()
     }
     else
     {
-        QDate begin_date = string_to_date(begin);
-        QDate end_date = string_to_date(end);
-
-        if(!begin_date.isValid() || !end_date.isValid())
-        {
-            give_error(month_error);
-            return;
-        }
-        else if(begin_date > end_date)
-        {
-            give_error(chronology_date_error);
-            return;
-        }
-        else if(begin_date == end_date)
-        {
-           give_error(same_date_error);
-           return;
-        }
+        begin = begin_date.toString("dd/MM/yyyy");
+        end = end_date.toString("dd/MM/yyyy");
     }
 
     std::pair<QString, QString> time_zone = std::make_pair(begin, end);
@@ -134,5 +113,73 @@ void TimeWindow::on_showButton_clicked()
 void TimeWindow::on_cancelButton_clicked()
 {
     this->close();
+}
+
+
+void TimeWindow::on_beginButton_clicked()
+{
+    begin_date = ui->calendar->selectedDate();
+    ui->calendar->setDateTextFormat(begin_date, highlight);
+
+    if(end_date.isNull())
+    {
+
+        QDate max_date = begin_date.addYears(10);
+
+        if(begin_date.currentDate() < max_date)
+        {
+            max_date = begin_date.currentDate();
+        }
+
+        ui->calendar->setMaximumDate(max_date);
+    }
+
+    ui->calendar->setMinimumDate(begin_date);
+    ui->beginDate->setText(begin_date.toString("dd/MM/yyyy"));
+}
+
+void TimeWindow::on_endButton_clicked()
+{
+    end_date = ui->calendar->selectedDate();
+    ui->calendar->setDateTextFormat(end_date, highlight);
+
+    if(begin_date.isNull())
+    {
+        QDate min_date = end_date.addYears(-10);
+
+        if(min_date < earliest)
+        {
+            min_date = earliest;
+        }
+
+        ui->calendar->setMinimumDate(min_date);
+    }
+
+    ui->calendar->setMaximumDate(end_date);
+    ui->endDate->setText(end_date.toString("dd/MM/yyyy"));
+}
+
+void TimeWindow::on_resetBeginButton_clicked()
+{
+    if(begin_date != end_date)
+    {
+        ui->calendar->setDateTextFormat(begin_date, plain);
+    }
+
+    begin_date = QDate();
+    ui->calendar->setMinimumDate(earliest);
+    ui->beginDate->setText(empty_date);
+}
+
+void TimeWindow::on_resetEndButton_clicked()
+{
+    if(begin_date != end_date)
+    {
+        ui->calendar->setDateTextFormat(end_date, plain);
+    }
+
+    end_date = QDate();
+    ui->calendar->setMaximumDate(end_date.currentDate());
+    ui->endDate->setText(empty_date);
 }
 
