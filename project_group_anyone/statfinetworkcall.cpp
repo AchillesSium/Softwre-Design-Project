@@ -27,10 +27,10 @@ statfinetworkcall::~statfinetworkcall()
 
 }
 
-void statfinetworkcall::queryStatFi()
+void statfinetworkcall::getDataFromApi()
 {
     QNetworkAccessManager *mgr = new QNetworkAccessManager(this);
-    const QUrl url(QStringLiteral("https://pxnet2.stat.fi:443/PXWeb/api/v1/en/ymp/taulukot/Kokodata.px"));
+    const QUrl url(statfiUrl);
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
@@ -100,7 +100,13 @@ void statfinetworkcall::queryStatFi()
     });
 }
 
-QJsonObject statfinetworkcall::getObject()
+void statfinetworkcall::postDataToApi()
+{
+
+}
+
+QJsonObject statfinetworkcall::getObject(bool getData)
 {
     return statfObj_;
 }
+

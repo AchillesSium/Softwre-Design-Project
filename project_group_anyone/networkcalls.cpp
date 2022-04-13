@@ -21,6 +21,26 @@ networkcalls::networkcalls()
 
 }
 
+networkcalls::~networkcalls()
+{
+
+}
+
+void networkcalls::getDataFromApi()
+{
+
+}
+
+void networkcalls::postDataToApi()
+{
+
+}
+
+QJsonObject networkcalls::getObject(bool getData)
+{
+
+}
+
 
 //void networkcalls::queryStatFi()
 //{

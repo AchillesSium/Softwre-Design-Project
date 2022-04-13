@@ -28,37 +28,7 @@ smearnetworkcall::~smearnetworkcall()
 
 void smearnetworkcall::querySmearStations()
 {
-    QNetworkAccessManager *mgr = new QNetworkAccessManager(this);
-    const QUrl url(QStringLiteral("https://smear-backend.rahtiapp.fi/station"));
-    QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-    QNetworkReply *reply = mgr->get(request);
-
-    QObject::connect(reply, &QNetworkReply::finished, [=](){
-        if(reply->error() == QNetworkReply::NoError){
-
-            //QString contents = QString::fromUtf8(reply->readAll());
-            //qDebug() << contents;
-            //QJsonObject obj = QJsonDocument::fromJson(reply->readAll()).object();
-            //qDebug() << obj;
-
-            QString contents = QString::fromUtf8(reply->readAll());
-            qDebug() << contents;
-            // needs to be commented out since apparently the data form from the reply can be read only once
-            stationObj_ = QJsonDocument::fromJson(reply->readAll()).object();
-            qDebug() << "Smear station" << stationObj_;
-            emit done();
-        }
-        else{
-            QString err = reply->errorString();
-            QVariant statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute );
-            qDebug() << statusCode.toInt();
-            qDebug() << err;
-            emit done();
-        }
-        reply->deleteLater();
-    });
 }
 
 void smearnetworkcall::querySmearTimeSeries(QString aggregation, int interval, QString startDate, QString endDate, QString tableVariable)
@@ -109,12 +79,52 @@ void smearnetworkcall::querySmearTimeSeries(QString aggregation, int interval, Q
     });
 }
 
-QJsonObject smearnetworkcall::getStationObject()
+void smearnetworkcall::getDataFromApi()
 {
-    return stationObj_;
+    QNetworkAccessManager *mgr = new QNetworkAccessManager(this);
+    const QUrl url(stationUrl);
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply *reply = mgr->get(request);
+
+    QObject::connect(reply, &QNetworkReply::finished, [=](){
+        if(reply->error() == QNetworkReply::NoError){
+
+            //QString contents = QString::fromUtf8(reply->readAll());
+            //qDebug() << contents;
+            //QJsonObject obj = QJsonDocument::fromJson(reply->readAll()).object();
+            //qDebug() << obj;
+
+            QString contents = QString::fromUtf8(reply->readAll());
+            qDebug() << contents;
+            // needs to be commented out since apparently the data form from the reply can be read only once
+            stationObj_ = QJsonDocument::fromJson(reply->readAll()).object();
+            qDebug() << "Smear station" << stationObj_;
+            emit done();
+        }
+        else{
+            QString err = reply->errorString();
+            QVariant statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute );
+            qDebug() << statusCode.toInt();
+            qDebug() << err;
+            emit done();
+        }
+        reply->deleteLater();
+    });
 }
 
-QJsonObject smearnetworkcall::getTimeSeriesObject()
+void smearnetworkcall::postDataToApi()
 {
-    return timeSeriesObj_;
+
 }
+
+QJsonObject smearnetworkcall::getObject(bool getData)
+{
+    if(getData == true){
+        return stationObj_;
+    }else{
+        return timeSeriesObj_;
+    }
+}
+

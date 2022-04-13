@@ -57,17 +57,18 @@ int main(int argc, char *argv[])
     statfinetworkcall *statfinetwork = new statfinetworkcall();
     smearnetworkcall *smearnetwork = new smearnetworkcall();
 
-    statfinetwork->queryStatFi();
+    statfinetwork->getDataFromApi();
 
-    //smearnetwork->querySmearStations();
-    smearnetwork->querySmearTimeSeries("MAX", 60, "2013-01-01", "2022-01-01", "KUM_EDDY.av_c_ep");
+    smearnetwork->getDataFromApi();
+    //smearnetwork->querySmearTimeSeries("MAX", 60, "2013-01-01", "2015-01-01", "KUM_EDDY.av_c_ep");
 
     // wait for the request to process completely
     QEventLoop loop;
     QObject::connect(statfinetwork, SIGNAL(done()), &loop, SLOT(quit()));
     loop.exec();
 
-    QJsonObject obj = statfinetwork->getObject();
+    QJsonObject obj = statfinetwork->getObject(true);
+    QJsonObject obj1 = smearnetwork->getObject(true);
 
     if(obj["class"] == QJsonValue::Undefined ){
         qDebug() << "error happened";
