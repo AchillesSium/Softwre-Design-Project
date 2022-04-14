@@ -66,6 +66,7 @@ void StatfiParser::parse(QJsonObject obj)
             sd.intensity_indexed = values[intensity_indexed_index].toDouble(); // Intensity of greenhouse gases, indexed, year 1990 = 100
         }
 
+        // if all values for a given year are null, the data is not included to the datastructure
         if(null_counter < 4){
            statfi_db_[years[i].toInt()] = sd;
         }
@@ -75,9 +76,11 @@ void StatfiParser::parse(QJsonObject obj)
         ++intensity_index;
         ++intensity_indexed_index;
     }
-}
 
-StatfiDB StatfiParser::get_db()
-{
-    return statfi_db_;
+    // move the data to the datastorage
+    DataStorage& storage = DataStorage::get();
+
+    storage.setStatfiDB(statfi_db_);
+    storage.setStatfiDBmin(statfi_db_.begin()->first);
+    storage.setStatfiDBmax(statfi_db_.rbegin()->first);
 }

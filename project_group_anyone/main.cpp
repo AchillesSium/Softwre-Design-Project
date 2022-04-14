@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 
     //smearnetwork->querySmearStations();
 
-    smearnetwork->querySmearTimeSeries("MAX", 60, "2018-01-01", "2020-01-01", "KUM_EDDY.av_c_ep");
+    smearnetwork->querySmearTimeSeries("MAX", 60, "2012-01-01", "2022-01-01", "KUM_EDDY.av_c_ep");
 
     QEventLoop smear_loop;
     QObject::connect(smearnetwork, SIGNAL(done()), &smear_loop, SLOT(quit()));
@@ -89,12 +89,6 @@ int main(int argc, char *argv[])
       /*
          * for (const auto &[k, v] : statfi_db)
             qDebug() << "m[" << k << "] = (" << v.intensity << ", " << v.intensity_indexed << ") ";*/
-        DataStorage& storage = DataStorage::get();
-
-        storage.setStatfiDB(parser->get_db());
-        storage.setStatfiDBmin(parser->get_db().begin()->first);
-        storage.setStatfiDBmax(parser->get_db().rbegin()->first);
-
 
         delete parser;
     }

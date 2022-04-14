@@ -2,7 +2,6 @@
 #define DATASTORAGE_H
 
 #include <map>
-#include "statfiparser.h"
 
 /*
  * Implemented as a singleton
@@ -11,6 +10,20 @@
  * storage.setStatfiDBmin(firstAvailableYear);
  * storage.setStatfiDBmax(lastAvailableYear);
  */
+
+
+const double NO_VALUE = 0.0;
+
+struct StatfiData{
+    double tonnes;
+    double intensity;
+    double tonnes_indexed;
+    double intensity_indexed;
+};
+
+using StatfiDB = std::map<int, StatfiData>;
+
+
 class DataStorage
 {
 public:

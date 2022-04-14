@@ -88,12 +88,13 @@ std::vector<DataPoint> SmearParser::get_table_data(QString table_name, QJsonArra
         DataPoint dp;
         QJsonObject test = data_arr[i].toObject();
 
+        // null values are skipped
         if(test[table_name] == QJsonValue::Null){
             continue;
         }
 
-        long double value = test[table_name].toDouble();
-        QString stime = test[QString("samptime")].toString();
+        long double value = test[table_name].toDouble(); // measured value
+        QString stime = test[QString("samptime")].toString(); // sampletime
 
         QDateTime samptime = QDateTime::fromString(stime, Qt::ISODateWithMs);
 
