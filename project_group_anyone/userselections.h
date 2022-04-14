@@ -17,7 +17,8 @@ enum class MeasuringStation
 {
     Varrio,
     Hyytiala,
-    Kumpula
+    Kumpula,
+    None
 };
 
 enum class AggregateType

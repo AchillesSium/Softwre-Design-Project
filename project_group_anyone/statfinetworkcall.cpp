@@ -87,7 +87,7 @@ void statfinetworkcall::query()
             //qDebug() << contents;
             // needs to be commented out since apparently the data form from the reply can be read only once
             statfObj_ = QJsonDocument::fromJson(reply->readAll()).object();
-            //qDebug() << "adskfhgaudfygifgiyg" << statfObj_;
+           //qDebug() << "adskfhgaudfygifgiyg" << statfObj_;
             emit done();
         }else{
             QString err = reply->errorString();

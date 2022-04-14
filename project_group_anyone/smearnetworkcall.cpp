@@ -15,10 +15,18 @@
 #include <QVector>
 #include <QJsonArray>
 #include <QDate>
+#include "userselections.h"
+
+using namespace std;
 
 smearnetworkcall::smearnetworkcall()
 {
 
+}
+
+smearnetworkcall::smearnetworkcall(UserSelections* selections)
+{
+    userSelections = selections;
 }
 
 smearnetworkcall::~smearnetworkcall()
@@ -28,25 +36,11 @@ smearnetworkcall::~smearnetworkcall()
 
 void smearnetworkcall::query()
 {
-
-}
-
-void smearnetworkcall::querySmearTimeSeries(QString aggregation, int interval, QString startDate, QString endDate, QString tableVariable)
-{
-    QString intervalStr = QString::number(interval);
-
-    QString from = startDate + "T00:00:00.000";
-    QString to = endDate + "T23:59:59.000";
+    QString str = QString::fromUtf8(userSelections->toQuery().c_str());
+    qDebug() << "Query" << str;
 
     QNetworkAccessManager *mgr = new QNetworkAccessManager(this);
-    QUrl url(QStringLiteral("https://smear-backend.rahtiapp.fi/search/timeseries"));
-    QUrlQuery query;
-    query.addQueryItem("aggregation", aggregation);
-    query.addQueryItem("interval", intervalStr);
-    query.addQueryItem("from", from);
-    query.addQueryItem("to", to);
-    query.addQueryItem("tablevariable", tableVariable);
-    url.setQuery(query.query());
+    QUrl url(str);
 
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
@@ -61,11 +55,11 @@ void smearnetworkcall::querySmearTimeSeries(QString aggregation, int interval, Q
             //QJsonObject obj = QJsonDocument::fromJson(reply->readAll()).object();
             //qDebug() << obj;
 
-            QString contents = QString::fromUtf8(reply->readAll());
-            qDebug() << contents;
+//            QString contents = QString::fromUtf8(reply->readAll());
+//            qDebug() << contents;
             // needs to be commented out since apparently the data form from the reply can be read only once
             timeSeriesObj_ = QJsonDocument::fromJson(reply->readAll()).object();
-            qDebug() << "Smear timeseries" << timeSeriesObj_;
+            //qDebug() << "Smear timeseries" << timeSeriesObj_;
             emit done();
         }
         else{
@@ -78,6 +72,54 @@ void smearnetworkcall::querySmearTimeSeries(QString aggregation, int interval, Q
         reply->deleteLater();
     });
 }
+
+//void smearnetworkcall::querySmearTimeSeries(QString aggregation, int interval, QString startDate, QString endDate, QString tableVariable)
+//{
+//    QString intervalStr = QString::number(interval);
+
+//    QString from = startDate + "T00:00:00.000";
+//    QString to = endDate + "T23:59:59.000";
+
+//    QNetworkAccessManager *mgr = new QNetworkAccessManager(this);
+//    QUrl url(QStringLiteral("https://smear-backend.rahtiapp.fi/search/timeseries"));
+//    QUrlQuery query;
+//    query.addQueryItem("aggregation", aggregation);
+//    query.addQueryItem("interval", intervalStr);
+//    query.addQueryItem("from", from);
+//    query.addQueryItem("to", to);
+//    query.addQueryItem("tablevariable", tableVariable);
+//    url.setQuery(query.query());
+
+//    QNetworkRequest request(url);
+//    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+//    QNetworkReply *reply = mgr->get(request);
+
+//    QObject::connect(reply, &QNetworkReply::finished, [=](){
+//        if(reply->error() == QNetworkReply::NoError){
+
+//            //QString contents = QString::fromUtf8(reply->readAll());
+//            //qDebug() << contents;
+//            //QJsonObject obj = QJsonDocument::fromJson(reply->readAll()).object();
+//            //qDebug() << obj;
+
+//            QString contents = QString::fromUtf8(reply->readAll());
+//            qDebug() << contents;
+//            // needs to be commented out since apparently the data form from the reply can be read only once
+//            timeSeriesObj_ = QJsonDocument::fromJson(reply->readAll()).object();
+//            qDebug() << "Smear timeseries" << timeSeriesObj_;
+//            emit done();
+//        }
+//        else{
+//            QString err = reply->errorString();
+//            QVariant statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute );
+//            qDebug() << statusCode.toInt();
+//            qDebug() << err;
+//            emit done();
+//        }
+//        reply->deleteLater();
+//    });
+//}
 
 //void smearnetworkcall::getDataFromApi()
 //{

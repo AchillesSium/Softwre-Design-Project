@@ -37,15 +37,15 @@ void TimeWindow::change_data(QString database_used)
         instructions_text = year_info;
         validator = year_validator;
         current_format = year_format;
+        ui->stackedSelection->setCurrentWidget(ui->statfi_query);
     }
 
     else // if "SMEAR"
     {
-        begin_label = begin_date_label;
-        end_label = end_date_label;
         instructions_text = date_info;
         validator = date_validator;
         current_format = date_format;
+        ui->stackedSelection->setCurrentWidget(ui->smear_query);
     }
 
     // Update current database
@@ -82,14 +82,16 @@ void TimeWindow::give_error(QString error)
 
 void TimeWindow::on_showButton_clicked()
 {
-    if(!ui->beginEdit->hasAcceptableInput() || !ui->endEdit->hasAcceptableInput())
-    {
-        give_error(input_error + current_format);
-        return;
-    }
+//    if(!ui->beginEdit->hasAcceptableInput() || !ui->endEdit->hasAcceptableInput())
+//    {
+//        give_error(input_error + current_format);
+//        return;
+//    }
 
     QString begin = ui->beginEdit->text();
     QString end = ui->endEdit->text();
+    begin = "01/01/2013";
+    end = "01/01/2020";
 
     if(current_database == "STATFI")
     {

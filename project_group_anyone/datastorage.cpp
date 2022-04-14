@@ -1,8 +1,10 @@
 #include "datastorage.h"
 
-StatfiDB DataStorage::statfiDB_;
-int statfiDBmin_;
-int statfiDBmax_;
+DataStorage& DataStorage::get()
+{
+    static DataStorage* instance = new DataStorage();
+    return *instance;
+}
 
 void DataStorage::setStatfiDB(StatfiDB db)
 {
@@ -14,22 +16,22 @@ StatfiDB& DataStorage::getStatfiDB()
     return statfiDB_;
 }
 
-void setStatfiDBmin(int min)
+void DataStorage::setStatfiDBmin(int min)
 {
     statfiDBmin_ = min;
 }
 
-void setStatfiDBmax(int max)
+void DataStorage::setStatfiDBmax(int max)
 {
     statfiDBmax_ = max;
 }
 
-int getStatfiDBmin()
+int DataStorage::getStatfiDBmin()
 {
     return statfiDBmin_;
 }
 
-int getStatfiDBmax()
+int DataStorage::getStatfiDBmax()
 {
     return statfiDBmax_;
 }

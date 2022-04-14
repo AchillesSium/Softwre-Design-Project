@@ -37,6 +37,13 @@
        </spacer>
       </item>
       <item>
+       <widget class="QLabel" name="databaseLabel">
+        <property name="text">
+         <string>Database</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QComboBox" name="databaseCombo">
         <item>
          <property name="text">
@@ -51,25 +58,89 @@
        </widget>
       </item>
       <item>
+       <widget class="QLabel" name="stationLabel">
+        <property name="text">
+         <string>Measuring Station</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QComboBox" name="stationCombo">
         <item>
          <property name="text">
-          <string>Measuring Station 1</string>
+          <string>Värriö</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Measuring Station 2</string>
+          <string>Hyytiälä</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Measuring Station 3</string>
+          <string>Kumpula</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="aggregationLabel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Aggregation Type</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="aggregationCombo">
+        <item>
+         <property name="text">
+          <string>No Type Selected</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Measuring Station 4</string>
+          <string>Arithmetic</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Geometric</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Sum</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Median</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Min</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Max</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Availabiliy</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Circular</string>
          </property>
         </item>
        </widget>
@@ -91,231 +162,127 @@
        </spacer>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <property name="topMargin">
+         <number>14</number>
+        </property>
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
-          <item>
-           <widget class="QStackedWidget" name="stackedBoxes">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="currentIndex">
-             <number>1</number>
-            </property>
-            <widget class="QWidget" name="smearBox">
-             <layout class="QVBoxLayout" name="verticalLayout_5">
-              <item>
-               <widget class="QLabel" name="gasesLabel">
-                <property name="text">
-                 <string>Gases</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="co2Box">
-                <property name="text">
-                 <string>CO2</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="so2Box">
-                <property name="text">
-                 <string>SO2</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="noxBox">
-                <property name="text">
-                 <string>NOx</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="otherBox">
-                <property name="text">
-                 <string>Other</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="verticalSpacer_2">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </widget>
-            <widget class="QWidget" name="statfiBox">
-             <layout class="QVBoxLayout" name="verticalLayout_6">
-              <item>
-               <widget class="QLabel" name="datasetsLabel">
-                <property name="text">
-                 <string>CO2 Data sets</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QRadioButton" name="co2DataRadio">
-                <property name="text">
-                 <string>CO2</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QRadioButton" name="intensityRadio">
-                <property name="text">
-                 <string>Intensity</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QRadioButton" name="indexedRadio">
-                <property name="text">
-                 <string>Indexed</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QRadioButton" name="indexedIntensityRadio">
-                <property name="text">
-                 <string>Indexed
-Intentisy</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="verticalSpacer_7">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </widget>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QVBoxLayout" name="verticalLayout_4">
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <widget class="QStackedWidget" name="stackedBoxes">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="smearBox">
+           <layout class="QVBoxLayout" name="verticalLayout_5">
             <item>
-             <widget class="Line" name="line_2">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
+             <widget class="QLabel" name="gasesLabel">
+              <property name="text">
+               <string>Gases</string>
               </property>
              </widget>
             </item>
+            <item>
+             <widget class="QRadioButton" name="co2Radio">
+              <property name="text">
+               <string>    CO2</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="so2Radio">
+              <property name="text">
+               <string>    SO2</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="noxRadio">
+              <property name="text">
+               <string>    NOx</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Expanding</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
            </layout>
-          </item>
-          <item>
-           <spacer name="verticalSpacer_5">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Maximum</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
-          <item>
-           <spacer name="verticalSpacer_6">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Fixed</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>10</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QLabel" name="additionalLabel">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Additional data</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="maxBox">
-            <property name="text">
-             <string>Maximum</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="minBox">
-            <property name="text">
-             <string>Minimum</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="avgBox">
-            <property name="text">
-             <string>Average</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="verticalSpacer_3">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Preferred</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>73</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
+          </widget>
+          <widget class="QWidget" name="statfiBox">
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <item>
+             <widget class="QLabel" name="datasetsLabel">
+              <property name="text">
+               <string>CO2 Data sets</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="co2DataRadio">
+              <property name="text">
+               <string>    CO2</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="intensityRadio">
+              <property name="text">
+               <string>    Intensity</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="indexedRadio">
+              <property name="text">
+               <string>    Indexed</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="indexedIntensityRadio">
+              <property name="text">
+               <string>    Indexed Intentisy</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_7">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+         </widget>
         </item>
        </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2"/>
       </item>
       <item>
        <layout class="QGridLayout" name="gridLayout">
@@ -379,7 +346,7 @@ Intentisy</string>
        </spacer>
       </item>
       <item>
-       <widget class="Line" name="line">
+       <widget class="Line" name="verticalLine">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>

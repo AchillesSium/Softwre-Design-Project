@@ -11,6 +11,8 @@
 #include "jsonparser.h"
 #include "datastorage.h"
 #include "controller.h"
+#include "smearnetworkcall.h"
+#include "smearparser.h"
 
 std::vector<std::pair<int, double>> Controller::getSTATFIData(UserSelections* selections)
 {
@@ -28,7 +30,8 @@ std::vector<std::pair<int, double>> Controller::getSTATFIData(UserSelections* se
 
     std::vector<std::pair<int, double>> filteredVector;
 
-    StatfiDB& statfi_db_ = DataStorage::getStatfiDB();
+    DataStorage& storage = DataStorage::get();
+    StatfiDB& statfi_db_ = storage.getStatfiDB();
 
 //    for (const auto &[k, v] : statfi_db_)
 //        qDebug() << "m[" << k << "] = (" << v.intensity << ", " << v.intensity_indexed << ") ";
@@ -77,5 +80,38 @@ void Controller::getSMEARData(UserSelections* selections)
 
     delete network;
     */
+    smearnetworkcall *smearNetwork = new smearnetworkcall(selections);
+    smearNetwork->query();
+
+    QEventLoop loop;
+    QObject::connect(smearNetwork, SIGNAL(done()), &loop, SLOT(quit()));
+    loop.exec();
+
+    QJsonObject obj = smearNetwork->getObject();
+    //QJsonObject obj1 = smearnetwork->getObject();
+
+    if(obj["class"] == QJsonValue::Undefined ){
+        qDebug() << "error happened";
+    }
+    else{
+        SmearParser *smearparser = new SmearParser();
+        smearparser->parse(obj);
+      /*
+         * for (const auto &[k, v] : statfi_db)
+            qDebug() << "m[" << k << "] = (" << v.intensity << ", " << v.intensity_indexed << ") ";*/
+        SmearDB db = smearparser->get_db();
+
+
+        for(auto it = db.cbegin(); it != db.cend(); ++it)
+        {
+            //qDebug() << "wrgwrgwrgwrgwg" << it->first; //<< " " << it->second.CO2 << " " << it->second.NOX;
+            break;
+        }
+
+
+        delete smearparser;
+    }
+
+    delete smearNetwork;
 }
 

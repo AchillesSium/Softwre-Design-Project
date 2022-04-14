@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>376</width>
-    <height>300</height>
+    <width>594</width>
+    <height>419</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -33,40 +33,58 @@
       </spacer>
      </item>
      <item>
-      <widget class="QLabel" name="beginLabel">
-       <property name="text">
-        <string>Begin date (dd/mm/yyyy)</string>
+      <widget class="QStackedWidget" name="stackedSelection">
+       <property name="currentIndex">
+        <number>1</number>
        </property>
+       <widget class="QWidget" name="statfi_query">
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QLabel" name="beginLabel">
+           <property name="text">
+            <string>Begin date (dd/mm/yyyy)</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="beginEdit"/>
+         </item>
+         <item>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Maximum</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>10</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="endLabel">
+           <property name="text">
+            <string>End date (dd/mm/yyyy)</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="endEdit"/>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="smear_query">
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="0">
+          <widget class="QCalendarWidget" name="calendar"/>
+         </item>
+        </layout>
+       </widget>
       </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="beginEdit"/>
-     </item>
-     <item>
-      <spacer name="verticalSpacer">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Maximum</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>10</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QLabel" name="endLabel">
-       <property name="text">
-        <string>End date (dd/mm/yyyy)</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="endEdit"/>
      </item>
      <item>
       <spacer name="verticalSpacer_2">
