@@ -27,7 +27,7 @@ statfinetworkcall::~statfinetworkcall()
 
 }
 
-void statfinetworkcall::getDataFromApi()
+void statfinetworkcall::query()
 {
     QNetworkAccessManager *mgr = new QNetworkAccessManager(this);
     const QUrl url(statfiUrl);
@@ -100,12 +100,7 @@ void statfinetworkcall::getDataFromApi()
     });
 }
 
-void statfinetworkcall::postDataToApi()
-{
-
-}
-
-QJsonObject statfinetworkcall::getObject(bool getData)
+QJsonObject statfinetworkcall::getObject()
 {
     return statfObj_;
 }

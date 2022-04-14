@@ -15,9 +15,8 @@ class networkcalls: public QObject
 public:
     networkcalls();
     virtual ~networkcalls();
-    virtual void getDataFromApi();
-    virtual void postDataToApi();
-    virtual QJsonObject getObject(bool getData);
+    virtual void query();
+    virtual QJsonObject getObject();
 signals:
     void done();
 private:

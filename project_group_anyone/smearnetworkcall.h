@@ -9,14 +9,11 @@ class smearnetworkcall : public networkcalls
 public:
     smearnetworkcall();
     ~smearnetworkcall();
-    void querySmearStations();
+    void query();
     void querySmearTimeSeries(QString aggregation, int interval, QString startDate, QString endDate, QString tableVariable);
-    void getDataFromApi();
-    void postDataToApi();
-    QJsonObject getObject(bool getData);
+    QJsonObject getObject();
 
 private:
-    QJsonObject stationObj_;
     QJsonObject timeSeriesObj_;
     QString stationUrl = QStringLiteral("https://smear-backend.rahtiapp.fi/station");
 };

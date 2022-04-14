@@ -26,7 +26,7 @@ smearnetworkcall::~smearnetworkcall()
 
 }
 
-void smearnetworkcall::querySmearStations()
+void smearnetworkcall::query()
 {
 
 }
@@ -79,52 +79,43 @@ void smearnetworkcall::querySmearTimeSeries(QString aggregation, int interval, Q
     });
 }
 
-void smearnetworkcall::getDataFromApi()
+//void smearnetworkcall::getDataFromApi()
+//{
+//    QNetworkAccessManager *mgr = new QNetworkAccessManager(this);
+//    const QUrl url(stationUrl);
+//    QNetworkRequest request(url);
+//    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+//    QNetworkReply *reply = mgr->get(request);
+
+//    QObject::connect(reply, &QNetworkReply::finished, [=](){
+//        if(reply->error() == QNetworkReply::NoError){
+
+//            //QString contents = QString::fromUtf8(reply->readAll());
+//            //qDebug() << contents;
+//            //QJsonObject obj = QJsonDocument::fromJson(reply->readAll()).object();
+//            //qDebug() << obj;
+
+//            QString contents = QString::fromUtf8(reply->readAll());
+//            qDebug() << contents;
+//            // needs to be commented out since apparently the data form from the reply can be read only once
+//            stationObj_ = QJsonDocument::fromJson(reply->readAll()).object();
+//            qDebug() << "Smear station" << stationObj_;
+//            emit done();
+//        }
+//        else{
+//            QString err = reply->errorString();
+//            QVariant statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute );
+//            qDebug() << statusCode.toInt();
+//            qDebug() << err;
+//            emit done();
+//        }
+//        reply->deleteLater();
+//    });
+//}
+
+QJsonObject smearnetworkcall::getObject()
 {
-    QNetworkAccessManager *mgr = new QNetworkAccessManager(this);
-    const QUrl url(stationUrl);
-    QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-
-    QNetworkReply *reply = mgr->get(request);
-
-    QObject::connect(reply, &QNetworkReply::finished, [=](){
-        if(reply->error() == QNetworkReply::NoError){
-
-            //QString contents = QString::fromUtf8(reply->readAll());
-            //qDebug() << contents;
-            //QJsonObject obj = QJsonDocument::fromJson(reply->readAll()).object();
-            //qDebug() << obj;
-
-            QString contents = QString::fromUtf8(reply->readAll());
-            qDebug() << contents;
-            // needs to be commented out since apparently the data form from the reply can be read only once
-            stationObj_ = QJsonDocument::fromJson(reply->readAll()).object();
-            qDebug() << "Smear station" << stationObj_;
-            emit done();
-        }
-        else{
-            QString err = reply->errorString();
-            QVariant statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute );
-            qDebug() << statusCode.toInt();
-            qDebug() << err;
-            emit done();
-        }
-        reply->deleteLater();
-    });
-}
-
-void smearnetworkcall::postDataToApi()
-{
-
-}
-
-QJsonObject smearnetworkcall::getObject(bool getData)
-{
-    if(getData == true){
-        return stationObj_;
-    }else{
-        return timeSeriesObj_;
-    }
+    return timeSeriesObj_;
 }
 

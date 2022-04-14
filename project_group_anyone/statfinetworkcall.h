@@ -8,9 +8,8 @@ class statfinetworkcall: public networkcalls
 public:
     statfinetworkcall();
     ~statfinetworkcall();
-    void getDataFromApi();
-    void postDataToApi();
-    QJsonObject getObject(bool getData);
+    void query();
+    QJsonObject getObject();
 
 private:
     QJsonObject statfObj_;
