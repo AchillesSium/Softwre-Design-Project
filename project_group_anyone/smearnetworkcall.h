@@ -12,7 +12,6 @@ public:
     explicit smearnetworkcall(UserSelections* selections);
     ~smearnetworkcall();
     void query();
-    void querySmearTimeSeries(QString aggregation, int interval, QString startDate, QString endDate, QString tableVariable);
     QJsonObject getObject();
 
 private:
