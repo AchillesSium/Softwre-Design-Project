@@ -531,7 +531,14 @@ void ChartWindow::on_applyButton_clicked()
 
             std::vector<DataPoint> gasDp = Controller::getSMEARData(selections);
 
+            for (DataPoint i: gasDp){
+                std::stringstream ss;
+                ss << i.first;
 
+                 QString st = QString::fromStdString(ss.str());
+
+                 qDebug() << "gas Dp " << st << i.second;
+            }
         }
         else
         {
