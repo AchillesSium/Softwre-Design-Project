@@ -4,6 +4,8 @@
 #include "controller.h"
 #include "date.h"
 #include <QDebug>
+#include <sstream>
+#include <QString>
 
 ChartWindow::ChartWindow(QWidget *parent) :
       QMainWindow(parent),
@@ -518,7 +520,7 @@ void ChartWindow::on_applyButton_clicked()
 
     else if(current == DataSource::SMEAR && view_elements->radioselection_smear != DataSet::None)
     {
-        if(view_elements->selected_preset_time == Day)
+        if(view_elements->selected_preset_time == Custom)
         {
             selections = new UserSelections(DataSource::SMEAR);
             selections->setMeasuringStation(view_elements->current_station);
@@ -527,7 +529,9 @@ void ChartWindow::on_applyButton_clicked()
             selections->setEnd(Date(view_elements->selected_custom_time.second.toStdString()));
             selections->setAggregateType(view_elements->selected_aggregation);
 
-            Controller::getSMEARData(selections);
+            std::vector<DataPoint> gasDp = Controller::getSMEARData(selections);
+
+
         }
         else
         {

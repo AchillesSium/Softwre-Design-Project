@@ -8,18 +8,7 @@
 #include <map>
 #include <vector>
 #include "jsonparser.h"
-
-
-const double NO_VALUE = 0.0;
-
-struct StatfiData{
-    double tonnes;
-    double intensity;
-    double tonnes_indexed;
-    double intensity_indexed;
-};
-
-using StatfiDB = std::map<int, StatfiData>;
+#include "datastorage.h"
 
 
 class StatfiParser: public Jsonparser
@@ -28,7 +17,6 @@ public:
     StatfiParser();
     ~StatfiParser();
     void parse(QJsonObject obj);
-    StatfiDB get_db();
 private:
     StatfiDB statfi_db_;
 };

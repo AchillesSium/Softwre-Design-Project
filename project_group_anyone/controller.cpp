@@ -68,7 +68,7 @@ std::vector<std::pair<int, double>> Controller::getSTATFIData(UserSelections* se
     return filteredVector;
 }
 
-void Controller::getSMEARData(UserSelections* selections)
+std::vector<DataPoint> Controller::getSMEARData(UserSelections* selections)
 {
     // Call SMEAR data fetcher, below is an example of what it might look
     /*
@@ -89,6 +89,7 @@ void Controller::getSMEARData(UserSelections* selections)
 
     QJsonObject obj = smearNetwork->getObject();
     //QJsonObject obj1 = smearnetwork->getObject();
+     std::vector<DataPoint> gasDp;
 
     if(obj["class"] == QJsonValue::Undefined ){
         qDebug() << "error happened";
@@ -101,17 +102,22 @@ void Controller::getSMEARData(UserSelections* selections)
             qDebug() << "m[" << k << "] = (" << v.intensity << ", " << v.intensity_indexed << ") ";*/
         SmearDB db = smearparser->get_db();
 
-
         for(auto it = db.cbegin(); it != db.cend(); ++it)
         {
-            //qDebug() << "wrgwrgwrgwrgwg" << it->first; //<< " " << it->second.CO2 << " " << it->second.NOX;
-            break;
+            if(it->second.CO2.empty() == false){
+                gasDp = it->second.CO2;
+            }else if(it->second.NOX.empty() == false){
+                gasDp = it->second.NOX;
+            }else if(it->second.SO2.empty() == false){
+                gasDp = it->second.SO2;
+            }
         }
-
 
         delete smearparser;
     }
 
     delete smearNetwork;
+
+    return gasDp;
 }
 

@@ -13,6 +13,8 @@
 #include "jsonparser.h"
 #include <QDebug>
 #include "controller.h"
+#include "datastorage.h"
+#include "smearparser.h"
 
 int main(int argc, char *argv[])
 {
@@ -59,31 +61,44 @@ int main(int argc, char *argv[])
 
     statfinetwork->query();
 
+
     //smearnetwork->getDataFromApi();
     //smearnetwork->querySmearTimeSeries("MAX", 60, "2013-01-01", "2015-01-01", "KUM_EDDY.av_c_ep");
 
     // wait for the request to process completely
-    QEventLoop loop;
-    QObject::connect(statfinetwork, SIGNAL(done()), &loop, SLOT(quit()));
-    loop.exec();
+    QEventLoop statfi_loop;
+    QObject::connect(statfinetwork, SIGNAL(done()), &statfi_loop, SLOT(quit()));
+    statfi_loop.exec();
+
+
+    //smearnetwork->querySmearStations();
+
+    //smearnetwork->querySmearTimeSeries("MAX", 60, "2012-01-01", "2022-01-01", "KUM_EDDY.av_c_ep");
+
+    QEventLoop smear_loop;
+    QObject::connect(statfinetwork, SIGNAL(done()), &smear_loop, SLOT(quit()));
+    smear_loop.exec();
 
     QJsonObject obj = statfinetwork->getObject();
     //QJsonObject obj1 = smearnetwork->getObject();
 
-    if(obj["class"] == QJsonValue::Undefined ){
+    QJsonObject obj1 = statfinetwork->getObject();
+    //QJsonObject obj2 = smearnetwork->getTimeSeriesObject();
+
+    if(obj1["class"] == QJsonValue::Undefined ){
         qDebug() << "error happened";
     }
     else{
 
         StatfiParser *parser = new StatfiParser();
-        parser->parse(obj);
+        parser->parse(obj1);
       /*
          * for (const auto &[k, v] : statfi_db)
             qDebug() << "m[" << k << "] = (" << v.intensity << ", " << v.intensity_indexed << ") ";*/
+
         delete parser;
     }
 
     delete statfinetwork;
-
     return a.exec();
 }

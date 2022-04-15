@@ -4,6 +4,7 @@
 #include "userselections.h"
 #include "date.h"
 #include "statfiparser.h"
+#include "smearparser.h"
 
 class Controller
 {
@@ -18,7 +19,7 @@ public:
     // NOTE: CHANGE RETURN VALUE WHEN DATATYPE IS DECIDED
     // OR CALL A FUNCTION FROM VIEW WITH THE FILTERED DATA
     // AS A PARAMETER INSTEAD
-    static void getSMEARData(UserSelections* selections);
+    static std::vector<DataPoint> getSMEARData(UserSelections* selections);
 
 
 private:
