@@ -15,6 +15,7 @@ ChartWindow::ChartWindow(QWidget *parent) :
     // Initialize the chart
     QtCharts::QChart *graph = new QtCharts::QChart();
     graph->setTitle("Gasses in your environment");
+    graph->legend()->setVisible(false);
 
     // Initialize the X-axis
     QtCharts::QValueAxis *axis_x = new QtCharts::QValueAxis();
@@ -23,84 +24,15 @@ ChartWindow::ChartWindow(QWidget *parent) :
     axis_x->setGridLineVisible(true);
     axis_x->setLabelFormat("%.1i");
     axis_x->setTitleText("Hours");
-    view_elements->selected_preset_time = Day;
-
-    // Initialize the Y-axis
-    QtCharts::QValueAxis *axis_y = new QtCharts::QValueAxis();
-    axis_y->setRange(0, 2000);
-    axis_y->setTickCount(9);
-    axis_y->setGridLineVisible(true);
-    axis_y->setLabelFormat("%.1i");
-    axis_y->setTitleText("Tonnes");
 
     // Add axis to the graph
     graph->addAxis(axis_x, Qt::AlignBottom);
-    graph->addAxis(axis_y, Qt::AlignLeft);
-
-    // Initialize the lines
-    QtCharts::QLineSeries *co2_day_series = new QtCharts::QLineSeries(graph);
-    QtCharts::QLineSeries *co2_week_series = new QtCharts::QLineSeries(graph);
-    QtCharts::QLineSeries *co2_month_series = new QtCharts::QLineSeries(graph);
-    QtCharts::QLineSeries *co2_year_series = new QtCharts::QLineSeries(graph);
-
-    QtCharts::QLineSeries *so2_day_series = new QtCharts::QLineSeries(graph);
-    QtCharts::QLineSeries *so2_week_series = new QtCharts::QLineSeries(graph);
-    QtCharts::QLineSeries *so2_month_series = new QtCharts::QLineSeries(graph);
-    QtCharts::QLineSeries *so2_year_series = new QtCharts::QLineSeries(graph);
-
-    QtCharts::QLineSeries *nox_day_series = new QtCharts::QLineSeries(graph);
-    QtCharts::QLineSeries *nox_week_series = new QtCharts::QLineSeries(graph);
-    QtCharts::QLineSeries *nox_month_series = new QtCharts::QLineSeries(graph);
-    QtCharts::QLineSeries *nox_year_series = new QtCharts::QLineSeries(graph);
-
-    // Adding lines to the vectors
-    co2_series.push_back(co2_day_series);
-    co2_series.push_back(co2_week_series);
-    co2_series.push_back(co2_month_series);
-    co2_series.push_back(co2_year_series);
-
-    so2_series.push_back(so2_day_series);
-    so2_series.push_back(so2_week_series);
-    so2_series.push_back(so2_month_series);
-    so2_series.push_back(so2_year_series);
-
-    nox_series.push_back(nox_day_series);
-    nox_series.push_back(nox_week_series);
-    nox_series.push_back(nox_month_series);
-    nox_series.push_back(nox_year_series);
-
-    // Fill lines with data
-    make_chart_line(time_day, co2_day, co2_day_series);
-    make_chart_line(time_week, co2_week, co2_week_series);
-    make_chart_line(time_month, co2_month, co2_month_series);
-    make_chart_line(time_year, co2_year, co2_year_series);
-
-    make_chart_line(time_day, so2_day, so2_day_series);
-    make_chart_line(time_week, so2_week, so2_week_series);
-    make_chart_line(time_month, so2_month, so2_month_series);
-    make_chart_line(time_year, so2_year, so2_year_series);
-
-    make_chart_line(time_day, nox_day, nox_day_series);
-    make_chart_line(time_week, nox_week, nox_week_series);
-    make_chart_line(time_month, nox_month, nox_month_series);
-    make_chart_line(time_year, nox_year, nox_year_series);
 
     // Initialize the chart view
     ui->chartView->setChart(graph);
     ui->chartView->setRenderHint(QPainter::Antialiasing);
 
-    // Set correct combo box and stacked widget
-    ui->databaseCombo->blockSignals(true);
-
-    ui->databaseCombo->setCurrentText("SMEAR");
-    view_elements->current_database = DataSource::SMEAR;
-    ui->stackedBoxes->setCurrentIndex(0);
-    view_elements->current_station = MeasuringStation::Varrio;
-    view_elements->radioselection_smear = None;
-    view_elements->radioselection_statfi = None;
-
-    ui->databaseCombo->blockSignals(false);
-
+    set_statfi();
 }
 
 ChartWindow::~ChartWindow()
@@ -110,38 +42,12 @@ ChartWindow::~ChartWindow()
 }
 
 //----------------------------------------------------------------------------------------------
-// Initialization
-
-void ChartWindow::make_chart_line(const std::vector<int> &x_axis,
-                                 const std::vector<int> &y_axis,
-                                 QtCharts::QLineSeries *chart_line)
-{
-    unsigned int axis_length = x_axis.size();
-
-    if(axis_length == y_axis.size())
-    {
-        for(unsigned int point = 0 ; point < axis_length ; point++)
-        {
-            chart_line->append(x_axis.at(point), y_axis.at(point));
-        }
-    }
-}
-
-
-
-//----------------------------------------------------------------------------------------------
 // Default functions
 
-void ChartWindow::default_combo_boxes()
+void ChartWindow::default_radio_buttons()
 {
-    // Sets the comboboxes to the first index
-    ui->databaseCombo->setCurrentIndex(0);
-    ui->stationCombo->setCurrentIndex(0);
-}
-
-void ChartWindow::default_check_boxes()
-{
-    remove_all_graph_series();
+    //remove_all_graph_series();
+    ui->chartView->chart()->removeAllSeries();
 
     if(view_elements->current_database == DataSource::SMEAR)
     {
@@ -204,62 +110,134 @@ void ChartWindow::default_check_boxes()
             // Nothing needs to be done
             break;
         }
-        view_elements->radioselection_statfi = None;
-        view_elements->radioselection_smear = None;
     }
 
-    // Reset aggregation type
-    ui->aggregationCombo->setCurrentIndex(0);
+    // Empty out the view element
+    view_elements->radioselection_statfi = None;
+    view_elements->radioselection_smear = None;
+
 }
 
+
+void ChartWindow::set_smear()
+{
+    // Set the viewObject
+    view_elements->current_database = DataSource::SMEAR;
+    view_elements->selected_aggregation = AggregateType::None;
+    view_elements->current_station = MeasuringStation::Varrio;
+    view_elements->radioselection_smear = DataSet::None;
+    view_elements->radioselection_statfi = DataSet::None;
+    view_elements->selected_preset_time = Time::No_time;
+    view_elements->selected_custom_time = std::make_pair("", "");
+
+
+    // Set view elements for STATFI
+
+        // Quick time buttons
+        ui->yearButton->setEnabled(true);
+        ui->monthButton->setEnabled(true);
+        ui->weekButton->setEnabled(true);
+        ui->dayButton->setEnabled(true);
+
+        // Radio buttons
+        ui->stackedBoxes->setCurrentWidget(ui->smearBox);
+
+        // Combo boxes
+        ui->stationCombo->setVisible(true);
+        ui->stationLabel->setVisible(true);
+        ui->aggregationCombo->setVisible(true);
+        ui->aggregationLabel->setVisible(true);
+
+        ui->stationCombo->blockSignals(true);
+        ui->aggregationCombo->blockSignals(true);
+
+        ui->stationCombo->setCurrentIndex(0);
+        ui->aggregationCombo->setCurrentIndex(0);
+
+        ui->stationCombo->blockSignals(false);
+        ui->aggregationCombo->blockSignals(false);
+
+        // Custom time button text
+        ui->timeButton->setText("Date-to_Date");
+
+        // Display x-axis for user
+        quick_time_change(Day);
+}
+
+void ChartWindow::set_statfi()
+{
+    // Set the viewObject
+    view_elements->current_database = DataSource::STATFI;
+    view_elements->selected_aggregation = AggregateType::None;
+    view_elements->current_station = MeasuringStation::None;
+    view_elements->radioselection_smear = DataSet::None;
+    view_elements->radioselection_statfi = DataSet::None;
+    view_elements->selected_preset_time = Time::No_time;
+    view_elements->selected_custom_time = std::make_pair("", "");
+
+
+    // Set view elements for STATFI
+
+        // Quick time buttons
+        ui->yearButton->setEnabled(false);
+        ui->monthButton->setEnabled(false);
+        ui->weekButton->setEnabled(false);
+        ui->dayButton->setEnabled(false);
+
+        // Radio buttons
+        ui->stackedBoxes->setCurrentWidget(ui->statfiBox);
+
+        // Combo boxes
+        ui->stationCombo->setVisible(false);
+        ui->stationLabel->setVisible(false);
+        ui->aggregationCombo->setVisible(false);
+        ui->aggregationLabel->setVisible(false);
+
+        // Custom time button text
+        ui->timeButton->setText("Year-to_Year");
+
+        // Display x-axis for user
+        quick_time_change(Year); // TODO make x-axis be a time span of ten years
+}
+
+
+//----------------------------------------------------------------------------------------------
+// Quality of life functions
+
+unsigned int ChartWindow::round_to_nearest(double minmax)
+{
+    unsigned int rounder = 1;
+
+    if (minmax < 100)
+    {
+        rounder = 10;
+    }
+    else if (minmax < 1000)
+    {
+        rounder = 100;
+    }
+    else if (minmax < 10000)
+    {
+        rounder = 1000;
+    }
+    else if (minmax < 100000)
+    {
+        rounder = 10000;
+    }
+
+    return ceil(minmax/rounder)*rounder;
+}
+
+QDateTime ChartWindow::make_datetime(Date from_date)
+{
+    QDate date = QDate(from_date.getYear(), from_date.getMonth(), from_date.getDay());
+    QTime time = QTime(from_date.getHour(), from_date.getMinute());
+    return QDateTime(date, time, QTimeZone(3));
+}
 
 
 //----------------------------------------------------------------------------------------------
 // Chart functions
-
-void ChartWindow::remove_graph_series(QtCharts::QLineSeries *old_series)
-{
-    ui->chartView->chart()->removeSeries(old_series);
-
-}
-
-void ChartWindow::remove_all_graph_series()
-{
-    QList<QAbstractSeries*> all_series = ui->chartView->chart()->series();
-
-    if(all_series.size() == 0)
-    {
-        return;
-    }
-
-    for(QAbstractSeries* pointer : qAsConst(all_series)) //qAsConst() makes the loop safer
-    {
-        ui->chartView->chart()->removeSeries(pointer);
-    }
-}
-
-void ChartWindow::add_graph_series(QtCharts::QLineSeries *new_series)
-{
-    ui->chartView->chart()->addSeries(new_series);
-}
-
-void ChartWindow::react_to_selection(bool state, std::vector<QtCharts::QLineSeries *> &pointers)
-{
-    QtCharts::QAbstractSeries *current_pointer = pointers.at(view_elements->selected_preset_time);
-    QList<QAbstractSeries*> all_series = ui->chartView->chart()->series();
-    QList<QAbstractSeries*>::iterator all;
-
-    all = std::find(all_series.begin(), all_series.end(), current_pointer);
-
-    if(state == true && all == all_series.end())
-    {
-       add_graph_series(pointers.at(view_elements->selected_preset_time));
-    }
-    else if(state == false && all != all_series.end())
-    {
-        remove_graph_series(pointers.at(view_elements->selected_preset_time));
-    }
-}
 
 void ChartWindow::quick_time_change(Time period)
 {
@@ -273,15 +251,15 @@ void ChartWindow::quick_time_change(Time period)
     switch(view_elements->radioselection_smear)
     {
     case CO2:
-        remove_graph_series(co2_series.at(view_elements->selected_preset_time));
+        //remove_graph_series(co2_series.at(view_elements->selected_preset_time));
         break;
 
     case SO2:
-        remove_graph_series(so2_series.at(view_elements->selected_preset_time));
+        //remove_graph_series(so2_series.at(view_elements->selected_preset_time));
         break;
 
     case NO:
-        remove_graph_series(nox_series.at(view_elements->selected_preset_time));
+        //remove_graph_series(nox_series.at(view_elements->selected_preset_time));
         break;
 
     default:
@@ -333,15 +311,15 @@ void ChartWindow::quick_time_change(Time period)
     switch(view_elements->radioselection_smear)
     {
     case CO2:
-        add_graph_series(co2_series.at(view_elements->selected_preset_time));
+        //add_graph_series(co2_series.at(view_elements->selected_preset_time));
         break;
 
     case SO2:
-        add_graph_series(so2_series.at(view_elements->selected_preset_time));
+        //add_graph_series(so2_series.at(view_elements->selected_preset_time));
         break;
 
     case NO:
-        add_graph_series(nox_series.at(view_elements->selected_preset_time));
+        //add_graph_series(nox_series.at(view_elements->selected_preset_time));
         break;
 
     default:
@@ -350,50 +328,78 @@ void ChartWindow::quick_time_change(Time period)
     }
 }
 
-QList<QPointF> ChartWindow::make_custom_series(const std::vector<std::pair<int, double>> &filtered, int to_start, int to_end)
+QList<QPointF> ChartWindow::make_statfi_series(const std::vector<std::pair<int, double>> &filtered, unsigned int to_start, unsigned int to_end)
 {
-    int counter = to_start;
+    unsigned int counter = to_start;
     QList<QPointF> points;
 
     while(counter <= to_end)
     {
-        qDebug() << filtered.at(counter).first << "year to be in series";
+        qDebug() << filtered.at(counter).first << "is to be in series";
         points.append(QPointF(filtered.at(counter).first, filtered.at(counter).second));
         counter++;
     }
 
+    qDebug() << "got out";
     return points;
 }
 
+QtCharts::QLineSeries* ChartWindow::make_smear_series(const std::vector<std::pair<double, QDateTime>> &pre_series, unsigned int start, unsigned int ending)
+{
+    qDebug() << "In make_smear_series";
+    unsigned int counter = start;
+    QLineSeries *series = new QLineSeries();
 
-void ChartWindow::display_custom_series(const std::vector<std::pair<int, double>> &filtered)
+    while(counter <= ending)
+    {
+        qDebug() << "Looping in make_semar_series in loop nr: " << counter;
+        series->append(pre_series.at(counter).second.toMSecsSinceEpoch(), pre_series.at(counter).first);
+        counter++;
+    }
+
+    qDebug() << "Made it, returning...";
+    return series;
+}
+
+
+void ChartWindow::display_statfi(const std::vector<std::pair<int, double>> &filtered)
 {
 
-    remove_all_graph_series();
+    //remove_all_graph_series();
+    ui->chartView->chart()->removeAllSeries();
 
     int start = 0;
     double max_value = 0;
+    double min_value = std::numeric_limits<unsigned int>::max();
     double previous_value = -1;
     double current_value;
     std::vector<QList<QPointF>> points;
 
-    for(unsigned int data_point = start ; data_point < filtered.size() ; data_point++)
+    for(unsigned int data_point = 0 ; data_point < filtered.size() ; data_point++)
     {
         current_value = filtered.at(data_point).second;
 
-        if(current_value == 0 && previous_value > 0)
+        if(current_value == 0 && (previous_value > 0 || previous_value == -1))
         {
-            points.push_back(make_custom_series(filtered, start, data_point -1));
+            if(data_point == 0)
+            {
+                points.push_back(make_statfi_series(filtered, start, data_point));
+            }
+            else
+            {
+                points.push_back(make_statfi_series(filtered, start, data_point -1));
+            }
+
             start = data_point;
         }
         else if(current_value > 0 && previous_value == 0)
         {
-            points.push_back(make_custom_series(filtered, start, data_point -1));
+            points.push_back(make_statfi_series(filtered, start, data_point -1));
             start = data_point;
         }
         else if(data_point == filtered.size() - 1)
         {
-            points.push_back(make_custom_series(filtered, start, data_point));
+            points.push_back(make_statfi_series(filtered, start, data_point));
         }
 
         previous_value = current_value;
@@ -403,11 +409,17 @@ void ChartWindow::display_custom_series(const std::vector<std::pair<int, double>
         {
             max_value = current_value;
         }
+
+        //Min value checker
+        if(current_value < min_value && current_value > 0)
+        {
+            min_value = current_value;
+        }
     }
 
     unsigned int point_amount = 0;
 
-    for(QList<QPointF> points_list : qAsConst(points))
+    for(auto& points_list : qAsConst(points))
     {
         QLineSeries *series = new QLineSeries();
         point_amount = point_amount + points_list.size();
@@ -417,6 +429,10 @@ void ChartWindow::display_custom_series(const std::vector<std::pair<int, double>
         {
             series->setVisible(false);
         }
+        else
+        {
+            series->setPen(chart_pen);
+        }
 
         ui->chartView->chart()->addSeries(series);
     }
@@ -425,18 +441,137 @@ void ChartWindow::display_custom_series(const std::vector<std::pair<int, double>
 
     QValueAxis *x_axis = static_cast<QValueAxis*>(ui->chartView->chart()->axisX());
     x_axis->setTitleText("Years");
-    x_axis->setTickCount(point_amount);
+    x_axis->setTickCount(filtered.size() + 1);
     x_axis->setGridLineVisible(true);
     x_axis->setLabelFormat("%.1i");
 
     QValueAxis *y_axis = static_cast<QValueAxis*>(ui->chartView->chart()->axisY());
-    y_axis->setRange(0, ceil(max_value));
+    y_axis->setRange(0, round_to_nearest(max_value + min_value));
     y_axis->setTitleText("Tonnes");
-    y_axis->setTickCount(10);
+    y_axis->setTickCount(11);
     y_axis->setGridLineVisible(true);
     y_axis->setLabelFormat("%.1i");
 
-    view_elements->selected_preset_time = Custom;
+    view_elements->selected_preset_time = Time::Custom;
+}
+
+
+void ChartWindow::display_smear(const std::vector<std::pair<double, QDateTime>> &filtered)
+{
+    qDebug() << "Starting";
+    unsigned int start = 0;
+    double max_value = 0;
+    double min_value = std::numeric_limits<unsigned int>::max();
+    double previous_value = -1;
+    double current_value;
+    std::vector<QLineSeries*> all_series;
+
+    qDebug() << "Variables initialized";
+
+    for(unsigned int data_point = 0 ; data_point < filtered.size() ; data_point++)
+    {
+        qDebug() << "Looping loop nr: " << data_point ;
+        current_value = filtered.at(data_point).first;
+
+        if(current_value == 0 && (previous_value > 0 || previous_value == -1))
+        {
+            qDebug() << "Beginning zero at " << filtered.at(data_point).second.toString("dd/MMMM/yyyy hh:ss");
+
+            if(data_point == 0)
+            {
+                all_series.push_back(make_smear_series(filtered, start, data_point));
+            }
+            else
+            {
+                all_series.push_back(make_smear_series(filtered, start, data_point-1));
+            }
+            start = data_point;
+        }
+        else if(current_value > 0 && previous_value == 0)
+        {
+            qDebug() << "Middle zero at " << filtered.at(data_point).second.toString("dd/MMMM/yyyy hh:ss");
+            all_series.push_back(make_smear_series(filtered, start, data_point-1));
+            start = data_point;
+        }
+        else if(data_point == filtered.size() - 1)
+        {
+            qDebug() << "Ending at " << filtered.at(data_point).second.toString("dd/MMMM/yyyy hh:ss");
+            all_series.push_back(make_smear_series(filtered, start, data_point));
+        }
+
+        previous_value = current_value;
+
+        //Max value checker
+        if(current_value > max_value)
+        {
+            max_value = current_value;
+        }
+
+        //Min value checker
+        if(current_value < min_value && current_value > 0)
+        {
+            min_value = current_value;
+        }
+    }
+
+    // Determine max and min times
+    QDateTime maximum_time = filtered.back().second;
+    QDateTime minimum_time = filtered.front().second;
+
+    // Create both axis
+
+    QDateTimeAxis *time_axis = new QDateTimeAxis;
+    time_axis->setFormat("dd/MMMM/yyyy");
+    time_axis->setTickCount(filtered.size() + 1);
+    time_axis->setRange(minimum_time, maximum_time);
+    time_axis->setGridLineVisible(true);
+    time_axis->setTitleText("Time");
+
+    qDebug() << "X-axis created";
+
+    QValueAxis *value_axis = new QValueAxis;
+    value_axis->setRange(0, round_to_nearest(max_value + min_value));
+    value_axis->setTitleText("Tonnes");
+    value_axis->setTickCount(11);
+    value_axis->setGridLineVisible(true);
+    value_axis->setLabelFormat("%.1i");
+
+    qDebug() << "Y-axis created";
+
+    // Remove old axises from the chart
+    ui->chartView->chart()->removeAxis(ui->chartView->chart()->axisX());
+    ui->chartView->chart()->removeAxis(ui->chartView->chart()->axisY());
+
+    // Add new axises to the chart
+    ui->chartView->chart()->addAxis(time_axis, Qt::AlignBottom);
+    ui->chartView->chart()->addAxis(value_axis, Qt::AlignLeft);
+
+    qDebug() << "Axises are in the chart";
+
+    for(QLineSeries* point_series : all_series)
+    {
+        qDebug() << "Looping through series loop";
+
+        ui->chartView->chart()->addSeries(point_series);
+        point_series->attachAxis(time_axis);
+        point_series->attachAxis(value_axis);
+
+        if(point_series->at(0).y() == 0)
+        {
+            point_series->setVisible(false);
+        }
+        else
+        {
+            qDebug() << point_series->pen();
+            point_series->setPen(chart_pen);
+        }
+    }
+
+    view_elements->selected_preset_time = Time::Custom;
+
+    qDebug() << "Finished!";
+
+
 }
 
 
@@ -452,6 +587,7 @@ void ChartWindow::display_custom_series(const std::vector<std::pair<int, double>
 void ChartWindow::get_pair(std::pair<QString,QString> time_pair)
 {
     view_elements->selected_custom_time = time_pair;
+    view_elements->selected_preset_time = Time::Custom;
     on_applyButton_clicked();
 }
 
@@ -462,8 +598,16 @@ void ChartWindow::get_pair(std::pair<QString,QString> time_pair)
 
 void ChartWindow::on_defaultButton_clicked()
 {
-    default_combo_boxes();
-    default_check_boxes();
+    default_radio_buttons();
+
+    if(view_elements->current_database == DataSource::STATFI)
+    {
+        set_statfi();
+    }
+    else if(view_elements->current_database == DataSource::SMEAR)
+    {
+        set_smear();
+    }
 }
 
 void ChartWindow::on_dayButton_clicked()
@@ -491,7 +635,7 @@ void ChartWindow::on_timeButton_clicked()
     TimeWindow *date = new TimeWindow();
     connect(date, &TimeWindow::send_pair, this, &ChartWindow::get_pair);
     date->setModal(true);
-    date->change_data(ui->databaseCombo->currentText());
+    date->change_data(view_elements->current_database, view_elements->current_station, view_elements->radioselection_smear);
     date->adjustSize();
     date->show();
 }
@@ -501,6 +645,7 @@ void ChartWindow::on_applyButton_clicked()
     // Send ViewObject pointer to controller
     UserSelections* selections = nullptr;
     DataSource current = view_elements->current_database;
+    qDebug() << "Got in apply_button_clicked";
 
     if(current == DataSource::STATFI && view_elements->radioselection_statfi != DataSet::None)
     {
@@ -511,16 +656,45 @@ void ChartWindow::on_applyButton_clicked()
 
         qDebug().nospace() << "abc" << qPrintable(view_elements->radioselection_statfi) << "def";
 
-        std::vector<std::pair<int, double>> filteredVector = Controller::getSTATFIData(selections);
-        qDebug() << "Filtered Vecor in Chart Window" << filteredVector;
+        std::vector<std::pair<int, double>> filtered_statfi = Controller::getSTATFIData(selections);
+        qDebug() << "Filtered Vecor in Chart Window" << filtered_statfi;
 
-        display_custom_series(filteredVector);
+        // Test values
+        filtered_statfi.clear();
+        filtered_statfi.push_back(std::make_pair(1989, 0.0));
+        filtered_statfi.push_back(std::make_pair(1990, 0.0));
+        filtered_statfi.push_back(std::make_pair(1991, 300.0));
+        filtered_statfi.push_back(std::make_pair(1992, 700.0));
+        filtered_statfi.push_back(std::make_pair(1993, 1300.0));
+        filtered_statfi.push_back(std::make_pair(1994, 400.0));
+        filtered_statfi.push_back(std::make_pair(1995, 2000.0));
+        filtered_statfi.push_back(std::make_pair(1996, 800.0));
+        filtered_statfi.push_back(std::make_pair(1997, 1700.0));
+        filtered_statfi.push_back(std::make_pair(1998, 1400.0));
+        filtered_statfi.push_back(std::make_pair(1999, 1100.0));
+        filtered_statfi.push_back(std::make_pair(2000, 900.0));
+        filtered_statfi.push_back(std::make_pair(2001, 600.0));
+        filtered_statfi.push_back(std::make_pair(2002, 500.0));
+        filtered_statfi.push_back(std::make_pair(2003, 0.0));
+        filtered_statfi.push_back(std::make_pair(2004, 0.0));
+        filtered_statfi.push_back(std::make_pair(2005, 2100.0));
+        filtered_statfi.push_back(std::make_pair(2006, 2050.0));
+        filtered_statfi.push_back(std::make_pair(2007, 1800.0));
+        filtered_statfi.push_back(std::make_pair(2008, 1000.0));
+        filtered_statfi.push_back(std::make_pair(2009, 950.0));
+        filtered_statfi.push_back(std::make_pair(2010, 0.0));
+        filtered_statfi.push_back(std::make_pair(2011, 0.0));
+        filtered_statfi.push_back(std::make_pair(2012, 0.0));
+
+        display_statfi(filtered_statfi);
     }
 
     else if(current == DataSource::SMEAR && view_elements->radioselection_smear != DataSet::None)
     {
+        qDebug() << "Got in datasource and dataset";
         if(view_elements->selected_preset_time == Custom)
         {
+            qDebug() << "Got in custom time";
             selections = new UserSelections(DataSource::SMEAR);
             selections->setMeasuringStation(view_elements->current_station);
             selections->setDataSet(view_elements->radioselection_smear);
@@ -528,7 +702,43 @@ void ChartWindow::on_applyButton_clicked()
             selections->setEnd(Date(view_elements->selected_custom_time.second.toStdString()));
             selections->setAggregateType(view_elements->selected_aggregation);
 
-            Controller::getSMEARData(selections);
+            std::vector<std::pair<double, QDateTime>> filtered_smear; // = Controller::getSMEARData(selections);
+
+            QDateTime moment = QDateTime(QDate(1998, 6, 5), QTime(0, 0), QTimeZone(3));
+            QDateTime moment_2 = QDateTime(QDate(1998, 6, 5), QTime(6, 0), QTimeZone(3));
+            QDateTime moment_3 = QDateTime(QDate(1998, 6, 5), QTime(18, 0), QTimeZone(3));
+            QDateTime moment_4 = QDateTime(QDate(1998, 6, 6), QTime(0, 0), QTimeZone(3));
+            QDateTime moment_5 = QDateTime(QDate(1998, 6, 6), QTime(6, 0), QTimeZone(3));
+            QDateTime moment_6 = QDateTime(QDate(1998, 6, 6), QTime(18, 0), QTimeZone(3));
+            QDateTime moment_7 = QDateTime(QDate(1998, 6, 7), QTime(0, 0), QTimeZone(3));
+            QDateTime moment_8 = QDateTime(QDate(1998, 6, 7), QTime(6, 0), QTimeZone(3));
+            QDateTime moment_9 = QDateTime(QDate(1998, 6, 7), QTime(18, 0), QTimeZone(3));
+            QDateTime moment_10 = QDateTime(QDate(1998, 6, 8), QTime(0, 0), QTimeZone(3));
+            QDateTime moment_11 = QDateTime(QDate(1998, 6, 8), QTime(6, 0), QTimeZone(3));
+            QDateTime moment_12 = QDateTime(QDate(1998, 6, 8), QTime(18, 0), QTimeZone(3));
+            QDateTime moment_13 = QDateTime(QDate(1998, 6, 9), QTime(0, 0), QTimeZone(3));
+            QDateTime moment_14 = QDateTime(QDate(1998, 6, 9), QTime(6, 0), QTimeZone(3));
+            QDateTime moment_15 = QDateTime(QDate(1998, 6, 9), QTime(18, 0), QTimeZone(3));
+            QDateTime moment_16 = QDateTime(QDate(1998, 6, 10), QTime(0, 0), QTimeZone(3));
+
+            filtered_smear.push_back(std::make_pair(0.0, moment));
+            filtered_smear.push_back(std::make_pair(0.0, moment_2));
+            filtered_smear.push_back(std::make_pair(5694.0, moment_3));
+            filtered_smear.push_back(std::make_pair(2035.0, moment_4));
+            filtered_smear.push_back(std::make_pair(4222.0, moment_5));
+            filtered_smear.push_back(std::make_pair(4056.0, moment_6));
+            filtered_smear.push_back(std::make_pair(2940.0, moment_7));
+            filtered_smear.push_back(std::make_pair(0.0, moment_8));
+            filtered_smear.push_back(std::make_pair(0.0, moment_9));
+            filtered_smear.push_back(std::make_pair(3567.0, moment_10));
+            filtered_smear.push_back(std::make_pair(2345.0, moment_11));
+            filtered_smear.push_back(std::make_pair(4567.0, moment_12));
+            filtered_smear.push_back(std::make_pair(4320.0, moment_13));
+            filtered_smear.push_back(std::make_pair(3209.0, moment_14));
+            filtered_smear.push_back(std::make_pair(0.0, moment_15));
+            filtered_smear.push_back(std::make_pair(0.0, moment_16));
+
+            display_smear(filtered_smear);
         }
         else
         {
@@ -536,17 +746,14 @@ void ChartWindow::on_applyButton_clicked()
             {
             case CO2:
                 // TODO Fetch the correct information and display it on the graph
-                react_to_selection(true, co2_series);
                 break;
 
             case SO2:
                 // TODO -||-
-                react_to_selection(true, so2_series);
                 break;
 
             case NO:
                 // TODO -||-
-                react_to_selection(true, nox_series);
                 break;
 
             default:
@@ -565,68 +772,17 @@ void ChartWindow::on_applyButton_clicked()
 
 void ChartWindow::on_databaseCombo_currentIndexChanged(const QString current_database)
 {
-    default_check_boxes();
-
-    bool quick_times = false;
-    QString button_text;
-    QWidget *widget = nullptr;
+    default_radio_buttons();
 
     if(current_database == "STATFI")
     {
-        quick_times = false;
-        button_text = "Year-to_Year";
-        widget = ui->stackedBoxes->widget(1);
-        quick_time_change(Year);
-        view_elements->current_database = DataSource::STATFI;
-        view_elements->current_station = MeasuringStation::None;
+        set_statfi();
     }
 
     else if(current_database == "SMEAR")
     {
-        quick_times = true;
-        button_text = "Date-to-Date";
-        widget = ui->stackedBoxes->widget(0);
-        view_elements->current_database = DataSource::SMEAR;
-        view_elements->current_station = static_cast<MeasuringStation>(ui->stationCombo->currentIndex());
-
-        remove_all_graph_series();
-        quick_time_change(Day);
-
-        // Re-make the Y-axis
-        ui->chartView->chart()->removeAxis(ui->chartView->chart()->axisY());
-        QValueAxis *axis_y = new QtCharts::QValueAxis();
-        axis_y->setRange(0, 2000);
-        axis_y->setTickCount(9);
-        axis_y->setGridLineVisible(true);
-        axis_y->setLabelFormat("%.1i");
-        axis_y->setTitleText("Tonnes");
-        ui->chartView->chart()->addAxis(axis_y, Qt::AlignLeft);
+        set_smear();
     }
-
-    // Combo box and label visibility
-    ui->stationCombo->setVisible(quick_times);
-    ui->aggregationCombo->setVisible(quick_times);
-
-    ui->stationLabel->setVisible(quick_times);
-    ui->aggregationLabel->setVisible(quick_times);
-
-    //Quick time selection buttons
-    ui->yearButton->setEnabled(quick_times);
-    ui->monthButton->setEnabled(quick_times);
-    ui->weekButton->setEnabled(quick_times);
-    ui->dayButton->setEnabled(quick_times);
-
-    //Specific time period button changed
-    ui->timeButton->setText(button_text);
-
-    //Change the check boxes
-    ui->stackedBoxes->setCurrentWidget(widget);
-
-    //Default the check boxes
-    default_check_boxes();
-
-    //Take Lines of the graph
-    remove_all_graph_series();
 }
 
 void ChartWindow::on_stationCombo_currentIndexChanged(const QString current_station)
@@ -692,7 +848,7 @@ void ChartWindow::on_co2Radio_clicked(bool state)
 {
     if(state == true)
     {
-        view_elements->radioselection_smear = CO2;
+        view_elements->radioselection_smear = DataSet::CO2;
     }
 }
 
@@ -700,7 +856,7 @@ void ChartWindow::on_so2Radio_clicked(bool state)
 {
     if(state == true)
     {
-        view_elements->radioselection_smear = SO2;
+        view_elements->radioselection_smear = DataSet::SO2;
     }
 }
 
@@ -708,7 +864,7 @@ void ChartWindow::on_noxRadio_clicked(bool state)
 {
     if(state == true)
     {
-        view_elements->radioselection_smear = NO;
+        view_elements->radioselection_smear = DataSet::NO;
     }
 }
 
@@ -718,7 +874,7 @@ void ChartWindow::on_co2DataRadio_clicked(bool state)
 {
     if(state == true)
     {
-        view_elements->radioselection_statfi = CO2tonnes;
+        view_elements->radioselection_statfi = DataSet::CO2tonnes;
     }
 }
 
@@ -726,7 +882,7 @@ void ChartWindow::on_intensityRadio_clicked(bool state)
 {
     if(state == true)
     {
-        view_elements->radioselection_statfi = CO2intensity;
+        view_elements->radioselection_statfi = DataSet::CO2intensity;
     }
 }
 
@@ -734,7 +890,7 @@ void ChartWindow::on_indexedRadio_clicked(bool state)
 {
     if(state == true)
     {
-        view_elements->radioselection_statfi = CO2indexed;
+        view_elements->radioselection_statfi = DataSet::CO2indexed;
     }
 }
 
@@ -742,7 +898,7 @@ void ChartWindow::on_indexedIntensityRadio_clicked(bool state)
 {
     if(state == true)
     {
-        view_elements->radioselection_statfi = CO2intensityIndexed;
+        view_elements->radioselection_statfi = DataSet::CO2intensityIndexed;
     }
 }
 

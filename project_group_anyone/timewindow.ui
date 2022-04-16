@@ -35,7 +35,7 @@
      <item>
       <widget class="QStackedWidget" name="stackedSelection">
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="statfi_query">
         <layout class="QVBoxLayout" name="verticalLayout_3">

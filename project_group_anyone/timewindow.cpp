@@ -6,26 +6,8 @@ TimeWindow::TimeWindow(QWidget *parent) :
     ui(new Ui::TimeWindow)
 {
     ui->setupUi(this);
-
-    ui->calendar->setGridVisible(true);
-    ui->calendar->setMaximumDate(ui->calendar->selectedDate());
-
-    earliest = QDate(1900, 1, 1);
-    ui->calendar->setMinimumDate(earliest);
-
-    highlight = QTextCharFormat();
-    highlight.setFontWeight(QFont::Black);
-    highlight.setBackground(QColor(0, 190, 0));
-    highlight.setForeground(QColor(255, 255, 255));
-
-    plain = ui->calendar->dateTextFormat(earliest.currentDate());
-
-    QRegExp year("(19[0-9][0-9]|200[0-9]|201[0-9]|202[0-2])");
-    year_validator = new QRegExpValidator(year, this);
-    ui->beginEdit->setValidator(year_validator);
-    ui->endEdit->setValidator(year_validator);
-
-    ui->infoEdit->setReadOnly(true);
+    ui->beginButton->setAutoDefault(false);
+    ui->endButton->setAutoDefault(false);
 }
 
 TimeWindow::~TimeWindow()
@@ -34,28 +16,60 @@ TimeWindow::~TimeWindow()
     delete ui;
 }
 
-void TimeWindow::change_data(QString database_used)
+void TimeWindow::change_data(DataSource database_used, MeasuringStation station_used, DataSet gas_used)
 {
     QString instructions_text;
+    QWidget* widget;
 
-    if(database_used == "STATFI")
+    if(database_used == DataSource::STATFI)
     {
+        // Set validator
+        QRegExp year("(199[0-9]|200[0-9])|201[0-6]");
+        year_validator = new QRegExpValidator(year, this);
+        ui->beginEdit->setValidator(year_validator);
+        ui->endEdit->setValidator(year_validator);
+
+        // Set variables
+        ui->beginYear->setText("Begin year [format: yyyy] [minimum: 1990]");
+        ui->endYear->setText("End year [format: yyyy] [maximum: 2016]");
         instructions_text = year_info;
         current_format = year_format;
-        ui->stackedSelection->setCurrentWidget(ui->statfi_query);
+        widget = ui->statfi_query;
     }
 
     else // if "SMEAR"
     {
+        // Set calendar
+        ui->calendar->setGridVisible(true);
+        ui->calendar->setMaximumDate(ui->calendar->selectedDate());
+
+        QDate min = determine_min_max(station_used, gas_used);
+        earliest = min;
+        ui->calendar->setMinimumDate(earliest);
+
+        // Create highlight
+        highlight = QTextCharFormat();
+        highlight.setFontWeight(QFont::Black);
+        highlight.setBackground(QColor(0, 190, 0));
+        highlight.setForeground(QColor(255, 255, 255));
+
+        // Set plain format
+        plain = ui->calendar->dateTextFormat(earliest.currentDate());
+
+        // Set variables
         instructions_text = date_info;
-        ui->stackedSelection->setCurrentWidget(ui->smear_query);
+        widget = ui->smear_query;
     }
 
     // Update current database
     current_database = database_used;
 
+    // Set widget
+    ui->stackedSelection->setCurrentWidget(widget);
+
     // Browser
     ui->infoEdit->setTextColor(Qt::black);
+    ui->infoEdit->setReadOnly(true);
     ui->infoEdit->append(instructions_text + "\n");
 }
 
@@ -72,22 +86,91 @@ void TimeWindow::give_error(QString error)
     ui->infoEdit->append(error + "\n");
 }
 
+QDate TimeWindow::determine_min_max(MeasuringStation station, DataSet gas)
+{
+    QDate min;
+
+    switch(station)
+    {
+    case(MeasuringStation::Varrio):
+        switch(gas)
+        {
+        case(DataSet::CO2):
+            min = QDate(2012, 4, 22);
+            break;
+        case(DataSet::SO2):
+            min = QDate(1998, 1, 1);
+            break;
+        case(DataSet::NO):
+            min = QDate(1998, 1, 1);
+            break;
+        default:
+            break;
+        }
+        break;
+
+    case(MeasuringStation::Hyytiala):
+        switch(gas)
+        {
+        case(DataSet::CO2):
+            min = QDate(2011, 11, 2);
+            break;
+        case(DataSet::SO2):
+            min = QDate(1997, 1, 25);
+            break;
+        case(DataSet::NO):
+            min = QDate(1997, 1, 1);
+            break;
+        default:
+            break;
+        }
+        break;
+
+    case(MeasuringStation::Kumpula):
+        switch(gas)
+        {
+        case(DataSet::CO2):
+            min = QDate(2013, 10, 1);
+            break;
+        case(DataSet::SO2):
+            min = QDate(2006, 9, 22);
+            break;
+        case(DataSet::NO):
+            min = QDate(2005, 11, 25);
+            break;
+        default:
+            break;
+        }
+        break;
+
+    default:
+        qDebug() << "Defaulted";
+        min = QDate(1900, 1, 1);
+        break;
+    }
+
+    return min;
+}
+
 // SLOTS
 //------------------------------------------------------------------------------------------------------
 
 void TimeWindow::on_showButton_clicked()
 {
-    if(!ui->beginEdit->hasAcceptableInput() || !ui->endEdit->hasAcceptableInput())
-    {
-        give_error(input_error + current_format);
-        return;
-    }
+    QString begin;
+    QString end;
 
-    QString begin = ui->beginEdit->text();
-    QString end = ui->endEdit->text();
-
-    if(current_database == "STATFI")
+    if(current_database == DataSource::STATFI)
     {
+        begin = ui->beginEdit->text();
+        end = ui->endEdit->text();
+
+        if(!ui->beginEdit->hasAcceptableInput() || !ui->endEdit->hasAcceptableInput())
+        {
+            give_error(input_error + current_format);
+            return;
+        }
+
         if(begin > end)
         {
             give_error(chronology_year_error);
@@ -99,10 +182,18 @@ void TimeWindow::on_showButton_clicked()
             return;
         }
     }
-    else
+    else // SMEAR
     {
-        begin = begin_date.toString("dd/MM/yyyy");
-        end = end_date.toString("dd/MM/yyyy");
+        if(begin_date.isNull() || end_date.isNull())
+        {
+            give_error(calendar_error);
+            return;
+        }
+       else
+        {
+            begin = begin_date.toString("dd/MM/yyyy");
+            end = end_date.toString("dd/MM/yyyy");
+        }
     }
 
     std::pair<QString, QString> time_zone = std::make_pair(begin, end);
