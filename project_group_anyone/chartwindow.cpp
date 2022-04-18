@@ -919,6 +919,7 @@ void ChartWindow::on_actionCloseWindow_triggered()
 void ChartWindow::on_actionSaveLoadout_triggered()
 {
     // fetch all relevant data from ViewObject
+    /**
     DataSource db = view_elements->current_database;
     MeasuringStation mstat = view_elements->current_station;
     DataSet ds_statfi = view_elements->radioselection_statfi;
@@ -926,8 +927,29 @@ void ChartWindow::on_actionSaveLoadout_triggered()
     std::string date_start = view_elements->selected_custom_time.first.toStdString();
     std::string date_end = view_elements->selected_custom_time.second.toStdString();
     AggregateType aggtype = view_elements->selected_aggregation;
+    **/
+
+    UserSelections* us = new UserSelections(view_elements->current_database);
+
+    if(view_elements->current_database == DataSource::SMEAR){
+        us->setDataSet(view_elements->radioselection_smear);
+        us->setMeasuringStation(view_elements->current_station);
+        us->setAggregateType(view_elements->selected_aggregation);
+        us->setStart(Date(view_elements->selected_custom_time.first.toStdString()));
+        us->setEnd(Date(view_elements->selected_custom_time.second.toStdString()));
+    }
+    else if(view_elements->current_database == DataSource::STATFI){
+        us->setDataSet(view_elements->radioselection_statfi);
+        us->setMeasuringStation(MeasuringStation::None);
+        us->setAggregateType(AggregateType::None);
+        Date start_d(1, 1, view_elements->selected_custom_time.first.toInt(), 0, 0);
+        Date end_d(1, 1, view_elements->selected_custom_time.second.toInt(), 0, 0);
+        us->setStart(start_d);
+        us->setEnd(end_d);
+    }
+
 
     LoadoutHandler* lh = new LoadoutHandler();
-    lh->save(db, mstat, ds_statfi, ds_smear, date_start, date_end, aggtype);
+    lh->save(us);
     delete lh;
 }

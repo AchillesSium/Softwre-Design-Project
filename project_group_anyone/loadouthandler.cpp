@@ -10,7 +10,7 @@ LoadoutHandler::~LoadoutHandler()
 
 }
 
-void LoadoutHandler::save(DataSource db, MeasuringStation mstat, DataSet ds_statfi, DataSet ds_smear, std::string date_start, std::string date_end, AggregateType aggtype)
+void LoadoutHandler::save(UserSelections* us)
 {
     // load "loadout.json" file from root and make all necessary additions and changes
     QFile file;
@@ -22,9 +22,10 @@ void LoadoutHandler::save(DataSource db, MeasuringStation mstat, DataSet ds_stat
 
     QJsonObject RootObject = JsonDocument.object();
 
-    switch(db)
+    switch(us->getSource())
     {
         case DataSource::None:
+            RootObject.insert("DataSource", "None");
             break;
 
         case DataSource::STATFI:
@@ -36,7 +37,7 @@ void LoadoutHandler::save(DataSource db, MeasuringStation mstat, DataSet ds_stat
             break;
     }
 
-    switch(ds_statfi)
+    switch(us->getDataSet())
     {
         case DataSet::CO2tonnes:
             RootObject.insert("DataSetSTATFI", "CO2tonnes");
@@ -59,7 +60,7 @@ void LoadoutHandler::save(DataSource db, MeasuringStation mstat, DataSet ds_stat
             break;
     }
 
-    switch(ds_smear)
+    switch(us->getDataSet())
     {
         case DataSet::CO2:
             RootObject.insert("DataSetSMEAR", "CO2");
@@ -78,7 +79,7 @@ void LoadoutHandler::save(DataSource db, MeasuringStation mstat, DataSet ds_stat
             break;
     }
 
-    switch(mstat)
+    switch(us->getMeasuringStation())
     {
         case MeasuringStation::Varrio:
             RootObject.insert("MeasuringStation", "Varrio");
@@ -97,7 +98,7 @@ void LoadoutHandler::save(DataSource db, MeasuringStation mstat, DataSet ds_stat
             break;
     }
 
-    switch(aggtype)
+    switch(us->getAggregateType())
     {
         case AggregateType::Arithmetic:
             RootObject.insert("AggregateType", "Arithmetic");
@@ -136,8 +137,8 @@ void LoadoutHandler::save(DataSource db, MeasuringStation mstat, DataSet ds_stat
             break;
     }
 
-    RootObject.insert("DateStart", QString::fromStdString(date_start));
-    RootObject.insert("DateEnd", QString::fromStdString(date_end));
+    RootObject.insert("DateStart", QString::fromStdString(us->getStart().toString()));
+    RootObject.insert("DateEnd", QString::fromStdString(us->getEnd().toString()));
 
     // write all changes back to the file
     JsonDocument.setObject(RootObject); // set to json document
@@ -153,8 +154,9 @@ void LoadoutHandler::save(DataSource db, MeasuringStation mstat, DataSet ds_stat
     }
 }
 
-void LoadoutHandler::load()
+UserSelections* LoadoutHandler::load()
 {
+    // load the "loadout.json" file
     QFile file;
     file.setFileName("loadout.json");
     file.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -166,7 +168,16 @@ void LoadoutHandler::load()
 
     // check if a loadout has been saved before
     if(RootObject.isEmpty()){
-        return;
+        return nullptr;
     }
+
+    // read all relevant data from the json file
+    QString db = RootObject["DataSource"].toString();
+    QString ds_statfi = RootObject["DataSetSTATFI"].toString();
+    QString ds_smear = RootObject["DataSetSMEAR"].toString();
+    QString mstat = RootObject["MeasuringStation"].toString();
+    QString aggtype = RootObject["AggregateType"].toString();
+    QString date_start = RootObject["DateStart"].toString();
+    QString date_end = RootObject["DateEnd"].toString();
 
 }
