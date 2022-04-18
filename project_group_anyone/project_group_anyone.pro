@@ -11,6 +11,7 @@ CONFIG += c++11
 SOURCES += \
     datastorage.cpp \
     jsonparser.cpp \
+    loadouthandler.cpp \
     main.cpp \
     chartwindow.cpp \
     networkcalls.cpp \
@@ -27,6 +28,7 @@ HEADERS += \
     chartwindow.h \
     datastorage.h \
     jsonparser.h \
+    loadouthandler.h \
     networkcalls.h \
     smearnetworkcall.h \
     smearparser.h \

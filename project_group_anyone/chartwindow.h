@@ -3,6 +3,7 @@
 
 #include "timewindow.h"
 #include "userselections.h"
+#include "loadouthandler.h"
 
 #include <QMainWindow>
 #include <QString>
@@ -91,7 +92,7 @@ private slots:
 
     // TODO?
     //void on_actionChooseLoadout_triggered();
-    //void on_actionSaveLoadout_triggered();
+    void on_actionSaveLoadout_triggered();
     //void on_actionSettings_triggered();
 
 private:

@@ -654,7 +654,7 @@ void ChartWindow::on_applyButton_clicked()
         selections->setStart(Date(1,1,view_elements->selected_custom_time.first.toInt(),0,0));
         selections->setEnd(Date(1,1,view_elements->selected_custom_time.second.toInt(),0,0));
 
-        qDebug().nospace() << "abc" << qPrintable(view_elements->radioselection_statfi) << "def";
+        //qDebug().nospace() << "abc" << qPrintable(view_elements->radioselection_statfi) << "def";
 
         std::vector<std::pair<int, double>> filtered_statfi = Controller::getSTATFIData(selections);
         qDebug() << "Filtered Vecor in Chart Window" << filtered_statfi;
@@ -914,4 +914,20 @@ void ChartWindow::on_actionNewWindow_triggered()
 void ChartWindow::on_actionCloseWindow_triggered()
 {
     this->close();
+}
+
+void ChartWindow::on_actionSaveLoadout_triggered()
+{
+    // fetch all relevant data from ViewObject
+    DataSource db = view_elements->current_database;
+    MeasuringStation mstat = view_elements->current_station;
+    DataSet ds_statfi = view_elements->radioselection_statfi;
+    DataSet ds_smear = view_elements->radioselection_smear;
+    std::string date_start = view_elements->selected_custom_time.first.toStdString();
+    std::string date_end = view_elements->selected_custom_time.second.toStdString();
+    AggregateType aggtype = view_elements->selected_aggregation;
+
+    LoadoutHandler* lh = new LoadoutHandler();
+    lh->save(db, mstat, ds_statfi, ds_smear, date_start, date_end, aggtype);
+    delete lh;
 }
