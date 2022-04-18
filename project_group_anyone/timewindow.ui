@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>594</width>
-    <height>419</height>
+    <width>806</width>
+    <height>332</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,7 +22,7 @@
         <enum>Qt::Vertical</enum>
        </property>
        <property name="sizeType">
-        <enum>QSizePolicy::Maximum</enum>
+        <enum>QSizePolicy::Preferred</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -35,14 +35,14 @@
      <item>
       <widget class="QStackedWidget" name="stackedSelection">
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="statfi_query">
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
-          <widget class="QLabel" name="beginLabel">
+          <widget class="QLabel" name="beginYear">
            <property name="text">
-            <string>Begin date (dd/mm/yyyy)</string>
+            <string>Begin year (yyyy)</string>
            </property>
           </widget>
          </item>
@@ -66,21 +66,113 @@
           </spacer>
          </item>
          <item>
-          <widget class="QLabel" name="endLabel">
+          <widget class="QLabel" name="endYear">
            <property name="text">
-            <string>End date (dd/mm/yyyy)</string>
+            <string>End year (yyyy)</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QLineEdit" name="endEdit"/>
          </item>
+         <item>
+          <spacer name="verticalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
         </layout>
        </widget>
        <widget class="QWidget" name="smear_query">
-        <layout class="QGridLayout" name="gridLayout">
-         <item row="0" column="0">
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
           <widget class="QCalendarWidget" name="calendar"/>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Preferred</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>15</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <layout class="QGridLayout" name="gridLayout_2">
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item row="2" column="2">
+            <widget class="QPushButton" name="endButton">
+             <property name="text">
+              <string>Select Ending</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLabel" name="endDate">
+             <property name="text">
+              <string>Not Selected</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLabel" name="beginDate">
+             <property name="text">
+              <string>Not Selected</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="beginDateLabel">
+             <property name="text">
+              <string>Begin date:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QPushButton" name="beginButton">
+             <property name="text">
+              <string>Select Beginning</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="endDateLabel">
+             <property name="text">
+              <string>End date:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <widget class="QPushButton" name="resetBeginButton">
+             <property name="text">
+              <string>Reset Beginning</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="3">
+            <widget class="QPushButton" name="resetEndButton">
+             <property name="text">
+              <string>Reset Ending</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
        </widget>
@@ -90,6 +182,9 @@
       <spacer name="verticalSpacer_2">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Preferred</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -104,10 +199,23 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
-      <widget class="QTextEdit" name="infoEdit"/>
+      <widget class="QTextEdit" name="infoEdit">
+       <property name="maximumSize">
+        <size>
+         <width>400</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="showButton">
+       <property name="maximumSize">
+        <size>
+         <width>400</width>
+         <height>16777215</height>
+        </size>
+       </property>
        <property name="text">
         <string>Show data</string>
        </property>
@@ -115,6 +223,12 @@
      </item>
      <item>
       <widget class="QPushButton" name="cancelButton">
+       <property name="maximumSize">
+        <size>
+         <width>400</width>
+         <height>16777215</height>
+        </size>
+       </property>
        <property name="text">
         <string>Cancel</string>
        </property>
