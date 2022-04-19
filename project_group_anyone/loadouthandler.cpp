@@ -180,4 +180,112 @@ UserSelections* LoadoutHandler::load()
     QString date_start = RootObject["DateStart"].toString();
     QString date_end = RootObject["DateEnd"].toString();
 
+    // set datasource
+    if(db == QString("STATFI")){
+        UserSelections* us = new UserSelections(DataSource::STATFI);
+
+        // set dataset
+        if(ds_statfi == QString("CO2tonnes")){
+            us->setDataSet(DataSet::CO2tonnes);
+        }
+        else if(ds_statfi == QString("CO2indexed")){
+            us->setDataSet(DataSet::CO2indexed);
+        }
+        else if(ds_statfi == QString("CO2intensity")){
+            us->setDataSet(DataSet::CO2intensity);
+        }
+        else if(ds_statfi == QString("CO2intensityIndexed")){
+            us->setDataSet(DataSet::CO2intensityIndexed);
+        }
+
+        // set start and end dates
+        int year = std::stoi(date_start.toStdString().substr(0, 4));
+        int month = std::stoi(date_start.toStdString().substr(5, 2));
+        int day = std::stoi(date_start.toStdString().substr(8, 2));
+
+        us->setStart(Date(day, month, year, 0, 0));
+
+        year = std::stoi(date_end.toStdString().substr(0, 4));
+        month = std::stoi(date_end.toStdString().substr(5, 2));
+        day = std::stoi(date_end.toStdString().substr(8, 2));
+
+        us->setEnd(Date(day, month, year, 0, 0));
+
+        us->setMeasuringStation(MeasuringStation::None);
+        us->setAggregateType(AggregateType::None);
+
+        return us;
+    }
+    else if(db == QString("SMEAR")){
+        UserSelections* us = new UserSelections(DataSource::SMEAR);
+
+        // set dataset
+        if(ds_smear == QString("CO2")){
+            us->setDataSet(DataSet::CO2);
+        }
+        else if(ds_smear == QString("SO2")){
+            us->setDataSet(DataSet::SO2);
+        }
+        else if(ds_smear == QString("NO")){
+            us->setDataSet(DataSet::NO);
+        }
+
+        // set measuring station
+        if(mstat == QString("Varrio")){
+            us->setMeasuringStation(MeasuringStation::Varrio);
+        }
+        else if(mstat == QString("Hyytiala")){
+            us->setMeasuringStation(MeasuringStation::Hyytiala);
+        }
+        else if(mstat == QString("Kumpula")){
+            us->setMeasuringStation(MeasuringStation::Kumpula);
+        }
+
+        // set aggregate type
+        if(aggtype == QString("Arithmetic")){
+            us->setAggregateType(AggregateType::Arithmetic);
+        }
+        else if(aggtype == QString("Availability")){
+            us->setAggregateType(AggregateType::Availability);
+        }
+        else if(aggtype == QString("Circular")){
+            us->setAggregateType(AggregateType::Circular);
+        }
+        else if(aggtype == QString("Geometric")){
+            us->setAggregateType(AggregateType::Geometric);
+        }
+        else if(aggtype == QString("Max")){
+            us->setAggregateType(AggregateType::Max);
+        }
+        else if(aggtype == QString("Median")){
+            us->setAggregateType(AggregateType::Median);
+        }
+        else if(aggtype == QString("Min")){
+            us->setAggregateType(AggregateType::Min);
+        }
+        else if(aggtype == QString("None")){
+            us->setAggregateType(AggregateType::None);
+        }
+        else if(aggtype == QString("Sum")){
+            us->setAggregateType(AggregateType::Sum);
+        }
+
+        // set start and end dates
+        int year = std::stoi(date_start.toStdString().substr(0, 4));
+        int month = std::stoi(date_start.toStdString().substr(5, 2));
+        int day = std::stoi(date_start.toStdString().substr(8, 2));
+
+        us->setStart(Date(day, month, year, 0, 0));
+
+        year = std::stoi(date_end.toStdString().substr(0, 4));
+        month = std::stoi(date_end.toStdString().substr(5, 2));
+        day = std::stoi(date_end.toStdString().substr(8, 2));
+
+        us->setEnd(Date(day, month, year, 0, 0));
+
+        return us;
+    }
+    else{
+        return nullptr;
+    }
 }

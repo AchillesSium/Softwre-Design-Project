@@ -916,19 +916,72 @@ void ChartWindow::on_actionCloseWindow_triggered()
     this->close();
 }
 
+void ChartWindow::on_actionChooseLoadout_triggered()
+{
+    LoadoutHandler* lh = new LoadoutHandler();
+    UserSelections* us = lh->load();
+
+    if(us == nullptr){
+        qDebug() << "something went wrong or no loadout saved";
+        delete us;
+        delete lh;
+        return;
+    }
+
+    view_elements->current_database = us->getSource();
+
+    if(view_elements->current_database == DataSource::STATFI){
+        view_elements->radioselection_statfi = us->getDataSet();
+        view_elements->radioselection_smear = DataSet::None;
+
+        // set start
+        int year = us->getStart().getYear();
+        std::string test = std::to_string(year);
+        view_elements->selected_custom_time.first = QString::fromStdString(test);
+
+        // set end
+        year = us->getEnd().getYear();
+        test = std::to_string(year);
+        view_elements->selected_custom_time.second = QString::fromStdString(test);
+
+        view_elements->selected_preset_time = Time::Year;
+
+    }
+    else if(view_elements->current_database == DataSource::SMEAR){
+        view_elements->radioselection_smear = us->getDataSet();
+        view_elements->radioselection_statfi = DataSet::None;
+
+        // set start
+        QString year = QString::fromStdString(std::to_string(us->getStart().getYear()));
+        QString month = QString::fromStdString(std::to_string(us->getStart().getMonth()));
+        QString day = QString::fromStdString(std::to_string(us->getStart().getDay()));
+
+        QString start_date = day + "/" + month + "/" + year;
+        view_elements->selected_custom_time.first = start_date;
+
+        // set end
+        year = QString::fromStdString(std::to_string(us->getEnd().getYear()));
+        month = QString::fromStdString(std::to_string(us->getEnd().getMonth()));
+        day = QString::fromStdString(std::to_string(us->getEnd().getDay()));
+
+        QString end_date = day + "/" + month + "/" + year;
+        view_elements->selected_custom_time.second = end_date;
+
+        view_elements->selected_preset_time = Time::Custom;
+    }
+
+    view_elements->current_station = us->getMeasuringStation();
+    view_elements->selected_aggregation = us->getAggregateType();
+
+    delete us;
+    delete lh;
+
+    //on_applyButton_clicked();
+}
+
 void ChartWindow::on_actionSaveLoadout_triggered()
 {
     // fetch all relevant data from ViewObject
-    /**
-    DataSource db = view_elements->current_database;
-    MeasuringStation mstat = view_elements->current_station;
-    DataSet ds_statfi = view_elements->radioselection_statfi;
-    DataSet ds_smear = view_elements->radioselection_smear;
-    std::string date_start = view_elements->selected_custom_time.first.toStdString();
-    std::string date_end = view_elements->selected_custom_time.second.toStdString();
-    AggregateType aggtype = view_elements->selected_aggregation;
-    **/
-
     UserSelections* us = new UserSelections(view_elements->current_database);
 
     if(view_elements->current_database == DataSource::SMEAR){
@@ -951,5 +1004,6 @@ void ChartWindow::on_actionSaveLoadout_triggered()
 
     LoadoutHandler* lh = new LoadoutHandler();
     lh->save(us);
+    delete us;
     delete lh;
 }

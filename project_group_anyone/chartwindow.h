@@ -91,7 +91,7 @@ private slots:
     void on_actionCloseWindow_triggered();
 
     // TODO?
-    //void on_actionChooseLoadout_triggered();
+    void on_actionChooseLoadout_triggered();
     void on_actionSaveLoadout_triggered();
     //void on_actionSettings_triggered();
 
