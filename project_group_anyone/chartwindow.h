@@ -7,6 +7,7 @@
 
 #include <QMainWindow>
 #include <QString>
+#include <string>
 #include <QChart>
 #include <QLineSeries>
 #include <QValueAxis>

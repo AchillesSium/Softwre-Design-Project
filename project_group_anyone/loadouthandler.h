@@ -3,10 +3,15 @@
 
 
 #include "userselections.h"
+#include "date.h"
 
 #include <QFile>
+#include <QIODevice>
+#include <QString>
+#include <string>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonParseError>
 #include <QDebug>
 
 class LoadoutHandler
