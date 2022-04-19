@@ -476,6 +476,21 @@ void ChartWindow::on_dayButton_clicked()
 void ChartWindow::on_weekButton_clicked()
 {
     quick_time_change(Week);
+
+//    QPixmap p = ui->chartView->grab();// chartView->grab();
+//    QOpenGLWidget *glWidget  = graph->findChildren<QOpenGLWidget>();
+//    if(glWidget){
+//        QPainter painter(&p);
+//        QPoint d = glWidget->mapToGlobal(QPoint())-ui->chartView->mapToGlobal(QPoint());
+//        painter.setCompositionMode(QPainter::CompositionMode_SourceAtop);
+//        painter.drawImage(d, glWidget->grabFramebuffer());
+//        painter.end();
+//    }
+//    p.save("test", "PNG");
+
+//    QString filename = QFileDialog::getSaveFileName(this, tr("Save QChart"), "", tr("Images (*.png)"));
+//    QPixmap p = ui->chartView->grab();
+//    p.save(filename, "PNG");
 }
 
 void ChartWindow::on_monthButton_clicked()
@@ -565,7 +580,6 @@ void ChartWindow::on_applyButton_clicked()
             }
         }
     }
-
     delete selections;
 }
 
