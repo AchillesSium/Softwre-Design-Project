@@ -23,7 +23,7 @@ ChartWindow::ChartWindow(QWidget *parent) :
     axis_x->setTickCount(24);
     axis_x->setGridLineVisible(true);
     axis_x->setLabelFormat("%.1i");
-    axis_x->setTitleText("Hours");
+    axis_x->setTitleText("Time Axis");
 
     // Add axis to the graph
     graph->addAxis(axis_x, Qt::AlignBottom);
@@ -127,17 +127,17 @@ void ChartWindow::set_smear()
     view_elements->current_station = MeasuringStation::Varrio;
     view_elements->radioselection_smear = DataSet::None;
     view_elements->radioselection_statfi = DataSet::None;
-    view_elements->selected_preset_time = Time::No_time;
-    view_elements->selected_custom_time = std::make_pair("", "");
+    selected_preset_time = Time::No_time;
+    view_elements->selected_time = std::make_pair("", "");
 
 
     // Set view elements for STATFI
 
         // Quick time buttons
-        ui->yearButton->setEnabled(true);
-        ui->monthButton->setEnabled(true);
-        ui->weekButton->setEnabled(true);
-        ui->dayButton->setEnabled(true);
+        ui->yearButton->setVisible(true);
+        ui->monthButton->setVisible(true);
+        ui->weekButton->setVisible(true);
+        ui->dayButton->setVisible(true);
 
         // Radio buttons
         ui->stackedBoxes->setCurrentWidget(ui->smearBox);
@@ -172,17 +172,17 @@ void ChartWindow::set_statfi()
     view_elements->current_station = MeasuringStation::None;
     view_elements->radioselection_smear = DataSet::None;
     view_elements->radioselection_statfi = DataSet::None;
-    view_elements->selected_preset_time = Time::No_time;
-    view_elements->selected_custom_time = std::make_pair("", "");
+    selected_preset_time = Time::No_time;
+    view_elements->selected_time = std::make_pair("", "");
 
 
     // Set view elements for STATFI
 
         // Quick time buttons
-        ui->yearButton->setEnabled(false);
-        ui->monthButton->setEnabled(false);
-        ui->weekButton->setEnabled(false);
-        ui->dayButton->setEnabled(false);
+        ui->yearButton->setVisible(false);
+        ui->monthButton->setVisible(false);
+        ui->weekButton->setVisible(false);
+        ui->dayButton->setVisible(false);
 
         // Radio buttons
         ui->stackedBoxes->setCurrentWidget(ui->statfiBox);
@@ -197,7 +197,7 @@ void ChartWindow::set_statfi()
         ui->timeButton->setText("Year-to_Year");
 
         // Display x-axis for user
-        quick_time_change(Year); // TODO make x-axis be a time span of ten years
+        quick_time_change(Year);
 }
 
 
@@ -228,11 +228,104 @@ unsigned int ChartWindow::round_to_nearest(double minmax)
     return ceil(minmax/rounder)*rounder;
 }
 
-QDateTime ChartWindow::make_datetime(Date from_date)
+
+unsigned int ChartWindow::largest_divider(unsigned int point_count)
 {
-    QDate date = QDate(from_date.getYear(), from_date.getMonth(), from_date.getDay());
-    QTime time = QTime(from_date.getHour(), from_date.getMinute());
-    return QDateTime(date, time, QTimeZone(3));
+    if(point_count <= 5)
+    {
+        return point_count;
+    }
+
+    unsigned int counter = 1;
+    unsigned int max_divider = 1;
+
+    while(counter < point_count)
+    {
+        if(point_count % counter == 0)
+        {
+            max_divider = counter;
+        }
+
+        counter++;
+    }
+
+    if(max_divider == 1) // On alkuluku
+    {
+        max_divider = point_count;
+    }
+
+    return max_divider + 1;
+}
+
+
+QtCharts::QDateTimeAxis* ChartWindow::smear_axis(const std::vector<std::pair<double, QDateTime>> &dates)
+{
+    QDateTime begin = dates.front().second;
+    QDateTime end = dates.back().second;
+
+    QDateTimeAxis *time_axis = new QDateTimeAxis;
+    time_axis->setGridLineVisible(true);
+
+    qDebug() << "Startted";
+    if(begin.date().year() == end.date().year())
+    {
+            qDebug() << "In year";
+        if(begin.date().month() == end.date().month())
+        {
+            qDebug() << "In month";
+            if(begin.date().day() == end.date().day())
+            {
+                qDebug() << "In day";
+                time_axis->setTickCount(largest_divider(end.time().hour() - begin.time().hour()));
+                time_axis->setFormat("ddd hh:mm");
+            }
+            else
+            {
+                if(begin.daysTo(end) > 1)
+                {
+                    time_axis->setTickCount(largest_divider(end.date().day() - begin.date().day()));
+                    time_axis->setFormat("dd/M");
+                }
+                else // Only one day difference
+                {
+                    time_axis->setTickCount(largest_divider(end.time().hour() - begin.time().hour()));
+                    time_axis->setFormat("ddd hh:mm");
+                }
+            }
+        }
+        else
+        {
+            if(end.date().month() - begin.date().month() > 1)
+            {
+                time_axis->setTickCount(end.date().month() - begin.date().month() + 1);
+                time_axis->setFormat("MMM");
+            }
+            else // Only one month difference
+            {
+                qDebug() << "Month else";
+
+                time_axis->setTickCount(largest_divider(begin.daysTo(end)));
+                time_axis->setFormat("dd/M");
+            }
+        }
+    }
+    else
+    {
+        if(end.date().year() - begin.date().year() > 1)
+        {
+            time_axis->setTickCount(end.date().year() - begin.date().year() + 1);
+            time_axis->setFormat("yyyy");
+        }
+        else // Only one year difference
+        {
+            time_axis->setTickCount(13);
+            time_axis->setFormat("MMM/yy");
+        }
+    }
+
+    time_axis->setRange(begin, end);
+    time_axis->setTitleText("Time");
+    return time_axis;
 }
 
 
@@ -241,91 +334,48 @@ QDateTime ChartWindow::make_datetime(Date from_date)
 
 void ChartWindow::quick_time_change(Time period)
 {
+    QDateTime begin;
+    QDateTime end = begin.currentDateTime();
 
-    if(view_elements->selected_preset_time == period)
-    {
-        return;
-    }
-
-
-    switch(view_elements->radioselection_smear)
-    {
-    case CO2:
-        //remove_graph_series(co2_series.at(view_elements->selected_preset_time));
-        break;
-
-    case SO2:
-        //remove_graph_series(so2_series.at(view_elements->selected_preset_time));
-        break;
-
-    case NO:
-        //remove_graph_series(nox_series.at(view_elements->selected_preset_time));
-        break;
-
-    default:
-        // Nothing needs to be done
-        break;
-    }
-
-    ui->chartView->chart()->removeAxis(ui->chartView->chart()->axisX());
-    axis_x = new QValueAxis();
-    int max_tick;
     QString title_text;
 
     switch(period)
     {
     case Day:
-        max_tick = 24;
+        begin = end.addDays(-1);
         title_text = "Hours";
         break;
 
     case Week:
-        max_tick = 7;
+        begin = end.addDays(-7);
         title_text = "Days";
         break;
 
     case Month:
-        max_tick = 30;
+        begin = end.addMonths(-1);
         title_text = "Days";
         break;
 
     case Year:
-        max_tick = 12;
+        begin = end.addYears(-1);
         title_text = "Months";
         break;
 
     default:
-        max_tick = 10;
-        title_text = "Years";
+        title_text = "Custom";
         break;
     }
 
-    axis_x->setMax(max_tick);
-    axis_x->setTickCount(max_tick);
+    view_elements->selected_time = std::make_pair(begin.toString("dd/MM/yyyy"), end.toString("dd/MM/yyyy"));
+
+    // Remove axis and make new dummy-axis as a placeholder for actual axis
+    ui->chartView->chart()->removeAxis(ui->chartView->chart()->axisX());
+    axis_x = new QValueAxis();
     axis_x->setTitleText(title_text);
     axis_x->setGridLineVisible(true);
     axis_x->setLabelFormat("%.1i");
     ui->chartView->chart()->addAxis(axis_x, Qt::AlignBottom);
-    view_elements->selected_preset_time = period;
-
-    switch(view_elements->radioselection_smear)
-    {
-    case CO2:
-        //add_graph_series(co2_series.at(view_elements->selected_preset_time));
-        break;
-
-    case SO2:
-        //add_graph_series(so2_series.at(view_elements->selected_preset_time));
-        break;
-
-    case NO:
-        //add_graph_series(nox_series.at(view_elements->selected_preset_time));
-        break;
-
-    default:
-        // Nothing needs to be done
-        break;
-    }
+    selected_preset_time = period;
 }
 
 QList<QPointF> ChartWindow::make_statfi_series(const std::vector<std::pair<int, double>> &filtered, unsigned int to_start, unsigned int to_end)
@@ -441,7 +491,7 @@ void ChartWindow::display_statfi(const std::vector<std::pair<int, double>> &filt
 
     QValueAxis *x_axis = static_cast<QValueAxis*>(ui->chartView->chart()->axisX());
     x_axis->setTitleText("Years");
-    x_axis->setTickCount(filtered.size() + 1);
+    x_axis->setTickCount(largest_divider(filtered.size()));
     x_axis->setGridLineVisible(true);
     x_axis->setLabelFormat("%.1i");
 
@@ -452,7 +502,7 @@ void ChartWindow::display_statfi(const std::vector<std::pair<int, double>> &filt
     y_axis->setGridLineVisible(true);
     y_axis->setLabelFormat("%.1i");
 
-    view_elements->selected_preset_time = Time::Custom;
+    selected_preset_time = Time::Custom;
 }
 
 
@@ -514,18 +564,9 @@ void ChartWindow::display_smear(const std::vector<std::pair<double, QDateTime>> 
         }
     }
 
-    // Determine max and min times
-    QDateTime maximum_time = filtered.back().second;
-    QDateTime minimum_time = filtered.front().second;
-
     // Create both axis
 
-    QDateTimeAxis *time_axis = new QDateTimeAxis;
-    time_axis->setFormat("dd/MMMM/yyyy");
-    time_axis->setTickCount(filtered.size() + 1);
-    time_axis->setRange(minimum_time, maximum_time);
-    time_axis->setGridLineVisible(true);
-    time_axis->setTitleText("Time");
+    QDateTimeAxis *time_axis = smear_axis(filtered);
 
     qDebug() << "X-axis created";
 
@@ -540,7 +581,11 @@ void ChartWindow::display_smear(const std::vector<std::pair<double, QDateTime>> 
 
     // Remove old axises from the chart
     ui->chartView->chart()->removeAxis(ui->chartView->chart()->axisX());
-    ui->chartView->chart()->removeAxis(ui->chartView->chart()->axisY());
+
+    if(ui->chartView->chart()->axisY())
+    {
+        ui->chartView->chart()->removeAxis(ui->chartView->chart()->axisY());
+    }
 
     // Add new axises to the chart
     ui->chartView->chart()->addAxis(time_axis, Qt::AlignBottom);
@@ -567,7 +612,7 @@ void ChartWindow::display_smear(const std::vector<std::pair<double, QDateTime>> 
         }
     }
 
-    view_elements->selected_preset_time = Time::Custom;
+    selected_preset_time = Time::Custom;
 
     qDebug() << "Finished!";
 
@@ -586,8 +631,8 @@ void ChartWindow::display_smear(const std::vector<std::pair<double, QDateTime>> 
 
 void ChartWindow::get_pair(std::pair<QString,QString> time_pair)
 {
-    view_elements->selected_custom_time = time_pair;
-    view_elements->selected_preset_time = Time::Custom;
+    view_elements->selected_time = time_pair;
+    selected_preset_time = Time::Custom;
     on_applyButton_clicked();
 }
 
@@ -651,8 +696,8 @@ void ChartWindow::on_applyButton_clicked()
     {
         selections = new UserSelections(DataSource::STATFI);
         selections->setDataSet(view_elements->radioselection_statfi);
-        selections->setStart(Date(1,1,view_elements->selected_custom_time.first.toInt(),0,0));
-        selections->setEnd(Date(1,1,view_elements->selected_custom_time.second.toInt(),0,0));
+        selections->setStart(Date(1,1,view_elements->selected_time.first.toInt(),0,0));
+        selections->setEnd(Date(1,1,view_elements->selected_time.second.toInt(),0,0));
 
         qDebug().nospace() << "abc" << qPrintable(view_elements->radioselection_statfi) << "def";
 
@@ -689,78 +734,55 @@ void ChartWindow::on_applyButton_clicked()
         display_statfi(filtered_statfi);
     }
 
-    else if(current == DataSource::SMEAR && view_elements->radioselection_smear != DataSet::None)
+    else if(current == DataSource::SMEAR && view_elements->radioselection_smear != DataSet::None && selected_preset_time != Time::No_time)
     {
         qDebug() << "Got in datasource and dataset";
-        if(view_elements->selected_preset_time == Custom)
-        {
-            qDebug() << "Got in custom time";
-            selections = new UserSelections(DataSource::SMEAR);
-            selections->setMeasuringStation(view_elements->current_station);
-            selections->setDataSet(view_elements->radioselection_smear);
-            selections->setStart(Date(view_elements->selected_custom_time.first.toStdString()));
-            selections->setEnd(Date(view_elements->selected_custom_time.second.toStdString()));
-            selections->setAggregateType(view_elements->selected_aggregation);
+        qDebug() << "Got in custom time";
+        selections = new UserSelections(DataSource::SMEAR);
+        selections->setMeasuringStation(view_elements->current_station);
+        selections->setDataSet(view_elements->radioselection_smear);
+        selections->setStart(Date(view_elements->selected_time.first.toStdString()));
+        selections->setEnd(Date(view_elements->selected_time.second.toStdString()));
+        selections->setAggregateType(view_elements->selected_aggregation);
 
-            std::vector<std::pair<double, QDateTime>> filtered_smear; // = Controller::getSMEARData(selections);
+        std::vector<std::pair<double, QDateTime>> filtered_smear; //= Controller::getSMEARData(selections);
 
-            QDateTime moment = QDateTime(QDate(1998, 6, 5), QTime(0, 0), QTimeZone(3));
-            QDateTime moment_2 = QDateTime(QDate(1998, 6, 5), QTime(6, 0), QTimeZone(3));
-            QDateTime moment_3 = QDateTime(QDate(1998, 6, 5), QTime(18, 0), QTimeZone(3));
-            QDateTime moment_4 = QDateTime(QDate(1998, 6, 6), QTime(0, 0), QTimeZone(3));
-            QDateTime moment_5 = QDateTime(QDate(1998, 6, 6), QTime(6, 0), QTimeZone(3));
-            QDateTime moment_6 = QDateTime(QDate(1998, 6, 6), QTime(18, 0), QTimeZone(3));
-            QDateTime moment_7 = QDateTime(QDate(1998, 6, 7), QTime(0, 0), QTimeZone(3));
-            QDateTime moment_8 = QDateTime(QDate(1998, 6, 7), QTime(6, 0), QTimeZone(3));
-            QDateTime moment_9 = QDateTime(QDate(1998, 6, 7), QTime(18, 0), QTimeZone(3));
-            QDateTime moment_10 = QDateTime(QDate(1998, 6, 8), QTime(0, 0), QTimeZone(3));
-            QDateTime moment_11 = QDateTime(QDate(1998, 6, 8), QTime(6, 0), QTimeZone(3));
-            QDateTime moment_12 = QDateTime(QDate(1998, 6, 8), QTime(18, 0), QTimeZone(3));
-            QDateTime moment_13 = QDateTime(QDate(1998, 6, 9), QTime(0, 0), QTimeZone(3));
-            QDateTime moment_14 = QDateTime(QDate(1998, 6, 9), QTime(6, 0), QTimeZone(3));
-            QDateTime moment_15 = QDateTime(QDate(1998, 6, 9), QTime(18, 0), QTimeZone(3));
-            QDateTime moment_16 = QDateTime(QDate(1998, 6, 10), QTime(0, 0), QTimeZone(3));
+        /*
+        QDateTime moment = QDateTime(QDate(2005, 1, 5), QTime(0, 0), QTimeZone(3));
+        QDateTime moment_2 = QDateTime(QDate(2005, 2, 5), QTime(6, 0), QTimeZone(3));
+        QDateTime moment_3 = QDateTime(QDate(2005, 3, 5), QTime(18, 0), QTimeZone(3));
+        QDateTime moment_4 = QDateTime(QDate(2005, 4, 6), QTime(0, 0), QTimeZone(3));
+        QDateTime moment_5 = QDateTime(QDate(2005, 5, 6), QTime(6, 0), QTimeZone(3));
+        QDateTime moment_6 = QDateTime(QDate(2005, 6, 6), QTime(18, 0), QTimeZone(3));
+        QDateTime moment_7 = QDateTime(QDate(2005, 7, 7), QTime(0, 0), QTimeZone(3));
+        QDateTime moment_8 = QDateTime(QDate(2005, 8, 7), QTime(6, 0), QTimeZone(3));
+        QDateTime moment_9 = QDateTime(QDate(2005, 8, 7), QTime(18, 0), QTimeZone(3));
+        QDateTime moment_10 = QDateTime(QDate(2005, 9, 8), QTime(0, 0), QTimeZone(3));
+        QDateTime moment_11 = QDateTime(QDate(2005, 10, 8), QTime(6, 0), QTimeZone(3));
+        QDateTime moment_12 = QDateTime(QDate(2005, 11, 8), QTime(18, 0), QTimeZone(3));
+        QDateTime moment_13 = QDateTime(QDate(2005, 12, 9), QTime(0, 0), QTimeZone(3));
+        QDateTime moment_14 = QDateTime(QDate(2005, 12, 9), QTime(6, 0), QTimeZone(3));
+        QDateTime moment_15 = QDateTime(QDate(2005, 12, 9), QTime(18, 0), QTimeZone(3));
+        QDateTime moment_16 = QDateTime(QDate(2006, 1, 10), QTime(0, 0), QTimeZone(3));
 
-            filtered_smear.push_back(std::make_pair(0.0, moment));
-            filtered_smear.push_back(std::make_pair(0.0, moment_2));
-            filtered_smear.push_back(std::make_pair(5694.0, moment_3));
-            filtered_smear.push_back(std::make_pair(2035.0, moment_4));
-            filtered_smear.push_back(std::make_pair(4222.0, moment_5));
-            filtered_smear.push_back(std::make_pair(4056.0, moment_6));
-            filtered_smear.push_back(std::make_pair(2940.0, moment_7));
-            filtered_smear.push_back(std::make_pair(0.0, moment_8));
-            filtered_smear.push_back(std::make_pair(0.0, moment_9));
-            filtered_smear.push_back(std::make_pair(3567.0, moment_10));
-            filtered_smear.push_back(std::make_pair(2345.0, moment_11));
-            filtered_smear.push_back(std::make_pair(4567.0, moment_12));
-            filtered_smear.push_back(std::make_pair(4320.0, moment_13));
-            filtered_smear.push_back(std::make_pair(3209.0, moment_14));
-            filtered_smear.push_back(std::make_pair(0.0, moment_15));
-            filtered_smear.push_back(std::make_pair(0.0, moment_16));
+        filtered_smear.push_back(std::make_pair(0.0, moment));
+        filtered_smear.push_back(std::make_pair(0.0, moment_2));
+        filtered_smear.push_back(std::make_pair(5694.0, moment_3));
+        filtered_smear.push_back(std::make_pair(2035.0, moment_4));
+        filtered_smear.push_back(std::make_pair(4222.0, moment_5));
+        filtered_smear.push_back(std::make_pair(4056.0, moment_6));
+        filtered_smear.push_back(std::make_pair(2940.0, moment_7));
+        filtered_smear.push_back(std::make_pair(0.0, moment_8));
+        filtered_smear.push_back(std::make_pair(0.0, moment_9));
+        filtered_smear.push_back(std::make_pair(3567.0, moment_10));
+        filtered_smear.push_back(std::make_pair(2345.0, moment_11));
+        filtered_smear.push_back(std::make_pair(4567.0, moment_12));
+        filtered_smear.push_back(std::make_pair(4320.0, moment_13));
+        filtered_smear.push_back(std::make_pair(3209.0, moment_14));
+        filtered_smear.push_back(std::make_pair(0.0, moment_15));
+        filtered_smear.push_back(std::make_pair(0.0, moment_16));*/
 
-            display_smear(filtered_smear);
-        }
-        else
-        {
-            switch(view_elements->radioselection_smear)
-            {
-            case CO2:
-                // TODO Fetch the correct information and display it on the graph
-                break;
-
-            case SO2:
-                // TODO -||-
-                break;
-
-            case NO:
-                // TODO -||-
-                break;
-
-            default:
-                // Nothing to be done
-                break;
-            }
-        }
+        display_smear(filtered_smear);
     }
 
     delete selections;

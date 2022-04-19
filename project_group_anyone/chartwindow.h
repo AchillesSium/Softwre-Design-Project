@@ -42,7 +42,9 @@ public:
 
     // Quality of life functions
     unsigned int round_to_nearest(double minmax);
-    QDateTime make_datetime(Date from_date);
+    //QDateTime make_datetime(Date from_date);
+    unsigned int largest_divider(unsigned int point_count);
+    QtCharts::QDateTimeAxis* smear_axis(const std::vector<std::pair<double, QDateTime>> &filtered);
 
     // Chart functions
     void remove_all_graph_series();
@@ -106,12 +108,13 @@ private:
         MeasuringStation current_station;
         DataSet radioselection_statfi;
         DataSet radioselection_smear;
-        Time selected_preset_time;
-        std::pair<QString, QString> selected_custom_time; // From beginning date to end date
+        std::pair<QString, QString> selected_time; // From beginning date to end date
         AggregateType selected_aggregation;
     };
 
     std::shared_ptr<ViewObject> view_elements;
+
+    Time selected_preset_time;
 
 
     // Chart elements
