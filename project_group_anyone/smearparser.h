@@ -1,19 +1,22 @@
 #ifndef SMEARPARSER_H
 #define SMEARPARSER_H
 
+#include <Qt>
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QDebug>
 #include <QVector>
-#include <QDate>
+#include <QDateTime>
 #include <string>
 #include <map>
 #include <utility>
 #include "jsonparser.h"
+#include "date.h"
+#include "qnamespace.h"
 
 enum SMEAR_stations {Varrio = 1, Hyytiala = 2, Kumpula = 3}; // same as the station id:s
 
-using DataPoint = std::pair<long double, QDate>;
+using DataPoint = std::pair<long double, QDateTime>;
 
 struct SmearData{
     std::vector<DataPoint> CO2;

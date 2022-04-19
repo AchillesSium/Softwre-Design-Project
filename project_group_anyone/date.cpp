@@ -115,5 +115,5 @@ std::string Date::toString()
     std::string dayStr = std::to_string(day_);
     if (day_ < 10) dayStr = "0" + dayStr;
 
-    return yearStr + "-" + monthStr + "-" + dayStr + "T00:00.000";
+    return yearStr + "-" + monthStr + "-" + dayStr + "T00:00:00.000";
 }

@@ -8,10 +8,13 @@
 #include "date.h"
 #include <iostream>
 #include <string>
-#include "networkcalls.h"
+#include "statfinetworkcall.h"
+#include "smearnetworkcall.h"
 #include "jsonparser.h"
 #include <QDebug>
 #include "controller.h"
+#include "datastorage.h"
+#include "smearparser.h"
 
 int main(int argc, char *argv[])
 {
@@ -53,31 +56,49 @@ int main(int argc, char *argv[])
     ChartWindow w;
     w.show();
 
-    networkcalls *network = new networkcalls();
+    statfinetworkcall *statfinetwork = new statfinetworkcall();
+    //smearnetworkcall *smearnetwork = new smearnetworkcall();
 
-    network->queryStatFi();
+    statfinetwork->query();
+
+
+    //smearnetwork->getDataFromApi();
+    //smearnetwork->querySmearTimeSeries("MAX", 60, "2013-01-01", "2015-01-01", "KUM_EDDY.av_c_ep");
 
     // wait for the request to process completely
-    QEventLoop loop;
-    QObject::connect(network, SIGNAL(done()), &loop, SLOT(quit()));
-    loop.exec();
+    QEventLoop statfi_loop;
+    QObject::connect(statfinetwork, SIGNAL(done()), &statfi_loop, SLOT(quit()));
+    statfi_loop.exec();
 
-    QJsonObject obj = network->getObject();
 
-    if(obj["class"] == QJsonValue::Undefined ){
+    //smearnetwork->querySmearStations();
+
+    //smearnetwork->querySmearTimeSeries("MAX", 60, "2012-01-01", "2022-01-01", "KUM_EDDY.av_c_ep");
+
+    QEventLoop smear_loop;
+    QObject::connect(statfinetwork, SIGNAL(done()), &smear_loop, SLOT(quit()));
+    smear_loop.exec();
+
+    QJsonObject obj = statfinetwork->getObject();
+    //QJsonObject obj1 = smearnetwork->getObject();
+
+    QJsonObject obj1 = statfinetwork->getObject();
+    //QJsonObject obj2 = smearnetwork->getTimeSeriesObject();
+
+    if(obj1["class"] == QJsonValue::Undefined ){
         qDebug() << "error happened";
     }
     else{
 
         StatfiParser *parser = new StatfiParser();
-        parser->parse(obj);
+        parser->parse(obj1);
       /*
          * for (const auto &[k, v] : statfi_db)
             qDebug() << "m[" << k << "] = (" << v.intensity << ", " << v.intensity_indexed << ") ";*/
+
         delete parser;
     }
 
-    delete network;
-
+    delete statfinetwork;
     return a.exec();
 }

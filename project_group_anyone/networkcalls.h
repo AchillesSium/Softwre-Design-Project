@@ -13,9 +13,10 @@ class networkcalls: public QObject
 {
     Q_OBJECT
 public:
-    explicit networkcalls();
-    void queryStatFi();
-    QJsonObject getObject();
+    networkcalls();
+    virtual ~networkcalls();
+    virtual void query();
+    virtual QJsonObject getObject();
 signals:
     void done();
 private:
