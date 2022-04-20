@@ -100,11 +100,6 @@
        <widget class="QComboBox" name="aggregationCombo">
         <item>
          <property name="text">
-          <string>No Type Selected</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
           <string>Arithmetic</string>
          </property>
         </item>
@@ -353,6 +348,22 @@
        </spacer>
       </item>
       <item>
+       <widget class="QPlainTextEdit" name="selected_time_display">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>168</width>
+          <height>50</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="Line" name="verticalLine">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -426,7 +437,7 @@
     <addaction name="actionChooseLoadout"/>
     <addaction name="actionSaveLoadout"/>
     <addaction name="separator"/>
-    <addaction name="actionSettings"/>
+    <addaction name="actionPic"/>
     <addaction name="actionCloseWindow"/>
    </widget>
    <addaction name="menuWindow"/>
@@ -447,9 +458,9 @@
     <string>Save Loadout</string>
    </property>
   </action>
-  <action name="actionSettings">
+  <action name="actionPic">
    <property name="text">
-    <string>Settings</string>
+    <string>Save chart as a picture</string>
    </property>
   </action>
   <action name="actionCloseWindow">

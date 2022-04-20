@@ -16,6 +16,13 @@ TimeWindow::~TimeWindow()
     delete ui;
 }
 
+/**
+ * @brief TimeWindow::change_data
+ *        Method sets up the TimeWindow to represent the correct database for SMEAR and STATFI can't use
+ *        the same selection for time span selection. STATFI only uses the @param database_used to determine
+ *        current database truly is STATFI. However if the database is SMEAR method also needs @param station_used
+ *        and @param gas_used to determine limits for the time span the user can make.
+ */
 void TimeWindow::change_data(DataSource database_used, MeasuringStation station_used, DataSet gas_used)
 {
     QString instructions_text;
@@ -73,19 +80,36 @@ void TimeWindow::change_data(DataSource database_used, MeasuringStation station_
     ui->infoEdit->append(instructions_text + "\n");
 }
 
-
+/**
+ * @brief TimeWindow::string_to_date
+ *        Simple method that changes QString @param string_date into a QDate.
+ * @return
+ *        Method returns the finished QDate.
+ */
 QDate TimeWindow::string_to_date(QString string_date)
 {
     QDate date = QDate::fromString(string_date, "dd/MM/yyyy");
     return date;
 }
 
+/**
+ * @brief TimeWindow::give_error
+ *        Method displays the given error @param error in the TimeWindow in a different colour than
+ *        the instructions are given.
+ */
 void TimeWindow::give_error(QString error)
 {
     ui->infoEdit->setTextColor(Qt::red);
     ui->infoEdit->append(error + "\n");
 }
 
+/**
+ * @brief TimeWindow::determine_min_max
+ *        This method uses @param station and @param gas to determine which is the correct
+ *        starting date for the calendar.
+ * @return
+ *        Returns the correct date in form of a QDate object.
+ */
 QDate TimeWindow::determine_min_max(MeasuringStation station, DataSet gas)
 {
     QDate min;
@@ -144,7 +168,6 @@ QDate TimeWindow::determine_min_max(MeasuringStation station, DataSet gas)
         break;
 
     default:
-        qDebug() << "Defaulted";
         min = QDate(1900, 1, 1);
         break;
     }
@@ -155,6 +178,11 @@ QDate TimeWindow::determine_min_max(MeasuringStation station, DataSet gas)
 // SLOTS
 //------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief TimeWindow::on_showButton_clicked
+ *        Method checks if the data user has given is correct and gives errors accordingly. If all data
+ *        is in place an in correct forms the method sends the data to ChartWindow and closes the TimeWindow.
+ */
 void TimeWindow::on_showButton_clicked()
 {
     QString begin;
@@ -201,12 +229,22 @@ void TimeWindow::on_showButton_clicked()
     on_cancelButton_clicked();
 }
 
+/**
+ * @brief TimeWindow::on_cancelButton_clicked
+ *        Closes the TimeWindow. This returns the user to the ChartWindow view but no time span has
+ *        been determined yet
+ */
 void TimeWindow::on_cancelButton_clicked()
 {
     this->close();
 }
 
-
+/**
+ * @brief TimeWindow::on_beginButton_clicked (and on_endButton_clicked())
+ *        Slot saves the currently selected calendar date to memory and displays it to the user.
+ *        The new limits caused by the selection are also set. The maximum timespan for SMEAR is one
+ *        year.
+ */
 void TimeWindow::on_beginButton_clicked()
 {
     begin_date = ui->calendar->selectedDate();
@@ -215,7 +253,7 @@ void TimeWindow::on_beginButton_clicked()
     if(end_date.isNull())
     {
 
-        QDate max_date = begin_date.addYears(10);
+        QDate max_date = begin_date.addYears(1);
 
         if(begin_date.currentDate() < max_date)
         {
@@ -236,7 +274,7 @@ void TimeWindow::on_endButton_clicked()
 
     if(begin_date.isNull())
     {
-        QDate min_date = end_date.addYears(-10);
+        QDate min_date = end_date.addYears(-1);
 
         if(min_date < earliest)
         {
@@ -250,6 +288,11 @@ void TimeWindow::on_endButton_clicked()
     ui->endDate->setText(end_date.toString("dd/MM/yyyy"));
 }
 
+/**
+ * @brief TimeWindow::on_resetBeginButton_clicked (and on_resetEndButton_clicked)
+ *        Method resets the previously selected date to null date object. This also resets the limits for
+ *        the calendar.
+ */
 void TimeWindow::on_resetBeginButton_clicked()
 {
     if(begin_date != end_date)
@@ -257,8 +300,16 @@ void TimeWindow::on_resetBeginButton_clicked()
         ui->calendar->setDateTextFormat(begin_date, plain);
     }
 
+    if(end_date.isNull())
+    {
+        ui->calendar->setMinimumDate(earliest);
+    }
+    else
+    {
+        ui->calendar->setMinimumDate(end_date.addYears(-1));
+    }
+
     begin_date = QDate();
-    ui->calendar->setMinimumDate(earliest);
     ui->beginDate->setText(empty_date);
 }
 
@@ -269,8 +320,16 @@ void TimeWindow::on_resetEndButton_clicked()
         ui->calendar->setDateTextFormat(end_date, plain);
     }
 
+    if(begin_date.isNull())
+    {
+        ui->calendar->setMaximumDate(earliest.currentDate());
+    }
+    else
+    {
+        ui->calendar->setMaximumDate(begin_date.addYears(1));
+    }
+
     end_date = QDate();
-    ui->calendar->setMaximumDate(end_date.currentDate());
     ui->endDate->setText(empty_date);
 }
 

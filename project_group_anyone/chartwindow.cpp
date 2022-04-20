@@ -19,17 +19,6 @@ ChartWindow::ChartWindow(QWidget *parent) :
     graph->setTitle("Gasses in your environment");
     graph->legend()->setVisible(false);
 
-    // Initialize the X-axis
-    QtCharts::QValueAxis *axis_x = new QtCharts::QValueAxis();
-    axis_x->setRange(0, 24);
-    axis_x->setTickCount(24);
-    axis_x->setGridLineVisible(true);
-    axis_x->setLabelFormat("%.1i");
-    axis_x->setTitleText("Time Axis");
-
-    // Add axis to the graph
-    graph->addAxis(axis_x, Qt::AlignBottom);
-
     // Initialize the chart view
     ui->chartView->setChart(graph);
     ui->chartView->setRenderHint(QPainter::Antialiasing);
@@ -46,6 +35,11 @@ ChartWindow::~ChartWindow()
 //----------------------------------------------------------------------------------------------
 // Default functions
 
+
+/**
+ * @brief ChartWindow::default_radio_buttons
+ *        Defaults a set of radiobuttons depending on the Database currently used.
+ */
 void ChartWindow::default_radio_buttons()
 {
     //remove_all_graph_series();
@@ -120,7 +114,11 @@ void ChartWindow::default_radio_buttons()
 
 }
 
-
+/**
+ * @brief ChartWindow::set_smear
+ *        Sets the View so SMEAR data can be fetched. This includes changing some
+ *        visibility values and resetting changes made when STATFI was the current database.
+ */
 void ChartWindow::set_smear()
 {
     // Set the viewObject
@@ -162,10 +160,15 @@ void ChartWindow::set_smear()
         // Custom time button text
         ui->timeButton->setText("Date-to_Date");
 
-        // Display x-axis for user
-        quick_time_change(Day);
+        // Time span display
+        ui->selected_time_display->setPlainText(not_selected);
 }
 
+
+/**
+ * @brief ChartWindow::set_statfi
+ *        Similar to ChartWindow::set_smear, but opposite regarding the databases.
+ */
 void ChartWindow::set_statfi()
 {
     // Set the viewObject
@@ -198,14 +201,22 @@ void ChartWindow::set_statfi()
         // Custom time button text
         ui->timeButton->setText("Year-to_Year");
 
-        // Display x-axis for user
-        quick_time_change(Year);
+        // Time span display
+        ui->selected_time_display->setPlainText(not_selected);
 }
 
 
 //----------------------------------------------------------------------------------------------
 // Quality of life functions
 
+
+/**
+ * @brief ChartWindow::round_to_nearest
+ *        Rounds given value (@param minmax) to the nearest integer depending on the size of the
+ *        number.
+ * @return
+ *        Method returns the rounded number.
+ */
 unsigned int ChartWindow::round_to_nearest(double minmax)
 {
     unsigned int rounder = 1;
@@ -231,6 +242,15 @@ unsigned int ChartWindow::round_to_nearest(double minmax)
 }
 
 
+/**
+ * @brief ChartWindow::largest_divider
+ *        Finds out the biggest number the (@param point_count) can be divided without a remainder.
+ *        If such number cannot be found, other than 1, the number is returned with +1. This is because
+ *        the method is used determening the "tick count" for the chart and one tick must be reseved for
+ *        the y-axis.
+ * @return
+ *        Returns the biggest divider with +1.
+ */
 unsigned int ChartWindow::largest_divider(unsigned int point_count)
 {
     if(point_count <= 5)
@@ -259,8 +279,14 @@ unsigned int ChartWindow::largest_divider(unsigned int point_count)
     return max_divider + 1;
 }
 
-
-QtCharts::QDateTimeAxis* ChartWindow::smear_axis(const std::vector<std::pair<double, QDateTime>> &dates)
+/**
+ * @brief ChartWindow::smear_axis
+ *        Creates an axis for SMEAR data. Method determines the time span at hand is with @param dates and
+ *        follows the path to a correct form of an axis.
+ * @return
+ *        Method returns a pointer to the correct axis.
+ */
+QtCharts::QDateTimeAxis* ChartWindow::smear_axis(const std::vector<std::pair<long double, QDateTime>> &dates)
 {
     QDateTime begin = dates.front().second;
     QDateTime end = dates.back().second;
@@ -334,6 +360,11 @@ QtCharts::QDateTimeAxis* ChartWindow::smear_axis(const std::vector<std::pair<dou
 //----------------------------------------------------------------------------------------------
 // Chart functions
 
+/**
+ * @brief ChartWindow::quick_time_change
+ *        Changes the time span quickly to one of the preset spans. Which setting is used is
+ *        determined by @param period.
+ */
 void ChartWindow::quick_time_change(Time period)
 {
     QDateTime begin;
@@ -369,17 +400,21 @@ void ChartWindow::quick_time_change(Time period)
     }
 
     view_elements->selected_time = std::make_pair(begin.toString("dd/MM/yyyy"), end.toString("dd/MM/yyyy"));
+    ui->selected_time_display->setPlainText(selected + begin.toString("dd/MM/yyyy") + " - " + end.toString("dd/MM/yyyy"));
 
-    // Remove axis and make new dummy-axis as a placeholder for actual axis
-    ui->chartView->chart()->removeAxis(ui->chartView->chart()->axisX());
-    axis_x = new QValueAxis();
-    axis_x->setTitleText(title_text);
-    axis_x->setGridLineVisible(true);
-    axis_x->setLabelFormat("%.1i");
-    ui->chartView->chart()->addAxis(axis_x, Qt::AlignBottom);
     selected_preset_time = period;
 }
 
+
+/**
+ * @brief ChartWindow::make_statfi_series
+ *        Method makes a list of QPoints that can later be formed into a QLineSeries.
+ *        @param filtered vector gives the bulk of the data which is then iterated trough
+ *        according to @param to_start and @param to_end. This method is used specifically
+ *        when visualizin STATFI date.
+ * @return
+ *        Method returns the list of QPoints
+ */
 QList<QPointF> ChartWindow::make_statfi_series(const std::vector<std::pair<int, double>> &filtered, unsigned int to_start, unsigned int to_end)
 {
     unsigned int counter = to_start;
@@ -387,16 +422,23 @@ QList<QPointF> ChartWindow::make_statfi_series(const std::vector<std::pair<int, 
 
     while(counter <= to_end)
     {
-        qDebug() << filtered.at(counter).first << "is to be in series";
         points.append(QPointF(filtered.at(counter).first, filtered.at(counter).second));
         counter++;
     }
 
-    qDebug() << "got out";
     return points;
 }
 
-QtCharts::QLineSeries* ChartWindow::make_smear_series(const std::vector<std::pair<double, QDateTime>> &pre_series, unsigned int start, unsigned int ending)
+/**
+ * @brief ChartWindow::make_smear_series
+ *        Similar method to ChartWindow::make_statfi_series. However here the method makes a finished
+ *        QLineSeries instead of a list of QPoints.
+ *        The variables work in similar manner. @param pre_series is a vector with all the needed data,
+ *        @param start is the starting index and @param ending is the ending index.
+ * @return
+ *        Method returns a pointer to the finished QLineSeries.
+ */
+QtCharts::QLineSeries* ChartWindow::make_smear_series(const std::vector<std::pair<long double, QDateTime>> &pre_series, unsigned int start, unsigned int ending)
 {
     qDebug() << "In make_smear_series";
     unsigned int counter = start;
@@ -404,7 +446,6 @@ QtCharts::QLineSeries* ChartWindow::make_smear_series(const std::vector<std::pai
 
     while(counter <= ending)
     {
-        qDebug() << "Looping in make_semar_series in loop nr: " << counter;
         series->append(pre_series.at(counter).second.toMSecsSinceEpoch(), pre_series.at(counter).first);
         counter++;
     }
@@ -413,11 +454,15 @@ QtCharts::QLineSeries* ChartWindow::make_smear_series(const std::vector<std::pai
     return series;
 }
 
-
+/**
+ * @brief ChartWindow::display_statfi
+ *        Method iterates trough the data the controller gives to the view and visualizes it to
+ *        the ChartView. @param filtered includes all the data from the controller. This data is
+ *        transformed into QLineSerieses and based on the data chart axeses are also formed and scaled
+ *        accordingly.
+ */
 void ChartWindow::display_statfi(const std::vector<std::pair<int, double>> &filtered)
 {
-
-    //remove_all_graph_series();
     ui->chartView->chart()->removeAllSeries();
 
     int start = 0;
@@ -507,10 +552,15 @@ void ChartWindow::display_statfi(const std::vector<std::pair<int, double>> &filt
     selected_preset_time = Time::Custom;
 }
 
-
-void ChartWindow::display_smear(const std::vector<std::pair<double, QDateTime>> &filtered)
+/**
+ * @brief ChartWindow::display_smear
+ *        Similar to ChartWindow::display_statfi, but only for SMEAR data as they require different
+ *        visualization tools. @param filtered remains as the data got from the controller.
+ */
+void ChartWindow::display_smear(const std::vector<std::pair<long double, QDateTime>> &filtered)
 {
-    qDebug() << "Starting";
+    ui->chartView->chart()->removeAllSeries();
+
     unsigned int start = 0;
     double max_value = 0;
     double min_value = std::numeric_limits<unsigned int>::max();
@@ -518,11 +568,9 @@ void ChartWindow::display_smear(const std::vector<std::pair<double, QDateTime>> 
     double current_value;
     std::vector<QLineSeries*> all_series;
 
-    qDebug() << "Variables initialized";
-
     for(unsigned int data_point = 0 ; data_point < filtered.size() ; data_point++)
     {
-        qDebug() << "Looping loop nr: " << data_point ;
+        qDebug() << filtered.at(data_point).second.toString("d/M/yy h:m") ;
         current_value = filtered.at(data_point).first;
 
         if(current_value == 0 && (previous_value > 0 || previous_value == -1))
@@ -567,10 +615,7 @@ void ChartWindow::display_smear(const std::vector<std::pair<double, QDateTime>> 
     }
 
     // Create both axis
-
     QDateTimeAxis *time_axis = smear_axis(filtered);
-
-    qDebug() << "X-axis created";
 
     QValueAxis *value_axis = new QValueAxis;
     value_axis->setRange(0, round_to_nearest(max_value + min_value));
@@ -578,8 +623,6 @@ void ChartWindow::display_smear(const std::vector<std::pair<double, QDateTime>> 
     value_axis->setTickCount(11);
     value_axis->setGridLineVisible(true);
     value_axis->setLabelFormat("%.1i");
-
-    qDebug() << "Y-axis created";
 
     // Remove old axises from the chart
     ui->chartView->chart()->removeAxis(ui->chartView->chart()->axisX());
@@ -593,12 +636,8 @@ void ChartWindow::display_smear(const std::vector<std::pair<double, QDateTime>> 
     ui->chartView->chart()->addAxis(time_axis, Qt::AlignBottom);
     ui->chartView->chart()->addAxis(value_axis, Qt::AlignLeft);
 
-    qDebug() << "Axises are in the chart";
-
     for(QLineSeries* point_series : all_series)
     {
-        qDebug() << "Looping through series loop";
-
         ui->chartView->chart()->addSeries(point_series);
         point_series->attachAxis(time_axis);
         point_series->attachAxis(value_axis);
@@ -609,16 +648,11 @@ void ChartWindow::display_smear(const std::vector<std::pair<double, QDateTime>> 
         }
         else
         {
-            qDebug() << point_series->pen();
             point_series->setPen(chart_pen);
         }
     }
 
     selected_preset_time = Time::Custom;
-
-    qDebug() << "Finished!";
-
-
 }
 
 
@@ -635,6 +669,9 @@ void ChartWindow::get_pair(std::pair<QString,QString> time_pair)
 {
     view_elements->selected_time = time_pair;
     selected_preset_time = Time::Custom;
+
+    ui->selected_time_display->setPlainText(selected + time_pair.first + " - " + time_pair.second);
+
     on_applyButton_clicked();
 }
 
@@ -643,6 +680,10 @@ void ChartWindow::get_pair(std::pair<QString,QString> time_pair)
 //----------------------------------------------------------------------------------------------
 // Button slots
 
+/**
+ * @brief ChartWindow::on_defaultButton_clicked
+ *        Defaults all the view elements and deletes all the axises
+ */
 void ChartWindow::on_defaultButton_clicked()
 {
     default_radio_buttons();
@@ -655,8 +696,25 @@ void ChartWindow::on_defaultButton_clicked()
     {
         set_smear();
     }
+
+    QAbstractAxis* x_axis = ui->chartView->chart()->axisX();
+    QAbstractAxis* y_axis = ui->chartView->chart()->axisY();
+
+    if(x_axis)
+    {
+        ui->chartView->chart()->removeAxis(x_axis);
+    }
+    if(y_axis)
+    {
+        ui->chartView->chart()->removeAxis(y_axis);
+    }
 }
 
+/**
+ * @brief ChartWindow::on_dayButton_clicked (and other preset time buttons clicked)
+ *        Sets the current time span to be same as the button associated with it.
+ *        These slots is only a shortcut to quick_time_change method.
+ */
 void ChartWindow::on_dayButton_clicked()
 {
     quick_time_change(Day);
@@ -665,21 +723,6 @@ void ChartWindow::on_dayButton_clicked()
 void ChartWindow::on_weekButton_clicked()
 {
     quick_time_change(Week);
-
-//    QPixmap p = ui->chartView->grab();// chartView->grab();
-//    QOpenGLWidget *glWidget  = graph->findChildren<QOpenGLWidget>();
-//    if(glWidget){
-//        QPainter painter(&p);
-//        QPoint d = glWidget->mapToGlobal(QPoint())-ui->chartView->mapToGlobal(QPoint());
-//        painter.setCompositionMode(QPainter::CompositionMode_SourceAtop);
-//        painter.drawImage(d, glWidget->grabFramebuffer());
-//        painter.end();
-//    }
-//    p.save("test", "PNG");
-
-//    QString filename = QFileDialog::getSaveFileName(this, tr("Save QChart"), "", tr("Images (*.png)"));
-//    QPixmap p = ui->chartView->grab();
-//    p.save(filename, "PNG");
 }
 
 void ChartWindow::on_monthButton_clicked()
@@ -692,6 +735,10 @@ void ChartWindow::on_yearButton_clicked()
     quick_time_change(Year);
 }
 
+/**
+ * @brief ChartWindow::on_timeButton_clicked
+ *        Creates a new TimeWindow where user can select the time span for their data.
+ */
 void ChartWindow::on_timeButton_clicked()
 {
     TimeWindow *date = new TimeWindow();
@@ -702,12 +749,17 @@ void ChartWindow::on_timeButton_clicked()
     date->show();
 }
 
+/**
+ * @brief ChartWindow::on_applyButton_clicked
+ *        This slot finally fetches the data the user requested. It creates the UserSelections object
+ *        with data the user has given. Nature of the data is determined by the databases so they need
+ *        to have their separate commands.
+ */
 void ChartWindow::on_applyButton_clicked()
 {
     // Send ViewObject pointer to controller
     UserSelections* selections = nullptr;
     DataSource current = view_elements->current_database;
-    qDebug() << "Got in apply_button_clicked";
 
     if(current == DataSource::STATFI && view_elements->radioselection_statfi != DataSet::None)
     {
@@ -716,45 +768,12 @@ void ChartWindow::on_applyButton_clicked()
         selections->setStart(Date(1,1,view_elements->selected_time.first.toInt(),0,0));
         selections->setEnd(Date(1,1,view_elements->selected_time.second.toInt(),0,0));
 
-        qDebug().nospace() << "abc" << qPrintable(view_elements->radioselection_statfi) << "def";
-
         std::vector<std::pair<int, double>> filtered_statfi = Controller::getSTATFIData(selections);
-        qDebug() << "Filtered Vecor in Chart Window" << filtered_statfi;
-
-        // Test values
-        filtered_statfi.clear();
-        filtered_statfi.push_back(std::make_pair(1989, 0.0));
-        filtered_statfi.push_back(std::make_pair(1990, 0.0));
-        filtered_statfi.push_back(std::make_pair(1991, 300.0));
-        filtered_statfi.push_back(std::make_pair(1992, 700.0));
-        filtered_statfi.push_back(std::make_pair(1993, 1300.0));
-        filtered_statfi.push_back(std::make_pair(1994, 400.0));
-        filtered_statfi.push_back(std::make_pair(1995, 2000.0));
-        filtered_statfi.push_back(std::make_pair(1996, 800.0));
-        filtered_statfi.push_back(std::make_pair(1997, 1700.0));
-        filtered_statfi.push_back(std::make_pair(1998, 1400.0));
-        filtered_statfi.push_back(std::make_pair(1999, 1100.0));
-        filtered_statfi.push_back(std::make_pair(2000, 900.0));
-        filtered_statfi.push_back(std::make_pair(2001, 600.0));
-        filtered_statfi.push_back(std::make_pair(2002, 500.0));
-        filtered_statfi.push_back(std::make_pair(2003, 0.0));
-        filtered_statfi.push_back(std::make_pair(2004, 0.0));
-        filtered_statfi.push_back(std::make_pair(2005, 2100.0));
-        filtered_statfi.push_back(std::make_pair(2006, 2050.0));
-        filtered_statfi.push_back(std::make_pair(2007, 1800.0));
-        filtered_statfi.push_back(std::make_pair(2008, 1000.0));
-        filtered_statfi.push_back(std::make_pair(2009, 950.0));
-        filtered_statfi.push_back(std::make_pair(2010, 0.0));
-        filtered_statfi.push_back(std::make_pair(2011, 0.0));
-        filtered_statfi.push_back(std::make_pair(2012, 0.0));
-
         display_statfi(filtered_statfi);
     }
 
     else if(current == DataSource::SMEAR && view_elements->radioselection_smear != DataSet::None && selected_preset_time != Time::No_time)
     {
-        qDebug() << "Got in datasource and dataset";
-        qDebug() << "Got in custom time";
         selections = new UserSelections(DataSource::SMEAR);
         selections->setMeasuringStation(view_elements->current_station);
         selections->setDataSet(view_elements->radioselection_smear);
@@ -762,42 +781,7 @@ void ChartWindow::on_applyButton_clicked()
         selections->setEnd(Date(view_elements->selected_time.second.toStdString()));
         selections->setAggregateType(view_elements->selected_aggregation);
 
-        std::vector<std::pair<double, QDateTime>> filtered_smear; //= Controller::getSMEARData(selections);
-
-        /*
-        QDateTime moment = QDateTime(QDate(2005, 1, 5), QTime(0, 0), QTimeZone(3));
-        QDateTime moment_2 = QDateTime(QDate(2005, 2, 5), QTime(6, 0), QTimeZone(3));
-        QDateTime moment_3 = QDateTime(QDate(2005, 3, 5), QTime(18, 0), QTimeZone(3));
-        QDateTime moment_4 = QDateTime(QDate(2005, 4, 6), QTime(0, 0), QTimeZone(3));
-        QDateTime moment_5 = QDateTime(QDate(2005, 5, 6), QTime(6, 0), QTimeZone(3));
-        QDateTime moment_6 = QDateTime(QDate(2005, 6, 6), QTime(18, 0), QTimeZone(3));
-        QDateTime moment_7 = QDateTime(QDate(2005, 7, 7), QTime(0, 0), QTimeZone(3));
-        QDateTime moment_8 = QDateTime(QDate(2005, 8, 7), QTime(6, 0), QTimeZone(3));
-        QDateTime moment_9 = QDateTime(QDate(2005, 8, 7), QTime(18, 0), QTimeZone(3));
-        QDateTime moment_10 = QDateTime(QDate(2005, 9, 8), QTime(0, 0), QTimeZone(3));
-        QDateTime moment_11 = QDateTime(QDate(2005, 10, 8), QTime(6, 0), QTimeZone(3));
-        QDateTime moment_12 = QDateTime(QDate(2005, 11, 8), QTime(18, 0), QTimeZone(3));
-        QDateTime moment_13 = QDateTime(QDate(2005, 12, 9), QTime(0, 0), QTimeZone(3));
-        QDateTime moment_14 = QDateTime(QDate(2005, 12, 9), QTime(6, 0), QTimeZone(3));
-        QDateTime moment_15 = QDateTime(QDate(2005, 12, 9), QTime(18, 0), QTimeZone(3));
-        QDateTime moment_16 = QDateTime(QDate(2006, 1, 10), QTime(0, 0), QTimeZone(3));
-
-        filtered_smear.push_back(std::make_pair(0.0, moment));
-        filtered_smear.push_back(std::make_pair(0.0, moment_2));
-        filtered_smear.push_back(std::make_pair(5694.0, moment_3));
-        filtered_smear.push_back(std::make_pair(2035.0, moment_4));
-        filtered_smear.push_back(std::make_pair(4222.0, moment_5));
-        filtered_smear.push_back(std::make_pair(4056.0, moment_6));
-        filtered_smear.push_back(std::make_pair(2940.0, moment_7));
-        filtered_smear.push_back(std::make_pair(0.0, moment_8));
-        filtered_smear.push_back(std::make_pair(0.0, moment_9));
-        filtered_smear.push_back(std::make_pair(3567.0, moment_10));
-        filtered_smear.push_back(std::make_pair(2345.0, moment_11));
-        filtered_smear.push_back(std::make_pair(4567.0, moment_12));
-        filtered_smear.push_back(std::make_pair(4320.0, moment_13));
-        filtered_smear.push_back(std::make_pair(3209.0, moment_14));
-        filtered_smear.push_back(std::make_pair(0.0, moment_15));
-        filtered_smear.push_back(std::make_pair(0.0, moment_16));*/
+        std::vector<std::pair<long double, QDateTime>> filtered_smear = Controller::getSMEARData(selections);
 
         display_smear(filtered_smear);
 
@@ -809,6 +793,12 @@ void ChartWindow::on_applyButton_clicked()
 //----------------------------------------------------------------------------------------------
 // Combo Box slots
 
+/**
+ * @brief ChartWindow::on_databaseCombo_currentIndexChanged
+ *        Generally all combo box slots have similar structure. Get the text from combo box,
+ *        @param current_database, when it is changed and do actions according to it. It usually
+ *        includes changing something in the view_elements object.
+ */
 void ChartWindow::on_databaseCombo_currentIndexChanged(const QString current_database)
 {
     default_radio_buttons();
@@ -883,6 +873,12 @@ void ChartWindow::on_aggregationCombo_currentIndexChanged(const QString current_
 //----------------------------------------------------------------------------------------------
 // Check Box and Radio Button slots
 
+/**
+ * @brief ChartWindow::on_co2Radio_clicked
+ *        Radio button slots work all in the same way. If a radio buttons is clicked the slot
+ *        activates and takes the booleon value of the button @param state and changes the view_element
+ *        accordingly.
+ */
 void ChartWindow::on_co2Radio_clicked(bool state)
 {
     if(state == true)
@@ -944,6 +940,11 @@ void ChartWindow::on_indexedIntensityRadio_clicked(bool state)
 //----------------------------------------------------------------------------------------------
 // Menu Bar slots
 
+/**
+ * @brief ChartWindow::on_actionNewWindow_triggered
+ *        Action triggered slots all work in a similar way. Action is triggered and so the slot
+ *        will react to that and execute wanted action.
+ */
 void ChartWindow::on_actionNewWindow_triggered()
 {
     ChartWindow *history = new ChartWindow();
@@ -953,4 +954,25 @@ void ChartWindow::on_actionNewWindow_triggered()
 void ChartWindow::on_actionCloseWindow_triggered()
 {
     this->close();
+}
+
+void ChartWindow::on_actionPic_triggered()
+{
+    /*
+    QPixmap p = ui->chartView->grab();// chartView->grab();
+    QOpenGLWidget *glWidget  = graph->findChildren<QOpenGLWidget>();
+
+    if(glWidget)
+    {
+        QPainter painter(&p);
+        QPoint d = glWidget->mapToGlobal(QPoint())-ui->chartView->mapToGlobal(QPoint());
+        painter.setCompositionMode(QPainter::CompositionMode_SourceAtop);
+        painter.drawImage(d, glWidget->grabFramebuffer());
+        painter.end();
+    }
+    p.save("test", "PNG");*/
+
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save QChart"), "", tr("Images (*.png)"));
+    QPixmap p = ui->chartView->grab();
+    p.save(filename, "PNG");
 }

@@ -44,16 +44,16 @@ std::vector<std::pair<int, double>> Controller::getSTATFIData(UserSelections* se
         auto single_data  = statfi_db_.find(i);
         if(single_data != statfi_db_.end()){
             switch(selected_gas) {
-              case 1:
+              case DataSet::CO2tonnes:
                 sampleValuePair = std::make_pair(i, single_data->second.tonnes);
                 break;
-              case 2:
+              case DataSet::CO2intensity:
                 sampleValuePair = std::make_pair(i, single_data->second.intensity);
                 break;
-              case 3:
+              case DataSet::CO2indexed:
                 sampleValuePair = std::make_pair(i, single_data->second.tonnes_indexed);
                 break;
-              case 4:
+              case DataSet::CO2intensityIndexed:
                 sampleValuePair = std::make_pair(i, single_data->second.intensity_indexed);
                 break;
               default:

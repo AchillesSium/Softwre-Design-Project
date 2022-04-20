@@ -42,18 +42,16 @@ public:
 
     // Quality of life functions
     unsigned int round_to_nearest(double minmax);
-    //QDateTime make_datetime(Date from_date);
     unsigned int largest_divider(unsigned int point_count);
-    QtCharts::QDateTimeAxis* smear_axis(const std::vector<std::pair<double, QDateTime>> &filtered);
+    QtCharts::QDateTimeAxis* smear_axis(const std::vector<std::pair<long double, QDateTime>> &filtered);
 
     // Chart functions
-    void remove_all_graph_series();
-    void react_to_selection(bool state, std::vector<QtCharts::QLineSeries*> &pointers);
+    void remove_all_axises();
     void quick_time_change(Time period);
     QList<QPointF> make_statfi_series(const std::vector<std::pair<int, double>> &filtered, unsigned int to_start, unsigned int to_end);
-    QtCharts::QLineSeries* make_smear_series(const std::vector<std::pair<double, QDateTime>> &pre_series, unsigned int start, unsigned int ending);
+    QtCharts::QLineSeries* make_smear_series(const std::vector<std::pair<long double, QDateTime>> &pre_series, unsigned int start, unsigned int ending);
     void display_statfi(const std::vector<std::pair<int, double>> &filtered);
-    void display_smear(const std::vector<std::pair<double, QDateTime>> &filtered);
+    void display_smear(const std::vector<std::pair<long double, QDateTime>> &filtered);
 
 public slots:
 
@@ -92,9 +90,10 @@ private slots:
     void on_actionCloseWindow_triggered();
 
     // TODO?
-    //void on_actionChooseLoadout_triggered();
+    //void on_actionLoadLoadout_triggered();
     //void on_actionSaveLoadout_triggered();
-    //void on_actionSettings_triggered();
+
+    void on_actionPic_triggered();
 
 private:
     Ui::ChartWindow *ui;
@@ -116,15 +115,14 @@ private:
 
     Time selected_preset_time;
 
+    const QString selected = "Selected time span: ";
+    const QString not_selected = "No time span selected!";
+
 
     // Chart elements
 
         // Chart
         QtCharts::QChart *graph;
-
-        // Axis
-        QtCharts::QValueAxis *axis_x;
-        QtCharts::QValueAxis *axis_y;
 
         // Series pen
         QPen chart_pen = QPen(QBrush(QColor(204, 0, 0), Qt::SolidPattern), 3, Qt::SolidLine, Qt::RoundCap);
