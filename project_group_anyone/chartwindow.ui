@@ -450,7 +450,7 @@
   </action>
   <action name="actionChooseLoadout">
    <property name="text">
-    <string>Choose Loadout</string>
+    <string>Load Loadout</string>
    </property>
   </action>
   <action name="actionSaveLoadout">

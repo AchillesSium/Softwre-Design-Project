@@ -123,7 +123,7 @@ void ChartWindow::set_smear()
 {
     // Set the viewObject
     view_elements->current_database = DataSource::SMEAR;
-    view_elements->selected_aggregation = AggregateType::None;
+    view_elements->selected_aggregation = AggregateType::Arithmetic;
     view_elements->current_station = MeasuringStation::Varrio;
     view_elements->radioselection_smear = DataSet::None;
     view_elements->radioselection_statfi = DataSet::None;
@@ -173,7 +173,7 @@ void ChartWindow::set_statfi()
 {
     // Set the viewObject
     view_elements->current_database = DataSource::STATFI;
-    view_elements->selected_aggregation = AggregateType::None;
+    view_elements->selected_aggregation = AggregateType::Arithmetic;
     view_elements->current_station = MeasuringStation::None;
     view_elements->radioselection_smear = DataSet::None;
     view_elements->radioselection_statfi = DataSet::None;
@@ -221,7 +221,11 @@ unsigned int ChartWindow::round_to_nearest(double minmax)
 {
     unsigned int rounder = 1;
 
-    if (minmax < 100)
+    if(minmax < 10)
+    {
+        rounder = 1;
+    }
+    else if (minmax < 100)
     {
         rounder = 10;
     }
@@ -236,6 +240,10 @@ unsigned int ChartWindow::round_to_nearest(double minmax)
     else if (minmax < 100000)
     {
         rounder = 10000;
+    }
+    else if (minmax < 1000000)
+    {
+        rounder = 100000;
     }
 
     return ceil(minmax/rounder)*rounder;
@@ -271,7 +279,7 @@ unsigned int ChartWindow::largest_divider(unsigned int point_count)
         counter++;
     }
 
-    if(max_divider == 1) // On alkuluku
+    if(max_divider == 1) // point_count is a prime number
     {
         max_divider = point_count;
     }
@@ -305,7 +313,7 @@ QtCharts::QDateTimeAxis* ChartWindow::smear_axis(const std::vector<std::pair<lon
             {
                 qDebug() << "In day";
                 time_axis->setTickCount(largest_divider(end.time().hour() - begin.time().hour()));
-                time_axis->setFormat("ddd hh:mm");
+                time_axis->setFormat("d hh:mm");
             }
             else
             {
@@ -317,7 +325,7 @@ QtCharts::QDateTimeAxis* ChartWindow::smear_axis(const std::vector<std::pair<lon
                 else // Only one day difference
                 {
                     time_axis->setTickCount(largest_divider(end.time().hour() - begin.time().hour()));
-                    time_axis->setFormat("ddd hh:mm");
+                    time_axis->setFormat("d hh:mm");
                 }
             }
         }
@@ -508,7 +516,7 @@ void ChartWindow::display_statfi(const std::vector<std::pair<int, double>> &filt
         }
 
         //Min value checker
-        if(current_value < min_value && current_value > 0)
+        if(current_value < min_value)
         {
             min_value = current_value;
         }
@@ -542,10 +550,31 @@ void ChartWindow::display_statfi(const std::vector<std::pair<int, double>> &filt
     x_axis->setGridLineVisible(true);
     x_axis->setLabelFormat("%.1i");
 
+    unsigned int max_range = round_to_nearest(max_value + (min_value/10));
+    unsigned int min_range;
+
+    if(min_value - (max_range - max_value) > 0)
+    {
+        min_range = round_to_nearest(min_value - (max_range - max_value));
+    }
+    else
+    {
+        min_range = 0;
+    }
+
     QValueAxis *y_axis = static_cast<QValueAxis*>(ui->chartView->chart()->axisY());
-    y_axis->setRange(0, round_to_nearest(max_value + min_value));
-    y_axis->setTitleText("Tonnes");
-    y_axis->setTickCount(11);
+    y_axis->setRange(min_range, max_range);
+    y_axis->setTitleText("Tonnes (1t = 1000 kg)");
+
+    if(max_value < 10)
+    {
+        y_axis->setTickCount(round_to_nearest(max_value) + 1);
+    }
+    else
+    {
+        y_axis->setTickCount(11);
+    }
+
     y_axis->setGridLineVisible(true);
     y_axis->setLabelFormat("%.1i");
 
@@ -608,23 +637,46 @@ void ChartWindow::display_smear(const std::vector<std::pair<long double, QDateTi
         }
 
         //Min value checker
-        if(current_value < min_value && current_value > 0)
+        if(current_value < min_value)
         {
             min_value = current_value;
         }
     }
 
-    // Create both axis
+    // Create both axes
     QDateTimeAxis *time_axis = smear_axis(filtered);
 
+    unsigned int max_range = round_to_nearest(max_value + (min_value/10));
+    unsigned int min_range;
+
+    if(min_value - (max_range - max_value) > 0)
+    {
+        min_range = round_to_nearest(min_value - (max_range - max_value));
+    }
+    else
+    {
+        min_range = 0;
+    }
+
     QValueAxis *value_axis = new QValueAxis;
-    value_axis->setRange(0, round_to_nearest(max_value + min_value));
-    value_axis->setTitleText("Tonnes");
-    value_axis->setTickCount(11);
+    value_axis->setRange(min_range, max_range);
+    value_axis->setTitleText("Tonnes (1t = 1000 kg)");
+
+    qDebug() << "Current Max value is: " << max_value;
+
+    if(max_value < 10)
+    {
+        value_axis->setTickCount(round_to_nearest(max_value) + 1);
+    }
+    else
+    {
+        value_axis->setTickCount(11);
+    }
+
     value_axis->setGridLineVisible(true);
     value_axis->setLabelFormat("%.1i");
 
-    // Remove old axises from the chart
+    // Remove old axes from the chart
     ui->chartView->chart()->removeAxis(ui->chartView->chart()->axisX());
 
     if(ui->chartView->chart()->axisY())
@@ -632,7 +684,7 @@ void ChartWindow::display_smear(const std::vector<std::pair<long double, QDateTi
         ui->chartView->chart()->removeAxis(ui->chartView->chart()->axisY());
     }
 
-    // Add new axises to the chart
+    // Add new axes to the chart
     ui->chartView->chart()->addAxis(time_axis, Qt::AlignBottom);
     ui->chartView->chart()->addAxis(value_axis, Qt::AlignLeft);
 
@@ -682,7 +734,7 @@ void ChartWindow::get_pair(std::pair<QString,QString> time_pair)
 
 /**
  * @brief ChartWindow::on_defaultButton_clicked
- *        Defaults all the view elements and deletes all the axises
+ *        Defaults all the view elements and deletes all the axes
  */
 void ChartWindow::on_defaultButton_clicked()
 {
@@ -958,20 +1010,6 @@ void ChartWindow::on_actionCloseWindow_triggered()
 
 void ChartWindow::on_actionPic_triggered()
 {
-    /*
-    QPixmap p = ui->chartView->grab();// chartView->grab();
-    QOpenGLWidget *glWidget  = graph->findChildren<QOpenGLWidget>();
-
-    if(glWidget)
-    {
-        QPainter painter(&p);
-        QPoint d = glWidget->mapToGlobal(QPoint())-ui->chartView->mapToGlobal(QPoint());
-        painter.setCompositionMode(QPainter::CompositionMode_SourceAtop);
-        painter.drawImage(d, glWidget->grabFramebuffer());
-        painter.end();
-    }
-    p.save("test", "PNG");*/
-
     QString filename = QFileDialog::getSaveFileName(this, tr("Save QChart"), "", tr("Images (*.png)"));
     QPixmap p = ui->chartView->grab();
     p.save(filename, "PNG");
