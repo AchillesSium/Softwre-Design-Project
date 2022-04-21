@@ -52,21 +52,27 @@ enum DataSet
 
 #define SMEAR_BASE_QUERY "https://smear-backend.rahtiapp.fi/search/timeseries?";
 
+/**
+ * @brief The UserSelections class
+ * Class for storing and managing information about what kind
+ * of selections the user has made in the GUI. Used for forming
+ * API queries.
+ */
 class UserSelections
 {
 public:
     UserSelections(DataSource dataSource);
-    DataSource getSource();
-    Date& getStart();
-    Date& getEnd();
+    DataSource getSource()                              { return dataSource_; }
+    Date& getStart()                                    { return start_; }
+    Date& getEnd()                                      { return end_; }
+    DataSet getDataSet()                                { return dataSet_; }
+    MeasuringStation getMeasuringStation()              { return station_; }
+    AggregateType getAggregateType()                    { return aggregate_; }
     bool setStart(Date t);
     bool setEnd(Date t);
     void setDataSet(DataSet dataSet);
-    DataSet getDataSet();
     void setMeasuringStation(MeasuringStation station);
-    MeasuringStation getMeasuringStation();
     void setAggregateType(AggregateType type);
-    AggregateType getAggregateType();
     std::string toQuery();
 
 private:

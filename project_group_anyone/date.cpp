@@ -1,10 +1,23 @@
 #include "date.h"
 
+/**
+ * @brief Date::Date
+ * Constructor with default values.
+ */
 Date::Date()
 {
     Date(1, 1, 1, 0, 0);
 }
 
+/**
+ * @brief Date::Date
+ * Constructor with each value as an integer.
+ * @param day day to set.
+ * @param month month to set.
+ * @param year year to set.
+ * @param hour hour to set.
+ * @param minute minute to set.
+ */
 Date::Date(int day, int month, int year, int hour, int minute)
 {
     day_ = day;
@@ -15,6 +28,13 @@ Date::Date(int day, int month, int year, int hour, int minute)
 }
 
 // String needs to be formatted dd/mm/yyyy
+/**
+ * @brief Date::Date
+ * Constructor that forms a Date based on a string
+ * that is formatted as dd/mm/yyyy.
+ * WARNING: doesn't check the input, crashes easily
+ * @param dateStr date to set in dd/mm/yyyy format.
+ */
 Date::Date(std::string dateStr)
 {
     day_ = stoi(dateStr.substr(0,2));
@@ -24,9 +44,10 @@ Date::Date(std::string dateStr)
     minute_ = 0;
 }
 
-/*
- * After creating a Time object based on user input, validate it
- * immediately and inform the user about a failed validation.
+/**
+ * @brief Date::validate
+ * Checks the validity of the date.
+ * @return true if valid, false if not.
  */
 bool Date::validate()
 {
@@ -37,15 +58,20 @@ bool Date::validate()
     // Max limit of day
     if (isLeapYear())
     {
-        if (day_ > days_[1][month_])
+        if (day_ > days_[1][month_ - 1])
             return false;
     }
-    else if (day_ > days_[0][month_])
+    else if (day_ > days_[0][month_ - 1])
         return false;
 
     return true;
 }
 
+/**
+ * @brief Date::isLeapYear
+ * Checks if the date takes place in a leap year.
+ * @return true if leap year, false if not.
+ */
 bool Date::isLeapYear()
 {
     if (year_ % 400 == 0)
@@ -57,6 +83,12 @@ bool Date::isLeapYear()
     return false;
 }
 
+/**
+ * @brief Date::operator =
+ * Custom assignment operator.
+ * @param t Date to copy the contents of.
+ * @return Date with newly assigned contents.
+ */
 Date& Date::operator = (Date& t)
 {
     year_ = t.getYear();
@@ -67,6 +99,9 @@ Date& Date::operator = (Date& t)
     return *this;
 }
 
+/**
+ * Set of custom comparison operators for Dates.
+ */
 bool Date::operator == (Date& t)
 {
     return (year_ == t.getYear()
@@ -106,7 +141,12 @@ bool Date::operator <= (Date& t)
     return (*this < (t) || *this == (t));
 }
 
-// Returns the date in the following format: "yyyy-mm-ddThh:ss.mmm"
+/**
+ * @brief Date::toString
+ * Returns the Date in yyyy-mm-ddThh:ss.mmm
+ * format that is used in SMEAR API queries.
+ * @return the Date as a string in yyyy-mm-ddThh:ss.mmm format.
+ */
 std::string Date::toString()
 {
     std::string yearStr = std::to_string(year_);
@@ -116,4 +156,31 @@ std::string Date::toString()
     if (day_ < 10) dayStr = "0" + dayStr;
 
     return yearStr + "-" + monthStr + "-" + dayStr + "T00:00:00.000";
+}
+
+/**
+ * @brief Date::advance
+ * Advances the date by one day.
+ */
+void Date::advance()
+{
+    day_ ++;
+    if (isLeapYear())
+    {
+        if (day_ > days_[1][month_ - 1])
+        {
+            day_ = 1;
+            month_ ++;
+        }
+    }
+    else if (day_ > days_[0][month_ - 1])
+    {
+        day_ = 1;
+        month_ ++;
+    }
+    if (month_ > 12)
+    {
+        month_ = 1;
+        year_ ++;
+    }
 }

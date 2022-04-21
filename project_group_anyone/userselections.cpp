@@ -1,69 +1,74 @@
 #include "userselections.h"
 
-#include <algorithm>
-
+/**
+ * @brief UserSelections::UserSelections
+ * Constructs an UserSelections object with the given data source.
+ * @param dataSource the API the user wishes to access data from.
+ */
 UserSelections::UserSelections(DataSource dataSource)
 {
     dataSource_ = dataSource;
 }
 
-DataSource UserSelections::getSource()
-{
-    return dataSource_;
-}
-
-Date& UserSelections::getStart()
-{
-    return start_;
-}
-
-Date& UserSelections::getEnd()
-{
-    return end_;
-}
-
+/**
+ * @brief UserSelections::setStart
+ * Sets the start date for the API query.
+ * @param t start date to set.
+ * @return true if input date is valid, false if not.
+ */
 bool UserSelections::setStart(Date t)
 {
     start_ = t;
     return t.validate();
 }
 
+/**
+ * @brief UserSelections::setEnd
+ * Sets the end date for the API query.
+ * @param t end date to set.
+ * @return true if input date isvalid, false if not.
+ */
 bool UserSelections::setEnd(Date t)
 {
     end_ = t;
     return t.validate();
 }
 
+/**
+ * @brief UserSelections::setDataSet
+ * Sets the data set the for the API query.
+ * @param dataSet data set to set.
+ */
 void UserSelections::setDataSet(DataSet dataSet)
 {
     dataSet_ = dataSet;
 }
 
-DataSet UserSelections::getDataSet()
-{
-    return dataSet_;
-}
-
+/**
+ * @brief UserSelections::setMeasuringStation
+ * Sets the measuring station for the API query.
+ * @param station measuring station to set.
+ */
 void UserSelections::setMeasuringStation(MeasuringStation station)
 {
     station_ = station;
 }
 
-MeasuringStation UserSelections::getMeasuringStation()
-{
-    return station_;
-}
-
+/**
+ * @brief UserSelections::setAggregateType
+ * Sets the aggregate type for the API query.
+ * @param type aggregate type to set.
+ */
 void UserSelections::setAggregateType(AggregateType type)
 {
     aggregate_ = type;
 }
 
-AggregateType UserSelections::getAggregateType()
-{
-    return aggregate_;
-}
-
+/**
+ * @brief UserSelections::toQuery
+ * Forms a SMEAR API query based on the state of the object.
+ * @return the query as a string.
+ */
 std::string UserSelections::toQuery()
 {
     std::string query = SMEAR_BASE_QUERY;
@@ -72,6 +77,10 @@ std::string UserSelections::toQuery()
 
     query += "&interval=60";
 
+    // Do not allow the exact same time as start and end
+    if (start_ == end_)
+        end_.advance();
+
     query += "&from=" + start_.toString() + "&to=" + end_.toString();
 
     query += "&tablevariable=" + getTableVariableAsString();
@@ -79,6 +88,11 @@ std::string UserSelections::toQuery()
     return query;
 }
 
+/**
+ * @brief UserSelections::getAggregateTypeAsString
+ * Returns the aggregate enum as a string.
+ * @return the aggregate enum as a string.
+ */
 std::string UserSelections::getAggregateTypeAsString()
 {
     std::string agg = "NONE";
@@ -97,6 +111,12 @@ std::string UserSelections::getAggregateTypeAsString()
     return agg;
 }
 
+/**
+ * @brief UserSelections::getTableVariableAsString
+ * Picks the table variable string based on the chosen
+ * measuring station and data set.
+ * @return the table variable as a string.
+ */
 std::string UserSelections::getTableVariableAsString()
 {
     std::string tableVar = "";

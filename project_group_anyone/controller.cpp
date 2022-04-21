@@ -14,15 +14,15 @@
 #include "smearnetworkcall.h"
 #include "smearparser.h"
 
+/**
+ * @brief Controller::getSTATFIData
+ * Filters STATFI data based on user selections.
+ * @param selections user selections to base the data filtering on.
+ * @return container of the filtered data.
+ * First item in the pair is year, second is data value.
+ */
 std::vector<std::pair<int, double>> Controller::getSTATFIData(UserSelections* selections)
 {
-    // Get data from model
-
-    // Filter data to match with the selections
-
-    // Send filtered data to view, return value of the function can be changed
-    // OR a separate function can be created in the view and called here
-    // with the filtered data as a parameter
     DataSet selected_gas = selections->getDataSet();
 
     int startDate = selections->getStart().getYear();
@@ -32,9 +32,6 @@ std::vector<std::pair<int, double>> Controller::getSTATFIData(UserSelections* se
 
     DataStorage& storage = DataStorage::get();
     StatfiDB& statfi_db_ = storage.getStatfiDB();
-
-//    for (const auto &[k, v] : statfi_db_)
-//        qDebug() << "m[" << k << "] = (" << v.intensity << ", " << v.intensity_indexed << ") ";
 
     auto v  = statfi_db_.find(startDate);
     qDebug() << "map at" << v->first << v->second.intensity;
@@ -60,7 +57,8 @@ std::vector<std::pair<int, double>> Controller::getSTATFIData(UserSelections* se
                 sampleValuePair = std::make_pair(i, 0.0);
                 break;
             }
-        }else{
+        }
+        else{
             sampleValuePair = std::make_pair(i, 0.0);
         }
        filteredVector.push_back(sampleValuePair);
@@ -68,18 +66,14 @@ std::vector<std::pair<int, double>> Controller::getSTATFIData(UserSelections* se
     return filteredVector;
 }
 
+/**
+ * @brief Controller::getSMEARData
+ * Initiates an API query to SMEAR API and parses the resulting data.
+ * @param selections user selections to base the API query on.
+ * @return container of the parsed data.
+ */
 std::vector<DataPoint> Controller::getSMEARData(UserSelections* selections)
 {
-    // Call SMEAR data fetcher, below is an example of what it might look
-    /*
-    networkcallsSMEAR* network = new networkcallsSMEAR(selections);
-
-    network->query();
-
-    // Wait for the request, do stuff with the data, etc.
-
-    delete network;
-    */
     smearnetworkcall *smearNetwork = new smearnetworkcall(selections);
     smearNetwork->query();
 
@@ -88,8 +82,7 @@ std::vector<DataPoint> Controller::getSMEARData(UserSelections* selections)
     loop.exec();
 
     QJsonObject obj = smearNetwork->getObject();
-    //QJsonObject obj1 = smearnetwork->getObject();
-     std::vector<DataPoint> gasDp;
+    std::vector<DataPoint> gasDp;
 
     if(obj["class"] == QJsonValue::Undefined ){
         qDebug() << "error happened";
@@ -97,9 +90,6 @@ std::vector<DataPoint> Controller::getSMEARData(UserSelections* selections)
     else{
         SmearParser *smearparser = new SmearParser();
         smearparser->parse(obj);
-      /*
-         * for (const auto &[k, v] : statfi_db)
-            qDebug() << "m[" << k << "] = (" << v.intensity << ", " << v.intensity_indexed << ") ";*/
         SmearDB db = smearparser->get_db();
 
         for(auto it = db.cbegin(); it != db.cend(); ++it)
@@ -112,7 +102,6 @@ std::vector<DataPoint> Controller::getSMEARData(UserSelections* selections)
                 gasDp = it->second.SO2;
             }
         }
-
         delete smearparser;
     }
 

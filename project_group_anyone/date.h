@@ -3,6 +3,10 @@
 
 #include "string"
 
+/**
+ * @brief The Date class
+ * Represents a single point in time.
+ */
 class Date
 {
 public:
@@ -15,7 +19,6 @@ public:
     int getHour()           { return hour_; }
     int getMinute()         { return minute_; }
     bool validate();
-    bool isLeapYear();
     Date& operator = (Date& t);
     bool operator == (Date& t);
     bool operator != (Date& t);
@@ -24,7 +27,11 @@ public:
     bool operator >= (Date& t);
     bool operator <= (Date& t);
     std::string toString();
+    void advance();
+
 private:
+    bool isLeapYear();
+
     int year_;
     int month_;
     int day_;

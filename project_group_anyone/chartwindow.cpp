@@ -629,6 +629,9 @@ void ChartWindow::display_smear(const std::vector<std::pair<long double, QDateTi
 {
     ui->chartView->chart()->removeAllSeries();
 
+    if (filtered.empty())
+        return;
+
     unsigned int start = 0;
     double max_value = 0;
     double min_value = std::numeric_limits<unsigned int>::max();

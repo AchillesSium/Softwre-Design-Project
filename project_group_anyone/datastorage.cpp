@@ -1,10 +1,20 @@
 #include "datastorage.h"
 
+/**
+ * @brief DataStorage::get
+ * Returns the singleton or initializes it if it
+ * doesn't exist yet.
+ * @return the singleton data storage.
+ */
 DataStorage& DataStorage::get()
 {
     static DataStorage* instance = new DataStorage();
     return *instance;
 }
+
+/**
+ * Setters and getters for the data storage.
+ */
 
 void DataStorage::setStatfiDB(StatfiDB db)
 {

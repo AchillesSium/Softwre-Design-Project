@@ -3,15 +3,6 @@
 
 #include <map>
 
-/*
- * Implemented as a singleton
- * Use example:
- * DataStorage& storage = DataStorage::get();
- * storage.setStatfiDBmin(firstAvailableYear);
- * storage.setStatfiDBmax(lastAvailableYear);
- */
-
-
 const double NO_VALUE = 0.0;
 
 struct StatfiData{
@@ -23,7 +14,11 @@ struct StatfiData{
 
 using StatfiDB = std::map<int, StatfiData>;
 
-
+/**
+ * @brief The DataStorage class
+ * Singleton class for storing STATFI data throughout
+ * the life of the application.
+ */
 class DataStorage
 {
 public:
