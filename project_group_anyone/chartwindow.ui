@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1117</width>
-    <height>604</height>
+    <height>624</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -434,7 +434,7 @@
      <string>Window</string>
     </property>
     <addaction name="actionNewWindow"/>
-    <addaction name="actionChooseLoadout"/>
+    <addaction name="actionLoadLoadout"/>
     <addaction name="actionSaveLoadout"/>
     <addaction name="separator"/>
     <addaction name="actionPic"/>
@@ -448,7 +448,7 @@
     <string>New Window</string>
    </property>
   </action>
-  <action name="actionChooseLoadout">
+  <action name="actionLoadLoadout">
    <property name="text">
     <string>Load Loadout</string>
    </property>

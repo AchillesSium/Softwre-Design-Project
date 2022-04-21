@@ -3,9 +3,11 @@
 
 #include "timewindow.h"
 #include "userselections.h"
+#include "loadouthandler.h"
 
 #include <QMainWindow>
 #include <QString>
+#include <string>
 #include <QChart>
 #include <QLineSeries>
 #include <QValueAxis>
@@ -44,6 +46,7 @@ public:
     unsigned int round_to_nearest(double minmax);
     unsigned int largest_divider(unsigned int point_count);
     QtCharts::QDateTimeAxis* smear_axis(const std::vector<std::pair<long double, QDateTime>> &filtered);
+    QString enum_to_string(AggregateType type);
 
     // Chart functions
     void remove_all_axises();
@@ -89,11 +92,10 @@ private slots:
     void on_actionNewWindow_triggered();
     void on_actionCloseWindow_triggered();
 
-    // TODO?
-    //void on_actionLoadLoadout_triggered();
-    //void on_actionSaveLoadout_triggered();
-
+    // Actions
     void on_actionPic_triggered();
+    void on_actionLoadLoadout_triggered();
+    void on_actionSaveLoadout_triggered();
 
 private:
     Ui::ChartWindow *ui;

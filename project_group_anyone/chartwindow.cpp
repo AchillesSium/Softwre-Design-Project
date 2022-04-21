@@ -325,7 +325,7 @@ QtCharts::QDateTimeAxis* ChartWindow::smear_axis(const std::vector<std::pair<lon
                 else // Only one day difference
                 {
                     time_axis->setTickCount(largest_divider(end.time().hour() - begin.time().hour()));
-                    time_axis->setFormat("d hh:mm");
+                    time_axis->setFormat("hh:mm");
                 }
             }
         }
@@ -364,6 +364,44 @@ QtCharts::QDateTimeAxis* ChartWindow::smear_axis(const std::vector<std::pair<lon
     return time_axis;
 }
 
+QString ChartWindow::enum_to_string(AggregateType type)
+{
+    QString returnable;
+
+    switch(type)
+    {
+    case AggregateType::Arithmetic:
+        returnable = "Arithmetic";
+        break;
+    case AggregateType::Geometric:
+        returnable = "Geometric";
+        break;
+    case AggregateType::Sum:
+        returnable = "Sum";
+        break;
+    case AggregateType::Median:
+        returnable = "Sum";
+        break;
+    case AggregateType::Min:
+        returnable = "Min";
+        break;
+    case AggregateType::Max:
+        returnable = "Max";
+        break;
+    case AggregateType::Availability:
+        returnable = "Availability";
+        break;
+    case AggregateType::Circular:
+        returnable = "Circular";
+        break;
+    default:
+        returnable = "Arithmetic";
+        break;
+    }
+
+    return returnable;
+}
+
 
 //----------------------------------------------------------------------------------------------
 // Chart functions
@@ -377,6 +415,7 @@ void ChartWindow::quick_time_change(Time period)
 {
     QDateTime begin;
     QDateTime end = begin.currentDateTime();
+    qDebug() << end;
 
     QString title_text;
 
@@ -599,7 +638,6 @@ void ChartWindow::display_smear(const std::vector<std::pair<long double, QDateTi
 
     for(unsigned int data_point = 0 ; data_point < filtered.size() ; data_point++)
     {
-        qDebug() << filtered.at(data_point).second.toString("d/M/yy h:m") ;
         current_value = filtered.at(data_point).first;
 
         if(current_value == 0 && (previous_value > 0 || previous_value == -1))
@@ -676,9 +714,10 @@ void ChartWindow::display_smear(const std::vector<std::pair<long double, QDateTi
     value_axis->setGridLineVisible(true);
     value_axis->setLabelFormat("%.1i");
 
-    // Remove old axes from the chart
-    ui->chartView->chart()->removeAxis(ui->chartView->chart()->axisX());
-
+    if(ui->chartView->chart()->axisX())
+    {
+        ui->chartView->chart()->removeAxis(ui->chartView->chart()->axisX());
+    }
     if(ui->chartView->chart()->axisY())
     {
         ui->chartView->chart()->removeAxis(ui->chartView->chart()->axisY());
@@ -1013,4 +1052,172 @@ void ChartWindow::on_actionPic_triggered()
     QString filename = QFileDialog::getSaveFileName(this, tr("Save QChart"), "", tr("Images (*.png)"));
     QPixmap p = ui->chartView->grab();
     p.save(filename, "PNG");
+}
+
+void ChartWindow::on_actionLoadLoadout_triggered()
+{
+    qDebug() << "In LoadLoadout";
+    LoadoutHandler* lh = new LoadoutHandler();
+    UserSelections* us = lh->load();
+
+    if(us == nullptr){
+        qDebug() << "something went wrong or no loadout saved";
+        delete us;
+        delete lh;
+        return;
+    }
+
+    on_defaultButton_clicked();
+
+    view_elements->current_database = us->getSource();
+
+    if(view_elements->current_database == DataSource::STATFI)
+    {
+        ui->databaseCombo->setCurrentText("STATFI");
+
+        switch(us->getDataSet())
+        {
+        case DataSet::CO2tonnes:
+            ui->co2DataRadio->setChecked(true);
+            break;
+        case DataSet::CO2indexed:
+            ui->indexedRadio->setChecked(true);
+            break;
+        case DataSet::CO2intensity:
+            ui->intensityRadio->setChecked(true);
+            break;
+        case DataSet::CO2intensityIndexed:
+            ui->indexedIntensityRadio->setChecked(true);
+            break;
+        default:
+            break;
+        }
+
+        view_elements->radioselection_smear = DataSet::None;
+
+        // set start
+        int year = us->getStart().getYear();
+        std::string test = std::to_string(year);
+        view_elements->selected_time.first = QString::fromStdString(test);
+
+        // set end
+        year = us->getEnd().getYear();
+        test = std::to_string(year);
+        view_elements->selected_time.second = QString::fromStdString(test);
+
+        ui->selected_time_display->setPlainText(selected + view_elements->selected_time.first + " - " + view_elements->selected_time.second);
+
+        selected_preset_time = Time::Custom;
+
+    }
+    else if(view_elements->current_database == DataSource::SMEAR)
+    {
+        ui->databaseCombo->setCurrentText("SMEAR");
+
+        view_elements->radioselection_smear = us->getDataSet();
+
+        switch(view_elements->radioselection_smear)
+        {
+        case DataSet::CO2:
+            ui->co2Radio->setChecked(true);
+            break;
+        case DataSet::SO2:
+            ui->so2Radio->setChecked(true);
+            break;
+        case DataSet::NO:
+            ui->noxRadio->setChecked(true);
+            break;
+        default:
+            break;
+        }
+
+        view_elements->radioselection_statfi = DataSet::None;
+
+        // set start
+        /*
+        QString year = QString::fromStdString(std::to_string(us->getStart().getYear()));
+        QString month = QString::fromStdString(std::to_string(us->getStart().getMonth()));
+        QString day = QString::fromStdString(std::to_string(us->getStart().getDay()));*/
+
+        int year = us->getStart().getYear();
+        int month = us->getStart().getMonth();
+        int day = us->getStart().getDay();
+
+        QDate start = QDate(year, month, day);
+
+        QString start_date = start.toString("dd/MM/yyyy");
+        view_elements->selected_time.first = start_date;
+
+        // set end
+        /*
+        year = QString::fromStdString(std::to_string(us->getEnd().getYear()));
+        month = QString::fromStdString(std::to_string(us->getEnd().getMonth()));
+        day = QString::fromStdString(std::to_string(us->getEnd().getDay()));*/
+
+        year = us->getEnd().getYear();
+        month = us->getEnd().getMonth();
+        day = us->getEnd().getDay();
+
+        QDate end = QDate(year, month, day);
+
+        QString end_date = end.toString("dd/MM/yyyy");
+        view_elements->selected_time.second = end_date;
+
+        ui->selected_time_display->setPlainText(selected + start_date + " - " + end_date);
+
+        selected_preset_time = Time::Custom;
+
+        switch(us->getMeasuringStation())
+        {
+        case MeasuringStation::Varrio:
+            ui->stationCombo->setCurrentText("Värriö");
+            break;
+        case MeasuringStation::Kumpula:
+            ui->stationCombo->setCurrentText("Kumpula");
+            break;
+        case MeasuringStation::Hyytiala:
+            ui->stationCombo->setCurrentText("Hyytälä");
+            break;
+        default:
+            break;
+        }
+
+        ui->aggregationCombo->setCurrentText(enum_to_string(us->getAggregateType()));
+    }
+
+    delete us;
+    delete lh;
+
+    qDebug() << "Crash immenent! Prepare your asses!";
+    //on_applyButton_clicked();
+    qDebug() << "all set and done";
+}
+
+void ChartWindow::on_actionSaveLoadout_triggered()
+{
+    // fetch all relevant data from ViewObject
+    UserSelections* us = new UserSelections(view_elements->current_database);
+
+    if(view_elements->current_database == DataSource::SMEAR){
+        us->setDataSet(view_elements->radioselection_smear);
+        us->setMeasuringStation(view_elements->current_station);
+        us->setAggregateType(view_elements->selected_aggregation);
+        us->setStart(Date(view_elements->selected_time.first.toStdString()));
+        us->setEnd(Date(view_elements->selected_time.second.toStdString()));
+    }
+    else if(view_elements->current_database == DataSource::STATFI){
+        us->setDataSet(view_elements->radioselection_statfi);
+        us->setMeasuringStation(MeasuringStation::None);
+        us->setAggregateType(AggregateType::None);
+        Date start_d(1, 1, view_elements->selected_time.first.toInt(), 0, 0);
+        Date end_d(1, 1, view_elements->selected_time.second.toInt(), 0, 0);
+        us->setStart(start_d);
+        us->setEnd(end_d);
+    }
+
+
+    LoadoutHandler* lh = new LoadoutHandler();
+    lh->save(us);
+    delete us;
+    delete lh;
 }
