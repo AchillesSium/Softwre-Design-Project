@@ -1053,7 +1053,12 @@ void ChartWindow::on_actionPic_triggered()
     QPixmap p = ui->chartView->grab();
     p.save(filename, "PNG");
 }
-
+/**
+ * @brief ChartWindow::on_actionLoadLoadout_triggered
+ * loads a loadout from the .json file and makes changes to
+ * the state of the view accordingly.
+ * Does nothing if there is no loadout saved.
+ */
 void ChartWindow::on_actionLoadLoadout_triggered()
 {
     qDebug() << "In LoadLoadout";
@@ -1195,10 +1200,12 @@ void ChartWindow::on_actionLoadLoadout_triggered()
     delete us;
     delete lh;
 
-    //on_applyButton_clicked();
     qDebug() << "all set and done";
 }
-
+/**
+ * @brief ChartWindow::on_actionSaveLoadout_triggered
+ * Saves the current view settings to a .json file
+ */
 void ChartWindow::on_actionSaveLoadout_triggered()
 {
     // fetch all relevant data from ViewObject

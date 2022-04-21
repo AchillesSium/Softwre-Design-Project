@@ -1,15 +1,30 @@
 #include "loadouthandler.h"
 
+/**
+ * @brief LoadoutHandler::LoadoutHandler
+ * Constructor of the class
+ */
 LoadoutHandler::LoadoutHandler()
 {
 
 }
 
+/**
+ * @brief LoadoutHandler::~LoadoutHandler
+ * Destructor of the class
+ */
 LoadoutHandler::~LoadoutHandler()
 {
 
 }
 
+/**
+ * @brief LoadoutHandler::save
+ * Saves the settings provided by the UserSelections object to a .json file
+ * @param us: Object which contains the settings from the view that
+ * need to be saved; source of the data, dataset, start and end dates
+ * and with smear data the measuring station and aggregation type
+ */
 void LoadoutHandler::save(UserSelections* us)
 {
     // load "loadout.json" file from root and make all necessary additions and changes
@@ -154,6 +169,14 @@ void LoadoutHandler::save(UserSelections* us)
     }
 }
 
+/**
+ * @brief LoadoutHandler::load
+ * Reads the stored loadout from the "loadout.json" file,
+ * constructs an UserSelections object based on the stored values.
+ * @return
+ * Pointer to a UserSelection object which contains the settings stored in the .json file or
+ * nothing if there was no loadout saved in the file.
+ */
 UserSelections* LoadoutHandler::load()
 {
     // load the "loadout.json" file
@@ -161,7 +184,7 @@ UserSelections* LoadoutHandler::load()
     file.setFileName("loadout.json");
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QJsonParseError JsonParseError;
-    QJsonDocument JsonDocument = QJsonDocument::fromJson(file.readAll(), &JsonParseError);
+    QJsonDocument JsonDocument = QJsonDocument::fromJson(file.readAll(), &JsonParseError); // read data from file
     file.close();
 
     QJsonObject RootObject = JsonDocument.object();
@@ -171,7 +194,7 @@ UserSelections* LoadoutHandler::load()
         return nullptr;
     }
 
-    // read all relevant data from the json file
+    // store all relevant data from the json file to variables
     QString db = RootObject["DataSource"].toString();
     QString ds_statfi = RootObject["DataSetSTATFI"].toString();
     QString ds_smear = RootObject["DataSetSMEAR"].toString();

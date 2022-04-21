@@ -1,15 +1,31 @@
 #include "statfiparser.h"
 
+/**
+ * @brief StatfiParser::StatfiParser
+ * Constructor of the class
+ */
 StatfiParser::StatfiParser()
 {
 
 }
 
+/**
+ * @brief StatfiParser::~StatfiParser
+ * Destructor of the class
+ */
 StatfiParser::~StatfiParser()
 {
 
 }
 
+/**
+ * @brief StatfiParser::parse
+ * Function for parsing the QjsonObject given.
+ * Reads data from object and adds data to the statfi_db_ datastructure.
+ * After parsing the formed datastructure is given to the DataStorage
+ * @param obj
+ * QJson object received from the STATFI database holding all the data based on the query made.
+ */
 void StatfiParser::parse(QJsonObject obj)
 {
     // get all years from the QJsonObject to an vector
@@ -79,8 +95,9 @@ void StatfiParser::parse(QJsonObject obj)
 
     // move the data to the datastorage
     DataStorage& storage = DataStorage::get();
-
     storage.setStatfiDB(statfi_db_);
+
+    // set boundaries for the datastorage
     storage.setStatfiDBmin(statfi_db_.begin()->first);
     storage.setStatfiDBmax(statfi_db_.rbegin()->first);
 }

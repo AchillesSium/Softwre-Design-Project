@@ -26,7 +26,11 @@ struct SmearData{
 
 using SmearDB = std::map<int, SmearData>;
 
-
+/**
+ * @brief The SmearParser class
+ * Class for parsing the .json files received from the SMEAR database.
+ * It reads data from the file and stores everything necessary to a suitable container.
+ */
 class SmearParser: public Jsonparser
 {
 public:

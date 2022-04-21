@@ -3,6 +3,12 @@
 
 #include <QJsonObject>
 
+/**
+ * @brief The Jsonparser class
+ * An abstract class for other parser used in the program.
+ * This classes responsibility is to read data from the
+ * .json files received and storing the data to a suitable container.
+ */
 class Jsonparser
 {
 public:

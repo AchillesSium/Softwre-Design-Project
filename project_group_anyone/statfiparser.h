@@ -7,10 +7,15 @@
 #include <string>
 #include <map>
 #include <vector>
+
 #include "jsonparser.h"
 #include "datastorage.h"
 
-
+/**
+ * @brief The StatfiParser class
+ * Class for parsing the .json files received from the STATFI database.
+ * It reads data from the file and stores everything necessary to a suitable container.
+ */
 class StatfiParser: public Jsonparser
 {
 public:
