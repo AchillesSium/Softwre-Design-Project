@@ -119,6 +119,10 @@ private:
 
     const QString selected = "Selected time span: ";
     const QString not_selected = "No time span selected!";
+    const QString select_time = "Please select a time period before saving!";
+
+    const QString tonnes = "1000 t (10^6 kg)";
+    const QString intensity = "gCO2e/khW";
 
 
     // Chart elements

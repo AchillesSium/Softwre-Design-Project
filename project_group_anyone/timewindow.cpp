@@ -1,6 +1,12 @@
 #include "timewindow.h"
 #include "ui_timewindow.h"
 
+
+/**
+ * @brief TimeWindow::TimeWindow is a class that forms the window where the user selects their custom
+ *        time span. TimeWindow changes according to the database used.
+ * @param parent is a pointer to a possible parent object.
+ */
 TimeWindow::TimeWindow(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::TimeWindow)
@@ -17,11 +23,10 @@ TimeWindow::~TimeWindow()
 }
 
 /**
- * @brief TimeWindow::change_data
- *        Method sets up the TimeWindow to represent the correct database for SMEAR and STATFI can't use
- *        the same selection for time span selection. STATFI only uses the @param database_used to determine
- *        current database truly is STATFI. However if the database is SMEAR method also needs @param station_used
- *        and @param gas_used to determine limits for the time span the user can make.
+ * @brief TimeWindow::change_data sets up the TimeWindow to represent the correct database.
+ * @param station_used gives SMEAR TimeWindow the station the data is from. It is used to determine
+ *        avalibility of the data.
+ * @param gas_used gives SMEAR TimeWindow the gas the data is about. This too is to check availability.
  */
 void TimeWindow::change_data(DataSource database_used, MeasuringStation station_used, DataSet gas_used)
 {
@@ -81,10 +86,8 @@ void TimeWindow::change_data(DataSource database_used, MeasuringStation station_
 }
 
 /**
- * @brief TimeWindow::string_to_date
- *        Simple method that changes QString @param string_date into a QDate.
- * @return
- *        Method returns the finished QDate.
+ * @brief TimeWindow::string_to_date is a simple method that changes QString @param string_date into a QDate.
+ * @return Method returns the finished QDate.
  */
 QDate TimeWindow::string_to_date(QString string_date)
 {
@@ -93,9 +96,9 @@ QDate TimeWindow::string_to_date(QString string_date)
 }
 
 /**
- * @brief TimeWindow::give_error
- *        Method displays the given error @param error in the TimeWindow in a different colour than
- *        the instructions are given.
+ * @brief TimeWindow::give_error displays the given error in the TimeWindow in a different coloured
+ *        text than the instructions are given.
+ * @param error is the text of the error message.
  */
 void TimeWindow::give_error(QString error)
 {
@@ -104,11 +107,11 @@ void TimeWindow::give_error(QString error)
 }
 
 /**
- * @brief TimeWindow::determine_min_max
- *        This method uses @param station and @param gas to determine which is the correct
- *        starting date for the calendar.
- * @return
- *        Returns the correct date in form of a QDate object.
+ * @brief TimeWindow::determine_min_max determines the begining date of the available data depending on
+ *        given measuring station and the measurable gas.
+ * @param station is the measuring station used.
+ * @param gas is the measured gas.
+ * @return Returns the correct beginning date of available data in form of a QDate object.
  */
 QDate TimeWindow::determine_min_max(MeasuringStation station, DataSet gas)
 {
@@ -179,9 +182,9 @@ QDate TimeWindow::determine_min_max(MeasuringStation station, DataSet gas)
 //------------------------------------------------------------------------------------------------------
 
 /**
- * @brief TimeWindow::on_showButton_clicked
- *        Method checks if the data user has given is correct and gives errors accordingly. If all data
- *        is in place an in correct forms the method sends the data to ChartWindow and closes the TimeWindow.
+ * @brief TimeWindow::on_showButton_clicked checks if the data user has given is correct and gives errors
+ *        accordingly. If all data is in place an in correct forms the method sends the data to ChartWindow
+ *        and closes the TimeWindow.
  */
 void TimeWindow::on_showButton_clicked()
 {
@@ -230,9 +233,8 @@ void TimeWindow::on_showButton_clicked()
 }
 
 /**
- * @brief TimeWindow::on_cancelButton_clicked
- *        Closes the TimeWindow. This returns the user to the ChartWindow view but no time span has
- *        been determined yet
+ * @brief TimeWindow::on_cancelButton_clicked closes the TimeWindow. This returns the user to the
+ *        ChartWindow view but no time span has been determined yet.
  */
 void TimeWindow::on_cancelButton_clicked()
 {
@@ -242,8 +244,7 @@ void TimeWindow::on_cancelButton_clicked()
 /**
  * @brief TimeWindow::on_beginButton_clicked (and on_endButton_clicked())
  *        Slot saves the currently selected calendar date to memory and displays it to the user.
- *        The new limits caused by the selection are also set. The maximum timespan for SMEAR is one
- *        year.
+ *        The new limits caused by the selection are also set.
  */
 void TimeWindow::on_beginButton_clicked()
 {
@@ -290,8 +291,8 @@ void TimeWindow::on_endButton_clicked()
 
 /**
  * @brief TimeWindow::on_resetBeginButton_clicked (and on_resetEndButton_clicked)
- *        Method resets the previously selected date to null date object. This also resets the limits for
- *        the calendar.
+ *        Method resets the previously selected date to null date object. This also resets the date
+ *        limits for the calendar.
  */
 void TimeWindow::on_resetBeginButton_clicked()
 {
