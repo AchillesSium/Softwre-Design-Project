@@ -1078,16 +1078,20 @@ void ChartWindow::on_actionLoadLoadout_triggered()
         switch(us->getDataSet())
         {
         case DataSet::CO2tonnes:
+            ui->co2DataRadio->clicked(true);
             ui->co2DataRadio->setChecked(true);
             break;
         case DataSet::CO2indexed:
+            ui->indexedRadio->clicked(true);
             ui->indexedRadio->setChecked(true);
             break;
         case DataSet::CO2intensity:
-            ui->intensityRadio->setChecked(true);
+            ui->intensityRadio->clicked(true);
+            ui->co2DataRadio->setChecked(true);
             break;
         case DataSet::CO2intensityIndexed:
-            ui->indexedIntensityRadio->setChecked(true);
+            ui->indexedIntensityRadio->clicked(true);
+            ui->co2DataRadio->setChecked(true);
             break;
         default:
             break;
@@ -1119,12 +1123,15 @@ void ChartWindow::on_actionLoadLoadout_triggered()
         switch(view_elements->radioselection_smear)
         {
         case DataSet::CO2:
+            ui->co2Radio->clicked(true);
             ui->co2Radio->setChecked(true);
             break;
         case DataSet::SO2:
+            ui->so2Radio->clicked(true);
             ui->so2Radio->setChecked(true);
             break;
         case DataSet::NO:
+            ui->noxRadio->clicked(true);
             ui->noxRadio->setChecked(true);
             break;
         default:
@@ -1188,7 +1195,6 @@ void ChartWindow::on_actionLoadLoadout_triggered()
     delete us;
     delete lh;
 
-    qDebug() << "Crash immenent! Prepare your asses!";
     //on_applyButton_clicked();
     qDebug() << "all set and done";
 }
