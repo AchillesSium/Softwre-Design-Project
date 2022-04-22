@@ -8,10 +8,10 @@ To run the program the user will need the "Qt Creator" program.
   - Select "Open Project" and locate the .pro file found in the project_group_anyone folder.
   - Configure it to run on Qt 5.9.9 MinGW 32bit (newer versions will NOT work).
   - Make sure the following Qt modules are installed (can be done via the Qt Maintenance Tool):
-		- QtCore
-		- QtGUI
-		- QtCharts
-		- QtNetwork
+    - QtCore
+    - QtGUI
+    - QtCharts
+    - QtNetwork
   - Build and run
 
 Note: We attempted to make an executable of the app, but the executable would crash with no
