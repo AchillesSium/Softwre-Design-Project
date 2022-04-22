@@ -20,7 +20,7 @@ indication as to why and we ran out of time trying to get it to work.
 For more information about the software see the design document of this project.
 
 Development team:
-Mohammad Hassan
-Sakari Klemola
-Aatu Laurikainen
-Aleksi Sirviö
+  Mohammad Hassan
+  Sakari Klemola
+  Aatu Laurikainen
+  Aleksi Sirviö
