@@ -1,0 +1,9 @@
+{
+    "AggregateType": "None",
+    "DataSetSMEAR": "None",
+    "DataSetSTATFI": "CO2tonnes",
+    "DataSource": "STATFI",
+    "DateEnd": "2016-01-01T00:00:00.000",
+    "DateStart": "2015-01-01T00:00:00.000",
+    "MeasuringStation": "None"
+}
