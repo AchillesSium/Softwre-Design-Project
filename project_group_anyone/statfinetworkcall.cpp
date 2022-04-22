@@ -60,23 +60,11 @@ void statfinetworkcall::query()
     codeTiedot["code"] = "Tiedot";
     codeTiedot["selection"] = selectionTiedot;
 
-    /*QJsonArray year_array;
-    year_array.push_back(QString("2015"));
-    QJsonObject selectionVuosi;
-    selectionVuosi["values"] = year_array;
-    selectionVuosi["filter"] = "item";
-    QJsonObject codeVuosi;
-    codeVuosi["code"] = "Vuosi";
-    codeVuosi["selection"] = selectionVuosi;*/
-
     QJsonArray query_array;
     query_array.push_back(codeTiedot);
-    //query_array.push_back(codeVuosi);
 
     QJsonObject query;
     query["query"] = query_array;
-   // QJsonArray query_array1;
-   // query["query"] = query_array1;
 
     QJsonObject format;
     format["format"] =  "json-stat2";

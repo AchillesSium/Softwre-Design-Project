@@ -22,11 +22,13 @@ int main(int argc, char *argv[])
     ChartWindow w;
     w.show();
 
+    /**
+     * Get STATFI data into the data storage at the launch of the app.
+     */
     statfinetworkcall *statfinetwork = new statfinetworkcall();
-
     statfinetwork->query();
 
-    // wait for the request to process completely
+    // Wait for the request to process completely
     QEventLoop statfi_loop;
     QObject::connect(statfinetwork, SIGNAL(done()), &statfi_loop, SLOT(quit()));
     statfi_loop.exec();
@@ -39,7 +41,6 @@ int main(int argc, char *argv[])
     }
     else
     {
-
         StatfiParser *parser = new StatfiParser();
         parser->parse(obj);
         delete parser;

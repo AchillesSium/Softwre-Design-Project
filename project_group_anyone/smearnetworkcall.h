@@ -5,6 +5,10 @@
 #include <QString>
 #include "userselections.h"
 
+/**
+ * @brief The smearnetworkcall class
+ * Class for making API queries to SMEAR database.
+ */
 class smearnetworkcall : public networkcalls
 {
 public:

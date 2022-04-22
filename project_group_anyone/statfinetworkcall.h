@@ -3,6 +3,10 @@
 
 #include "networkcalls.h"
 
+/**
+ * @brief The statfinetworkcall class
+ * Class for making API queries to STATFI database.
+ */
 class statfinetworkcall: public networkcalls
 {
 public:

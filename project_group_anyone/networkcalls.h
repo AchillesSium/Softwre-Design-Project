@@ -9,6 +9,10 @@
 
 using std::string;
 
+/**
+ * @brief The networkcalls class
+ * Parent class for classes that make network API queries.
+ */
 class networkcalls: public QObject
 {
     Q_OBJECT
