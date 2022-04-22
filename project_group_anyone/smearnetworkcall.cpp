@@ -19,21 +19,40 @@
 
 using namespace std;
 
+/**
+ * @brief smearnetworkcall::smearnetworkcal
+ * Constructor of the class
+ */
 smearnetworkcall::smearnetworkcall()
 {
 
 }
 
+/**
+ * @brief smearnetworkcall::smearnetworkcal
+ * Constructor of the class
+ * @param selections
+ */
 smearnetworkcall::smearnetworkcall(UserSelections* selections)
 {
     userSelections = selections;
 }
 
+
+/**
+ * @brief smearnetworkcall::~smearnetworkcal
+ * Destructor of the class
+ */
 smearnetworkcall::~smearnetworkcall()
 {
 
 }
 
+/**
+    * @brief smearnetworkcall::query
+    * API call for SMEAR data according to user selection
+    * Set the timeSeriesObj_ once the api call is successfull
+*/
 void smearnetworkcall::query()
 {
     QString str = QString::fromUtf8(userSelections->toQuery().c_str());
@@ -49,19 +68,8 @@ void smearnetworkcall::query()
 
     QObject::connect(reply, &QNetworkReply::finished, [=](){
         if(reply->error() == QNetworkReply::NoError){
-
-            //QString contents = QString::fromUtf8(reply->readAll());
-            //qDebug() << contents;
-            //QJsonObject obj = QJsonDocument::fromJson(reply->readAll()).object();
-            //qDebug() << obj;
-
-
-//            QString contents = QString::fromUtf8(reply->readAll());
-//            qDebug() << contents;
-
             // needs to be commented out since apparently the data form from the reply can be read only once
             timeSeriesObj_ = QJsonDocument::fromJson(reply->readAll()).object();
-            //qDebug() << "Smear timeseries" << timeSeriesObj_;
             emit done();
         }
         else{
@@ -75,6 +83,11 @@ void smearnetworkcall::query()
     });
 }
 
+/**
+    * @brief smearnetworkcall::getObject
+    * returns object of time series obtained from API call
+    * @return object of time series
+*/
 QJsonObject smearnetworkcall::getObject()
 {
     return timeSeriesObj_;

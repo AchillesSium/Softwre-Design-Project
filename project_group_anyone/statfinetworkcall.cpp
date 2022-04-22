@@ -17,16 +17,29 @@
 #include <QJsonArray>
 #include <QDate>
 
+/**
+ * @brief tatfinetworkcall::statfinetworkcall
+ * Constructor of the class
+ */
 statfinetworkcall::statfinetworkcall()
 {
 
 }
 
+/**
+ * @brief tatfinetworkcall::~statfinetworkcall
+ * Destructor of the class
+ */
 statfinetworkcall::~statfinetworkcall()
 {
 
 }
 
+/**
+    * @brief statfinetworkcall::query
+    * API call for STATFI data
+    * Set the statfObj_ once the api call is successfull
+*/
 void statfinetworkcall::query()
 {
     QNetworkAccessManager *mgr = new QNetworkAccessManager(this);
@@ -77,17 +90,8 @@ void statfinetworkcall::query()
 
     QObject::connect(reply, &QNetworkReply::finished, [=](){
         if(reply->error() == QNetworkReply::NoError){
-
-            //QString contents = QString::fromUtf8(reply->readAll());
-            //qDebug() << contents;
-            //QJsonObject obj = QJsonDocument::fromJson(reply->readAll()).object();
-            //qDebug() << obj;
-
-            //QString contents = QString::fromUtf8(reply->readAll());
-            //qDebug() << contents;
             // needs to be commented out since apparently the data form from the reply can be read only once
             statfObj_ = QJsonDocument::fromJson(reply->readAll()).object();
-           //qDebug() << "adskfhgaudfygifgiyg" << statfObj_;
             emit done();
         }else{
             QString err = reply->errorString();
@@ -100,6 +104,11 @@ void statfinetworkcall::query()
     });
 }
 
+/**
+    * @brief statfinetworkcall::getObject
+    * returns object of statfi obtained from API call
+    * @return object of statfi
+*/
 QJsonObject statfinetworkcall::getObject()
 {
     return statfObj_;
